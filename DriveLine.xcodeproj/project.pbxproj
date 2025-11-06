@@ -10,6 +10,9 @@
 		DCA84EA22EBD348900945801 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = DCA84EA12EBD348900945801 /* .gitignore */; };
 		DCA84EA52EBD34C500945801 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = DCA84EA32EBD34C500945801 /* LICENSE */; };
 		DCA84EA62EBD34C500945801 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = DCA84EA42EBD34C500945801 /* README.md */; };
+		DCA84EAB2EBD358200945801 /* Swinject in Frameworks */ = {isa = PBXBuildFile; productRef = DCA84EAA2EBD358200945801 /* Swinject */; };
+		DCA84EAE2EBD359400945801 /* CouchbaseLiteSwift in Frameworks */ = {isa = PBXBuildFile; productRef = DCA84EAD2EBD359400945801 /* CouchbaseLiteSwift */; };
+		DCA84EB12EBD35A000945801 /* SwiftUISturdy in Frameworks */ = {isa = PBXBuildFile; productRef = DCA84EB02EBD35A000945801 /* SwiftUISturdy */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -19,9 +22,22 @@
 		DCA84EA42EBD34C500945801 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		DCA84F8F2EBD36A200945801 /* Exceptions for "DriveLine" folder in "DriveLine" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = DCA84E922EBD345F00945801 /* DriveLine */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		DCA84E952EBD345F00945801 /* DriveLine */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				DCA84F8F2EBD36A200945801 /* Exceptions for "DriveLine" folder in "DriveLine" target */,
+			);
 			path = DriveLine;
 			sourceTree = "<group>";
 		};
@@ -32,6 +48,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DCA84EB12EBD35A000945801 /* SwiftUISturdy in Frameworks */,
+				DCA84EAE2EBD359400945801 /* CouchbaseLiteSwift in Frameworks */,
+				DCA84EAB2EBD358200945801 /* Swinject in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -77,6 +96,9 @@
 			);
 			name = DriveLine;
 			packageProductDependencies = (
+				DCA84EAA2EBD358200945801 /* Swinject */,
+				DCA84EAD2EBD359400945801 /* CouchbaseLiteSwift */,
+				DCA84EB02EBD35A000945801 /* SwiftUISturdy */,
 			);
 			productName = DriveLine;
 			productReference = DCA84E932EBD345F00945801 /* DriveLine.app */;
@@ -106,6 +128,11 @@
 			);
 			mainGroup = DCA84E8A2EBD345E00945801;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				DCA84EA92EBD358200945801 /* XCRemoteSwiftPackageReference "Swinject" */,
+				DCA84EAC2EBD359400945801 /* XCRemoteSwiftPackageReference "couchbase-lite-swift" */,
+				DCA84EAF2EBD35A000945801 /* XCRemoteSwiftPackageReference "SwiftUI-Sturdy" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = DCA84E942EBD345F00945801 /* Products */;
 			projectDirPath = "";
@@ -273,6 +300,7 @@
 				DEVELOPMENT_TEAM = 85F49QNXT3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = DriveLine/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -306,6 +334,7 @@
 				DEVELOPMENT_TEAM = 85F49QNXT3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = DriveLine/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -351,6 +380,51 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		DCA84EA92EBD358200945801 /* XCRemoteSwiftPackageReference "Swinject" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Swinject/Swinject";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.10.0;
+			};
+		};
+		DCA84EAC2EBD359400945801 /* XCRemoteSwiftPackageReference "couchbase-lite-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/couchbase/couchbase-lite-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.0.0;
+			};
+		};
+		DCA84EAF2EBD35A000945801 /* XCRemoteSwiftPackageReference "SwiftUI-Sturdy" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/OmAr-Kader/SwiftUI-Sturdy";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.1.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		DCA84EAA2EBD358200945801 /* Swinject */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DCA84EA92EBD358200945801 /* XCRemoteSwiftPackageReference "Swinject" */;
+			productName = Swinject;
+		};
+		DCA84EAD2EBD359400945801 /* CouchbaseLiteSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DCA84EAC2EBD359400945801 /* XCRemoteSwiftPackageReference "couchbase-lite-swift" */;
+			productName = CouchbaseLiteSwift;
+		};
+		DCA84EB02EBD35A000945801 /* SwiftUISturdy */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DCA84EAF2EBD35A000945801 /* XCRemoteSwiftPackageReference "SwiftUI-Sturdy" */;
+			productName = SwiftUISturdy;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = DCA84E8B2EBD345E00945801 /* Project object */;
 }

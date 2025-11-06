@@ -1,0 +1,33 @@
+{
+  "originHash" : "093b274944715e3c0842cf071b07398ec3abecdbfee7bbcceb3314503d3ebede",
+  "pins" : [
+    {
+      "identity" : "couchbase-lite-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/couchbase/couchbase-lite-swift",
+      "state" : {
+        "revision" : "26d5946a72fab2722f83c01c40116d0bd84a0819",
+        "version" : "4.0.0"
+      }
+    },
+    {
+      "identity" : "swiftui-sturdy",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/OmAr-Kader/SwiftUI-Sturdy",
+      "state" : {
+        "revision" : "18dfa7f757419c844af22d58e93536d83f366063",
+        "version" : "1.1.1"
+      }
+    },
+    {
+      "identity" : "swinject",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Swinject/Swinject",
+      "state" : {
+        "revision" : "b685b549fe4d8ae265fc7a2f27d0789720425d69",
+        "version" : "2.10.0"
+      }
+    }
+  ],
+  "version" : 3
+}
