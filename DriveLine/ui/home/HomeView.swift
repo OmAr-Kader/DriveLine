@@ -14,7 +14,7 @@ struct HomeView: View {
     
     var app: BaseAppObserve
     let navigator: Navigator
-    //let manager = EventKitManager()
+    let manager = EventKitManager()
 
     @State private var eventStatus: String = "Not Determined"
     
@@ -59,7 +59,6 @@ struct HomeView: View {
     
     
     func event() {
-        /*
         Task {
             do {
                 let granted = try await manager.requestCalendarAccess()
@@ -98,7 +97,5 @@ struct HomeView: View {
                 LogKit.print("Error: \(error.localizedDescription)")
             }
         }
-         */
-
     }
 }

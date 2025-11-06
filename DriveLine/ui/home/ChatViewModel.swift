@@ -17,7 +17,6 @@ final class ChatViewModel {
     var isSending: Bool = false
     var lastError: String?
     
-    private let GEMINI_API_KEY: String = ""
 
     init() {
 
@@ -75,7 +74,7 @@ final class ChatViewModel {
     func generateContent(prompt: String) async throws -> String {
         guard !prompt.isEmpty else { return "" }
 
-        let urlString = "\(Const.GEMINI_URL)/\(Const.GEMINI_MODEL):generateContent?key=\(GEMINI_API_KEY)"
+        let urlString = "\(Const.GEMINI_URL)/\(Const.GEMINI_MODEL):generateContent?key=\(SecureConst.GEMINI_API_KEY)"
         guard let url = URL(string: urlString) else {
             throw GeminiError.invalidURL
         }

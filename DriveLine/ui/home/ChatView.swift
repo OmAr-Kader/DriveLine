@@ -117,6 +117,10 @@ struct ChatView: View {
             .background(.regularMaterial)
             .onAppeared {
                 speech.requestSpeechRecognitionPermission()
+            }.onChange(inputFocused) { inputFocused in
+                if inputFocused, speech.isListening {
+                    speech.stopListening()
+                }
             }
     }
     
