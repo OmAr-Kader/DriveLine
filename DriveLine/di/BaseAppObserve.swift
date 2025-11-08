@@ -4,13 +4,11 @@ import Observation
 import SwiftUISturdy
 import CouchbaseLiteSwift
 
-
 @Observable
 final class BaseAppObserve: BaseObserver {
     
+    @MainActor
     private(set) var state: AppObserveState = AppObserveState()
-       
-    private var preff: Preference? = nil
     
     private var prefsTask: Task<Void, Error>? = nil
     
@@ -38,39 +36,8 @@ final class BaseAppObserve: BaseObserver {
     
     @MainActor
     func refreshPreferences(_ list: [Preference]) {
-        self.tasker.mainSync {
-            let countInt = (Int(list.first(where: { $0.keyString == "test_count"})?.value ?? "0") ?? 0)
-            let newCount: Update<Int> = if self.state.count == 0 { .set(countInt) } else { .keep }
-            withAnimation {
-                self.state = self.state.copy(preferences: .set(list), count: newCount)
-            }
-        }
-    }
-
-    @MainActor
-    func increaseCount() {
-        LogKit.print("1", "\(Int64(Date().timeIntervalSince1970 * 1000)) -")
-        self.tasker.mainSync {
-            let prefId = self.state.preferences.first(where: { $0.keyString == "test_count"})?.id ?? ""
-            
-            let new = self.state.count + 1
-            let newValue = "\(new)"
-            self.tasker.backSync {
-                if await self.project.pref.updatePref(Preference(id: prefId, keyString: "test_count", value: newValue), newValue: newValue) != nil {
-                    let newPrefs = await self.state.preferences.editItem {
-                        $0.keyString == "test_count"
-                    } edit: {
-                        $0.value = newValue
-                    }
-                    self.mainSync {
-                        LogKit.print("2", "\(Int64(Date().timeIntervalSince1970 * 1000)) -- \(prefId) -> \(new)")
-                        withAnimation {
-                            self.state = self.state.copy(preferences: .set(newPrefs), count: .set(new))
-                        }
-                    }
-                }
-            }
-        }
+        let userBase = fetchUserBase(list)
+        self.state = self.state.copy(preferences: .set(list), userBase: .set(userBase))
     }
     
     private func inti(invoke: @BackgroundActor @escaping ([Preference]) async -> Void) {
@@ -84,7 +51,6 @@ final class BaseAppObserve: BaseObserver {
         await invoke(await self.project.pref.prefs())
     }
 
-    
     @MainActor
     func findUserBase(
         invoke: @escaping @MainActor (UserBase?) -> Void
@@ -93,7 +59,7 @@ final class BaseAppObserve: BaseObserver {
             self.inti { it in
                 let userBase = await self.fetchUserBase(it)
                 self.mainSync {
-                    self.state = self.state.copy(preferences: .set(it))
+                    self.state = self.state.copy(preferences: .set(it), userBase: .set(userBase))
                     invoke(userBase)
                 }
             }
@@ -107,25 +73,39 @@ final class BaseAppObserve: BaseObserver {
         }
     }
 
-    private func fetchUserBase(_ list: [Preference]) async -> UserBase? {
+    private func fetchUserBase(_ list: [Preference]) -> UserBase? {
         let id = list.last { it in it.keyString == Const.PREF_USER_ID }?.value
         let name = list.last { it in it.keyString == Const.PREF_USER_NAME }?.value
         let email = list.last { it in it.keyString == Const.PREF_USER_EMAIL }?.value
         let userType = list.last { it in it.keyString == Const.PREF_USER_TYPE }?.value
-        if (id == nil || name == nil || email == nil || userType == nil) {
-            return nil
-        }
-        return UserBase(id: id!, name: name!, email: email!, accountType: Int(userType!)!)
+        let token = list.last { it in it.keyString == Const.PREF_USER_TOKEN }?.value
+        guard let id, let name, let email, let userType, let token else { return nil }
+        return UserBase(id: id, name: name, email: email, accountType: userType, token: token)
     }
 
     func updateUserBase(userBase: UserBase, invoke: @escaping @MainActor () -> Void) {
- 
         tasker.backSync {
             var list : [Preference] = []
             list.append(Preference(keyString: Const.PREF_USER_ID, value: userBase.id))
             list.append(Preference(keyString: Const.PREF_USER_NAME, value: userBase.name))
             list.append(Preference(keyString: Const.PREF_USER_EMAIL, value: userBase.email))
-            list.append(Preference(keyString: Const.PREF_USER_TYPE, value: String(userBase.accountType)))
+            list.append(Preference(keyString: Const.PREF_USER_TYPE, value: userBase.accountType))
+            list.append(Preference(keyString: Const.PREF_USER_TOKEN, value: userBase.token))
+            let _ = await self.project.pref.updatePref(list)
+            await self.inti { it in
+                self.mainSync {
+                    self.state = self.state.copy(preferences: .set(it))
+                    invoke()
+                }
+            }
+        }
+    }
+    
+    func updateUserBase(name: String, email: String, invoke: @escaping @MainActor () -> Void) {
+        tasker.backSync {
+            var list : [Preference] = []
+            list.append(Preference(keyString: Const.PREF_USER_NAME, value: name))
+            list.append(Preference(keyString: Const.PREF_USER_EMAIL, value: email))
             let _ = await self.project.pref.updatePref(list)
             await self.inti { it in
                 self.mainSync {
@@ -202,19 +182,16 @@ final class BaseAppObserve: BaseObserver {
         private(set) var preferences: [Preference] = []
         private(set) var userBase: UserBase? = nil
         private(set) var args = [Screen : any ScreenConfig]()
-        private(set) var count: Int = 0
         
         @MainActor
         mutating func copy(
             preferences: Update<[Preference]> = .keep,
             userBase: Update<UserBase?> = .keep,
-            count: Update<Int> = .keep,
             args: Update<[Screen : any ScreenConfig]> = .keep
         ) -> Self {
             if case .set(let value) = preferences { self.preferences = value }
             if case .set(let value) = userBase { self.userBase = value }
             if case .set(let value) = args { self.args = value }
-            if case .set(let value) = count { self.count = value }
             return self
         }
         

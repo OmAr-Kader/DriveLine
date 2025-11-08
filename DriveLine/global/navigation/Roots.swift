@@ -48,7 +48,7 @@ extension View {
        navigator: any Navigator
    ) -> some View {
        switch target {
-       case .AUTH_SCREEN_ROUTE: HomeScreen(app: app, navigator: navigator)
+       case .AUTH_SCREEN_ROUTE: AuthScreen(app: app, navigator: navigator)
        case .HOME_SCREEN_ROUTE: HomeScreen(app: app, navigator: navigator)
        }
    }

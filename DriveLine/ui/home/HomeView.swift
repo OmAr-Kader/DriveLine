@@ -33,18 +33,6 @@ struct HomeView: View {
                     }
                 }//.id(app.state.count)
             Spacer().height(20)
-            Button {
-                app.increaseCount()
-            } label: {
-                Text("Count: \(app.state.count)").foregroundStyle(.textOfApp)
-            }.padding()
-                .apply {
-                    if #available(iOS 26.0, *) {
-                        $0.glassEffect(.regular.tint(.blue).interactive())
-                    } else {
-                        $0.glassed(shape: Capsule(), tint: .blue)
-                    }
-                }//.id(app.state.count)
         }.toolbar(content: toolBarView)
             .navigationTitle("Home")
             .navigationBarHidden(false)

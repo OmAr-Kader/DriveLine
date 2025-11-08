@@ -10,13 +10,15 @@ import SwiftUISturdy
 
 struct Project : Sendable {
     let pref: PreferenceBase
+    let auth: AuthBase
 }
 
 func buildContainer() -> Container {
     let container = Container()
     
     let pro = Project(
-        pref: PreferenceBase(repository: PrefRepoImp(db: try? CouchbaseLocal()))
+        pref: PreferenceBase(repository: PrefRepoImp(db: try? CouchbaseLocal())),
+        auth: AuthBase(repo: AuthRepoImp())
     )
     let theme = Theme(isDarkMode: UITraitCollection.current.userInterfaceStyle.isDarkMode)
     container.register(Project.self) { _  in

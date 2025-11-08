@@ -11,13 +11,13 @@ import SwiftUISturdy
 @MainActor
 struct ChatView: View {
 
-    private let vm: ChatViewModel
+    private let obs: HomeObserve
     private var speech: SpeechManagerObservation = SpeechManagerObservation()
     @FocusState private var inputFocused: Bool
     @State private var scrollProxy: ScrollViewProxy? = nil
 
-    init(vm: ChatViewModel) {
-        self.vm = vm
+    init(obs: HomeObserve) {
+        self.obs = obs
     }
     
     var body: some View {
@@ -30,16 +30,17 @@ struct ChatView: View {
             
         }
         .safeAreaInset(edge: .bottom, content: inputBar)
-        .onChange(vm.messages) { _ in
-                // scroll to bottom when messages change
-                scrollToBottom(animated: true)
-                if let last = vm.messages.last, last.sender == .bot {
-                    // MARK: speech.speak(last.text)
-                }
+        .onChange(obs.state.messages) { _ in
+            // scroll to bottom when messages change
+            scrollToBottom(animated: true)
+            if let last = obs.state.messages.last, last.sender == .bot {
+                // MARK: speech.speak(last.text)
             }
-            .onAppear {
-                scrollToBottom(animated: false)
-            }
+        }
+        .onAppear {
+            obs.addWelcomeMessage()
+            //scrollToBottom(animated: false)
+        }
     }
 
 
@@ -47,7 +48,7 @@ struct ChatView: View {
         ScrollViewReader { proxy in
             ScrollView {
                 LazyVStack(spacing: 0) {
-                    ForEach(vm.messages) { msg in
+                    ForEach(obs.state.messages) { msg in
                         MessageRow(message: msg)
                             .id(msg.id)
                     }
@@ -79,10 +80,10 @@ struct ChatView: View {
                     .tint(.accentColor)               // caret and selection color
                     .font(.body)
                     .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.gray.opacity(0.4)))
-                    .disabled(vm.isSending)
+                    .disabled(obs.state.isSending)
                     .onSubmit {
                         Task {
-                            await vm.send(text: speech.transcribedText) {
+                            await obs.send(text: speech.transcribedText) {
                                 speech.transcribedText = ""
                             }
                         }
@@ -94,7 +95,7 @@ struct ChatView: View {
                     }
                 } label: {
                     Group {
-                        if vm.isSending {
+                        if obs.state.isSending {
                             ProgressView()
                                 .progressViewStyle(.circular)
                         } else {
@@ -108,8 +109,8 @@ struct ChatView: View {
                     .clipShape(Circle())
                     .shadow(radius: 2)
                 }
-                .disabled(vm.isSending)
-                .animation(.easeInOut(duration: 0.2), value: vm.isSending)
+                .disabled(obs.state.isSending)
+                .animation(.easeInOut(duration: 0.2), value: obs.state.isSending)
                 .accessibilityLabel(buttonAccessibilityLabel)
             }
         }.padding(.horizontal)
@@ -138,7 +139,7 @@ struct ChatView: View {
     }
     
     private var buttonAccessibilityLabel: String {
-        if vm.isSending {
+        if obs.state.isSending {
             return "Sending message"
         } else if !speech.transcribedText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty, !speech.isListening {
             return "Send message"
@@ -148,7 +149,7 @@ struct ChatView: View {
     }
     
     private var buttonBackgroundColor: Color {
-        if vm.isSending {
+        if obs.state.isSending {
             return .gray.opacity(0.3)
         } else if !speech.transcribedText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty, !speech.isListening {
             return .blue
@@ -159,7 +160,7 @@ struct ChatView: View {
 
     
     private func handleMainButtonTap() async {
-        TaskMainSwitcher(priority: .userInitiated) { [self] in
+        TaskMainSwitcher { [self] in
             withAnimation {
                 inputFocused = false
             }
@@ -172,7 +173,7 @@ struct ChatView: View {
         } else {
             let text = speech.transcribedText.trimmingCharacters(in: .whitespacesAndNewlines)
             if !text.isEmpty {
-                await vm.send(text: text) {
+                await obs.send(text: text) {
                     speech.transcribedText = ""
                 }
                 //inputFocused = true

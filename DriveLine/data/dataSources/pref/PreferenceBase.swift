@@ -4,9 +4,9 @@ import CouchbaseLiteSwift
 
 final class PreferenceBase : Sendable {
     
-    let repository: PrefRepo
+    private let repository: PrefRepo
     
-    public init(repository: PrefRepo) {
+    init(repository: PrefRepo) {
         self.repository = repository
     }
     

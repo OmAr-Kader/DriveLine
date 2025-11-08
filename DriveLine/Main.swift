@@ -101,7 +101,7 @@ struct SplashScreen : View {
                 .scaleEffect(scale)
                 .frame(width: width, height: width, alignment: .center)
                 .onAppeared {
-                    withAnimation(.easeInOut(duration: 1)) {
+                    withAnimation(.easeInOut(duration: 0.7)) {
                         width = 150
                     }
                 }
@@ -115,7 +115,7 @@ struct HomeScreen: View {
     
     var app: BaseAppObserve
     let navigator: Navigator
-    private let vm: ChatViewModel = ChatViewModel()
+    private let obs: HomeObserve = HomeObserve()
 
     @State private var selectedTab = 0
     @State private var isLoading = true
@@ -135,10 +135,10 @@ struct HomeScreen: View {
                         VStack{}.initialHomeScreen()
                     }
                     Tab("Assistant", systemImage: "waveform", value: 2) {
-                        ChatView(vm: vm).initialHomeScreen()
+                        ChatView(obs: obs).initialHomeScreen()
                     }
-                    Tab("Search", systemImage: "magnifyingglass", value: 3, role: .search) {
-                        VStack{}.initialHomeScreen()
+                    Tab("Profile", systemImage: "person.fill", value: 3, role: .search) {
+                        ProfileView(app: app, obs: obs).initialHomeScreen()
                     }
                     /*
                     Tab("Search", systemImage: "magnifyingglass", value: 1) {
@@ -146,10 +146,6 @@ struct HomeScreen: View {
                     }
                     Tab("Favorites", systemImage: "heart.fill", value: 2) {
                         FavoritesView(app: app, navigator: navigator)
-                    }
-
-                    Tab("Profile", systemImage: "person.fill", value: 3, role: .search) {
-                        ProfileView()
                     }*/
                 }
             } else {
@@ -170,7 +166,7 @@ struct HomeScreen: View {
                         }
                         .tag(1)
                     
-                    ChatView(vm: vm)
+                    ChatView(obs: obs)
                         .initialHomeScreen()
                         .tabItem {
                             Image(systemName: "waveform")
@@ -178,17 +174,17 @@ struct HomeScreen: View {
                         }
                         .tag(2)
                     
-                    VStack{}
+                    ProfileView(app: app, obs: obs)
                         .initialHomeScreen()
                         .tabItem {
-                            Image(systemName: "magnifyingglass")
-                            Text("Search")
+                            Image(systemName: "person.fill")
+                            Text("Profile")
                         }
                         .tag(3)
                 }
                 
             }
-        }.tint(.blue)
+        }.tint(.primaryOfApp)
             .hideToolbar()
     }
 }
@@ -197,8 +193,8 @@ extension View {
     
     @ViewBuilder
     func initialHomeScreen() -> some View {
-        padding(.vertical, 1)
-            .safeAreaInset(edge: .top) { Color.clear.frame(height: 0) }
+        padding(.bottom, 1)
+            //.safeAreaInset(edge: .top) { Color.clear.frame(height: 0) }
             .safeAreaInset(edge: .bottom) { Color.clear.frame(height: 0) }
             .toolbarBackground(.hidden, for: .tabBar)
             .toolbarBackground(.hidden, for: .bottomBar)

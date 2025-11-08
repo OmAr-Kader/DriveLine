@@ -1,3 +1,10 @@
+//
+//  Local.swift
+//  DriveLine
+//
+//  Created by OmAr Kader on 08/11/2025.
+//
+
 import Foundation
 import CouchbaseLiteSwift
 import SwiftUISturdy

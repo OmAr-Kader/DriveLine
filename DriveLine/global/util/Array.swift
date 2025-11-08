@@ -35,5 +35,22 @@ extension Array {
         
         return newArray
     }
+    
+    func add(_ item: Element) -> [Element] {
+        var list = self
+        list.append(item)
+        return list
+    }
 }
 
+
+extension String {
+    
+    @inlinable public init<T>(_ value: T?) where T : LosslessStringConvertible {
+        if let value {
+            self.init(value)
+        } else {
+            self.init()
+        }
+    }
+}
