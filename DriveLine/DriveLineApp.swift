@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-
+import SwiftUISturdy
 @main
 struct DriveLineApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
@@ -33,7 +33,6 @@ struct DriveLineApp: App {
                         if remainingMs > 0 {
                             try? await Task.sleep(nanoseconds: UInt64(remainingMs * 1_000_000))
                         }
-
                         Task { @MainActor in
                             withAnimation {
                                 self.screenToGo = screenToGo

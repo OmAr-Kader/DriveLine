@@ -34,7 +34,7 @@ struct ChatView: View {
             // scroll to bottom when messages change
             scrollToBottom(animated: true)
             if let last = obs.state.messages.last, last.sender == .bot {
-                // MARK: speech.speak(last.text)
+                speech.speak(last.text)
             }
         }
         .onAppear {
@@ -115,11 +115,15 @@ struct ChatView: View {
         }.padding(.horizontal)
             .padding(.vertical, 8)
             .background(.regularMaterial)
-            .onAppeared {
-                speech.requestSpeechRecognitionPermission()
-            }.onChange(inputFocused) { inputFocused in
+            .onChange(inputFocused) { inputFocused in
                 if inputFocused, speech.isListening {
                     speech.stopListening()
+                }
+            }.onChange(speech.isAuthorized) { new in
+                if new {
+                    Task {
+                        await handleMainButtonTap()
+                    }
                 }
             }
     }
@@ -159,12 +163,16 @@ struct ChatView: View {
 
     
     private func handleMainButtonTap() async {
+        if !speech.isAuthorized {
+            speech.requestSpeechRecognitionPermission()
+            return
+        }
         TaskMainSwitcher { [self] in
             withAnimation {
                 inputFocused = false
             }
             if speech.isSpeaking {
-                // MARK: speech.stopSpeaking()
+                speech.stopSpeaking()
             }
         }
         if speech.isListening {

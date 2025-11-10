@@ -97,7 +97,7 @@ struct ProfileView: View {
                 $0.toastView(toast: obs.toast, textColor: .textOfApp, backDarkSec: .backDarkSec)
             }
         }.onAppeared {
-            //obs.fetchUser(app.state.userBase)
+            obs.fetchUser(app.state.userBase)
         }.sheet(isPresented: obs.isEditSheet) {
             if let user = obs.state.user {
                 EditProfileSheet(path: $path, user: user, toast: obs.toast, isLoading: obs.state.isLoading) {
