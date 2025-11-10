@@ -127,12 +127,12 @@ struct HomeScreen: View {
             if #available(iOS 18.0, *) {
                 TabView(selection: $selectedTab) {
                     Tab(value: 0) {
-                        HomeView(app: app, navigator: navigator).initialHomeScreen()
+                        HomeView(obs: obs).initialHomeScreen()
                     } label: {
                         Label("Home", systemImage: "house.fill")
                     }
                     Tab("Schedule", systemImage: "calendar.and.person", value: 1) {
-                        VStack{}.initialHomeScreen()
+                        ScheduleView(app: app, navigator: navigator).initialHomeScreen()
                     }
                     Tab("Assistant", systemImage: "waveform", value: 2) {
                         ChatView(obs: obs).initialHomeScreen()
@@ -147,10 +147,26 @@ struct HomeScreen: View {
                     Tab("Favorites", systemImage: "heart.fill", value: 2) {
                         FavoritesView(app: app, navigator: navigator)
                     }*/
+                }.apply {
+                    if selectedTab == 3 {
+                        $0.visibleToolbar()
+                            .toolbar {
+                                ToolbarItem(placement: .topBarTrailing) {
+                                    Button {
+                                        guard obs.state.user != nil else { return }
+                                        self.obs.sheet(isEditSheet: true)
+                                    } label: {
+                                        Image.initial("pencil".forImage(tint: .textOfApp, isSystem: true))
+                                            .frame(size: 24)}
+                                }
+                            }
+                    } else {
+                        $0.hideToolbar()
+                    }
                 }
             } else {
                 TabView(selection: $selectedTab) {
-                    HomeView(app: app, navigator: navigator)
+                    HomeView(obs: obs)
                         .initialHomeScreen()
                         .tabItem {
                             Image(systemName: "house.fill")
@@ -158,7 +174,7 @@ struct HomeScreen: View {
                         }
                         .tag(0)
                     
-                    VStack{}
+                    ScheduleView(app: app, navigator: navigator)
                         .initialHomeScreen()
                         .tabItem {
                             Image(systemName: "calendar.and.person")
@@ -181,11 +197,32 @@ struct HomeScreen: View {
                             Text("Profile")
                         }
                         .tag(3)
+                }.apply {
+                    if selectedTab == 3 {
+                        $0.visibleToolbar()
+                            .toolbar {
+                                ToolbarItem(placement: .topBarTrailing) {
+                                    Button {
+                                        guard obs.state.user != nil else { return }
+                                        self.obs.sheet(isEditSheet: true)
+                                    } label: {
+                                        Image.initial("pencil".forImage(tint: .textOfApp, isSystem: true))
+                                            .frame(size: 24)}
+                                }
+                            }
+                    } else {
+                        $0.hideToolbar()
+                    }
                 }
-                
             }
         }.tint(.primaryOfApp)
-            .hideToolbar()
+            /*.onDisappear {
+                Task {
+                    obs.shortVideos.forEach {
+                        $0.player = nil
+                    }
+                }
+            }*/
     }
 }
 

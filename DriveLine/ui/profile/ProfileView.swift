@@ -60,7 +60,7 @@ struct ProfileView: View {
                 
                 Spacer().height(10)
                 // Edit Profile Button
-                Button(action: {
+                /*Button(action: {
                     guard obs.state.user != nil else { return }
                     self.obs.sheet(isEditSheet: true)
                 }) {
@@ -78,7 +78,7 @@ struct ProfileView: View {
                             $0.glassEffect(in: .rect(cornerRadius: 12.0))
                         }
                     }
-                }
+                }*/
                 
                 VStack(spacing: 0) {
                     Spacer()
@@ -97,7 +97,7 @@ struct ProfileView: View {
                 $0.toastView(toast: obs.toast, textColor: .textOfApp, backDarkSec: .backDarkSec)
             }
         }.onAppeared {
-            obs.fetchUser(app.state.userBase)
+            //obs.fetchUser(app.state.userBase)
         }.sheet(isPresented: obs.isEditSheet) {
             if let user = obs.state.user {
                 EditProfileSheet(path: $path, user: user, toast: obs.toast, isLoading: obs.state.isLoading) {

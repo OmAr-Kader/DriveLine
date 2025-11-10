@@ -68,19 +68,3 @@ final class AuthRepoImp : AuthRepo {
     }
     
 }
-
-extension URL {
-    
-    
-    @BackgroundActor
-    public func createPUTRequest<T: Encodable>(body: T? = nil) throws -> URLRequest {
-        var request = URLRequest(url: self)
-        request.httpMethod = "PUT"
-        if let body = body {
-            request.httpBody = try JSONEncoder().encode(body)
-        }
-        request.timeoutInterval = 10
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        return request
-    }
-}

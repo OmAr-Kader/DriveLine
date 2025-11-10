@@ -1,5 +1,5 @@
 {
-  "originHash" : "093b274944715e3c0842cf071b07398ec3abecdbfee7bbcceb3314503d3ebede",
+  "originHash" : "3ee0c1e5ccafcaaeaeea807554f70426c7e5c5271c86f0aa7530f06ebf0eeb29",
   "pins" : [
     {
       "identity" : "couchbase-lite-swift",
@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/OmAr-Kader/SwiftUI-Sturdy",
       "state" : {
-        "revision" : "18dfa7f757419c844af22d58e93536d83f366063",
-        "version" : "1.1.1"
+        "revision" : "1e7d6949fb3da6f413cb433e4f0447a4ffdc7a28",
+        "version" : "1.1.2"
       }
     },
     {

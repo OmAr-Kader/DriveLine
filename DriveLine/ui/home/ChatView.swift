@@ -38,7 +38,6 @@ struct ChatView: View {
             }
         }
         .onAppear {
-            obs.addWelcomeMessage()
             //scrollToBottom(animated: false)
         }
     }
@@ -133,7 +132,7 @@ struct ChatView: View {
             if !text.isEmpty {
                 return "paperplane.fill"
             } else {
-                return "mic.fill"
+                return "waveform"
             }
         }
     }
