@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/OmAr-Kader/SwiftUI-Sturdy",
       "state" : {
-        "revision" : "1e7d6949fb3da6f413cb433e4f0447a4ffdc7a28",
-        "version" : "1.1.2"
+        "revision" : "d9290186f03ee8fc6665fa2ba7f1378c71dd3401",
+        "version" : "1.1.3"
       }
     },
     {

@@ -156,6 +156,11 @@ final class BaseAppObserve: BaseObserver {
     }
     
     @MainActor
+    func setForUpdateSessions(_ forUpdateSessions: (newSession: AiSessionData?, needUpdateOnly: Bool)?) {
+        state = state.copy(forUpdateSessions: .set(forUpdateSessions))
+    }
+    
+    @MainActor
     func signOut(_ invoke: @escaping @MainActor () -> Void,_ failed: @escaping @MainActor () -> Void) {
         tasker.back {
             let result = await self.project.pref.deletePrefAll()
@@ -181,16 +186,19 @@ final class BaseAppObserve: BaseObserver {
         
         private(set) var preferences: [Preference] = []
         private(set) var userBase: UserBase? = nil
+        private(set) var forUpdateSessions: (newSession: AiSessionData?, needUpdateOnly: Bool)?
         private(set) var args = [Screen : any ScreenConfig]()
         
         @MainActor
         mutating func copy(
             preferences: Update<[Preference]> = .keep,
             userBase: Update<UserBase?> = .keep,
+            forUpdateSessions: Update<(newSession: AiSessionData?, needUpdateOnly: Bool)?> = .keep,
             args: Update<[Screen : any ScreenConfig]> = .keep
         ) -> Self {
             if case .set(let value) = preferences { self.preferences = value }
             if case .set(let value) = userBase { self.userBase = value }
+            if case .set(let value) = forUpdateSessions { self.forUpdateSessions = value }
             if case .set(let value) = args { self.args = value }
             return self
         }
@@ -207,4 +215,9 @@ final class BaseAppObserve: BaseObserver {
         }
     }
 
+}
+
+
+enum HomeTabs: Hashable {
+    case home, schedule, session, profile
 }

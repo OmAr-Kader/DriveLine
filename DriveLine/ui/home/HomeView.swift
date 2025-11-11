@@ -14,12 +14,16 @@ import Foundation
 // MARK: - Views
 @MainActor
 struct HomeView: View {
-    let obs: HomeObserve
+
+    let navigator: Navigator
+
+    @Binding var obs: HomeObserve
+
     @State private var selectedPage = 0
     
     // For adaptive grid columns based on orientation/size
-    @Environment(\.horizontalSizeClass) var hSizeClass
-    @Environment(\.verticalSizeClass) var vSizeClass
+    @Environment(\.horizontalSizeClass) private var hSizeClass
+    @Environment(\.verticalSizeClass) private var vSizeClass
     
     var body: some View {
         GeometryReader { geo in
@@ -75,7 +79,7 @@ struct HomeView: View {
             .padding(.horizontal)
             
             TabView(selection: $selectedPage) {
-                ForEach(Array(obs.courses.enumerated()), id: \.1.id) { idx, course in
+                ForEach(Array(obs.state.courses.enumerated()), id: \.1.id) { idx, course in
                     CourseCardView(course: course)
                         .padding(.horizontal, 16)
                         .tag(idx)
@@ -89,7 +93,7 @@ struct HomeView: View {
     @ViewBuilder
     private var pagerIndicator: some View {
         HStack(spacing: 8) {
-            ForEach(0..<obs.courses.count, id: \.self) { idx in
+            ForEach(0..<obs.state.courses.count, id: \.self) { idx in
                 Circle()
                     .fill(idx == selectedPage ? Color.blue : Color.gray.opacity(0.3))
                     .frame(width: idx == selectedPage ? 10 : 8, height: idx == selectedPage ? 10 : 8)
@@ -108,11 +112,11 @@ struct HomeView: View {
         let columnsCount = isPortrait ? 3 : 6
         let gridItem = Array(repeating: GridItem(.flexible(), spacing: 12), count: columnsCount)
         LazyVGrid(columns: gridItem, spacing: 12) {
-            ForEach(obs.shortVideos) { item in
+            ForEach(obs.state.shortVideos) { item in
                 ShortVideoTile(item: item) { player in
-                    let edit = obs.shortVideos.editItem(where: { $0.videoURL == item.videoURL }, edit: { $0.player = player })
+                    let edit = obs.state.shortVideos.editItem(where: { $0.videoURL == item.videoURL }, edit: { $0.player = player })
                     withAnimation {
-                        obs.shortVideos = edit
+                        obs.updateVideos(edit)
                     }
                 }.frame(height: isPortrait ? 140 : 120)
             }
@@ -203,11 +207,13 @@ fileprivate struct ShortVideoTile: View {
     @MainActor
     private func startPlayingMuted() {
         if let player = item.player {
+            guard player.timeControlStatus != .playing else { return }
             player.play()
             withAnimation {
                 showPlayer = true
             }
         } else {
+            guard sinkCancel == nil else { return }
             let player = AVPlayer(url: item.videoURL)
             player.isMuted = true
             sinkCancel = player.currentItem?.publisher(for: \.status)
@@ -218,6 +224,7 @@ fileprivate struct ShortVideoTile: View {
                     }
                     player.play()
                     sinkCancel?.cancel()
+                    sinkCancel = nil
                     showPlayer = true
                     addPlayer(player)
                 }

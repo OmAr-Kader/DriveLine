@@ -11,13 +11,13 @@ import SwiftUISturdy
 final class AuthRepoImp : AuthRepo {
     
     @BackgroundActor
-    func register(body: RegisterRequest, invoke: @escaping @BackgroundActor (BaseResponse) async -> Void, failed: @BackgroundActor (String) -> Void) async {
+    func register(body: RegisterRequest, invoke: @escaping @BackgroundActor (BaseMessageResponse) async -> Void, failed: @BackgroundActor (String) -> Void) async {
         guard let url = URL(string: SecureConst.BASE_URL + Endpoint.REGISTER) else {
-            LogKit.print("sendAppVersion Invalid URL"); failed("Failed")
+            LogKit.print("register Invalid URL"); failed("Failed")
             return
         }
         do {
-            let response: BaseResponse = try await url.createPOSTRequest(body: body).addAuthorizationHeader().performRequest()
+            let response: BaseMessageResponse = try await url.createPOSTRequest(body: body).addAuthorizationHeader().performRequest()
             await invoke(response)
         } catch {
             LogKit.print("Failed ->", error.localizedDescription); failed("Failed")
@@ -28,7 +28,7 @@ final class AuthRepoImp : AuthRepo {
     @BackgroundActor
     func login(body: LoginRequest, invoke: @escaping @BackgroundActor (LoginResponse) -> Void, failed: @BackgroundActor (String) -> Void) async {
         guard let url = URL(string: SecureConst.BASE_URL + Endpoint.LOGIN) else {
-            LogKit.print("sendAppVersion Invalid URL"); failed("Failed")
+            LogKit.print("login Invalid URL"); failed("Failed")
             return
         }
         do {
@@ -42,11 +42,11 @@ final class AuthRepoImp : AuthRepo {
     @BackgroundActor
     func fetchUserById(user: UserBase, invoke: @escaping @BackgroundActor (User) -> Void, failed: @BackgroundActor (String) -> Void) async {
         guard let url = URL(string: SecureConst.BASE_URL + Endpoint.USERS + user.id) else {
-            LogKit.print("sendAppVersion Invalid URL"); failed("Failed")
+            LogKit.print("fetchUserById Invalid URL"); failed("Failed")
             return
         }
         do {
-            let response: User = try await url.createGETRequest().addAuthorizationHeader(id: user.id, token: user.token).performRequest()
+            let response: User = try await url.createGETRequest().addAuthorizationHeader(user).performRequest()
             invoke(response)
         } catch {
             LogKit.print("Failed ->", error.localizedDescription); failed("Failed")
@@ -54,13 +54,13 @@ final class AuthRepoImp : AuthRepo {
     }
     
     @BackgroundActor
-    func updateUserById(token: String, user: User, invoke: @escaping @BackgroundActor (BaseResponse) -> Void, failed: @BackgroundActor (String) -> Void) async {
+    func updateUserById(token: String, user: User, invoke: @escaping @BackgroundActor (BaseMessageResponse) -> Void, failed: @BackgroundActor (String) -> Void) async {
         guard let url = URL(string: SecureConst.BASE_URL + Endpoint.USERS + user.id) else {
-            LogKit.print("sendAppVersion Invalid URL"); failed("Failed")
+            LogKit.print("updateUserById Invalid URL"); failed("Failed")
             return
         }
         do {
-            let response: BaseResponse = try await url.createPUTRequest(body: user).addAuthorizationHeader(id: user.id, token: token).performRequest()
+            let response: BaseMessageResponse = try await url.createPUTRequest(body: user).addAuthorizationHeader(id: user.id, token: token).performRequest()
             invoke(response)
         } catch {
             LogKit.print("Failed ->", error.localizedDescription); failed("Failed")

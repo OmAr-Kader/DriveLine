@@ -2,7 +2,7 @@
 //  Gemini.swift
 //  DriveLine
 //
-//  Created by OmAr Kader on 06/11/2025.
+//  Created by OmAr Kader on 11/11/2025.
 //
 
 import Foundation
@@ -50,25 +50,5 @@ enum GeminiError: Error, LocalizedError {
         case .noContent:
             return "No content returned."
         }
-    }
-}
-
-
-enum Sender: String, Codable {
-    case user
-    case bot
-}
-
-struct Message: Identifiable, Hashable {
-    let id: UUID
-    let text: String
-    let sender: Sender
-    let createdAt: Date
-
-    init(id: UUID = .init(), text: String, sender: Sender, createdAt: Date = .init()) {
-        self.id = id
-        self.text = text
-        self.sender = sender
-        self.createdAt = createdAt
     }
 }

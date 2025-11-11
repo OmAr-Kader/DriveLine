@@ -11,6 +11,7 @@ import SwiftUISturdy
 struct Project : Sendable {
     let pref: PreferenceBase
     let auth: AuthBase
+    let aiChat: AiChatBase
 }
 
 func buildContainer() -> Container {
@@ -18,7 +19,8 @@ func buildContainer() -> Container {
     
     let pro = Project(
         pref: PreferenceBase(repository: PrefRepoImp(db: try? CouchbaseLocal())),
-        auth: AuthBase(repo: AuthRepoImp())
+        auth: AuthBase(repo: AuthRepoImp()),
+        aiChat: AiChatBase(repo: AiChatRepoImp())
     )
     let theme = Theme(isDarkMode: UITraitCollection.current.userInterfaceStyle.isDarkMode)
     container.register(Project.self) { _  in

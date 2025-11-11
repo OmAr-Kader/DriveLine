@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUISturdy
 
-final class AuthBase : AuthRepo {
+final class AuthBase {
     
     private let repo: AuthRepo
     
@@ -17,7 +17,7 @@ final class AuthBase : AuthRepo {
     }
     
     @BackgroundActor
-    func register(body: RegisterRequest, invoke: @escaping @BackgroundActor (BaseResponse) async -> Void, failed: @BackgroundActor (String) -> Void) async {
+    func register(body: RegisterRequest, invoke: @escaping @BackgroundActor (BaseMessageResponse) async -> Void, failed: @BackgroundActor (String) -> Void) async {
         await repo.register(body: body, invoke: invoke, failed: failed)
     }
     
@@ -33,7 +33,7 @@ final class AuthBase : AuthRepo {
     }
     
     @BackgroundActor
-    func updateUserById(token: String, user: User, invoke: @escaping @BackgroundActor (BaseResponse) -> Void, failed: @BackgroundActor (String) -> Void) async {
+    func updateUserById(token: String, user: User, invoke: @escaping @BackgroundActor (BaseMessageResponse) -> Void, failed: @BackgroundActor (String) -> Void) async {
         await repo.updateUserById(token: token, user: user, invoke: invoke, failed: failed)
     }
     

@@ -12,10 +12,15 @@ import EventKit
 
 @MainActor
 struct ScheduleView: View {
-    
-    var app: BaseAppObserve
+
     let navigator: Navigator
-    let manager = EventKitManager()
+
+    @Binding var obs: HomeObserve
+    
+    @State
+    private var manager = EventKitManager()
+
+
 
     @State private var eventStatus: String = "Not Determined"
     
@@ -36,7 +41,6 @@ struct ScheduleView: View {
             Spacer().height(20)
         }
     }
-    
     
     func event() {
         Task {

@@ -13,42 +13,19 @@ import SwiftUI
 @Observable
 final class HomeObserve : BaseObserver {
     
-    var courses: [Course] = [
-        Course(index: 1,
-               title: "Uniform driving\nhours (colved)",
-               subtitle: "01",
-               price: "39.00 €",
-               gradient: [Color(#colorLiteral(red: 0.098, green: 0.48, blue: 1.0, alpha: 1.0)),
-                          Color(#colorLiteral(red: 0.443, green: 0.69, blue: 1.0, alpha: 1.0))]),
-        Course(index: 2,
-               title: "Uniform driving\nhours (colved)",
-               subtitle: "02",
-               price: "1120.00 €",
-               gradient: [Color(#colorLiteral(red: 1, green: 0.86, blue: 0.09, alpha: 1.0)),
-                          Color(#colorLiteral(red: 1, green: 0.94, blue: 0.7, alpha: 1.0))])
-    ]
-    
-    // Replace these sample URLs with your actual video URLs or local file URLs.
-    var shortVideos: [ShortVideo] = {
-        // Example: use remote mp4 URLs or bundle file URLs (Bundle.main.url(forResource...))
-        let sampleURLs: [URL] = [
-            URL(string: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4")!,
-            URL(string: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4")!,
-            URL(string: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4")!,
-            URL(string: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4")!,
-            URL(string: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/VolkswagenGTIReview.mp4")!,
-            URL(string: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4")!
-        ]
-        var list: [ShortVideo] = []
-        for i in 0..<sampleURLs.count {
-            list.append(ShortVideo(thumbImageName: "thumb\(i)", videoURL: sampleURLs[i], viewsText: "\(Int.random(in: 3...30))M views"))
-        }
-        return list
-    }()
-    
     @MainActor
     private(set) var state: HomeObserveState = HomeObserveState()
-
+    
+    var selectedTab: HomeTabs = .home
+    
+    var selectedTabBinding: Binding<HomeTabs> {
+        Binding {
+            self.selectedTab
+        } set: {
+            self.selectedTab = $0
+        }
+    }
+    
     init() {
         @Inject
         var pro: Project
@@ -70,70 +47,37 @@ final class HomeObserve : BaseObserver {
             self.sheet(isEditSheet: $0)
         }
     }
+
     
     @MainActor
-    func send(text: String, resetText: @escaping @Sendable @MainActor () -> Void) async {
-        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty, !self.state.isSending else { return }
-
-        let userMessage = Message(text: trimmed, sender: .user)
-        withAnimation {
-            self.state = self.state.copy(messages: .set(self.state.messages.add(userMessage)), lastError: .set(nil), isSending: .set(true))
-            resetText()
-        }
+    func fetchAiSessions(_ userBase: UserBase?) {
+        guard let userBase else { return }
+        LogKit.print("fetchAiSessions")
+        self.state = self.state.copy(isLoading: .set(true))
         self.tasker.back {
-            do {
-                let response = try await self.generateContent(prompt: trimmed)
-                self.mainSync { [self] in
+            await self.project.aiChat.getSessions(userBase) { new in
+                self.mainSync {
+                    LogKit.print("fetchAiSessions -> \(new.count)")
+                    let newSessions = new.map({ AiSessionData($0) }).sorted(by: { $0.updatedAt > $1.updatedAt })
                     withAnimation {
-                        let botMessage = Message(text: response, sender: .bot)
-                        self.state = self.state.copy(messages: .set(self.state.messages.add(botMessage)), isSending: .set(false))
+                        self.state = self.state.copy(isLoading: .set(false), aiSessions: .set(newSessions))
                     }
                 }
-            } catch {
-                self.mainSync { [self] in
+            } failed: { _ in
+                self.mainSync {
                     withAnimation {
-                        let errText = "Error: \(error.localizedDescription)"
-                        self.state = self.state.copy(messages: .set(self.state.messages.add(Message(text: errText, sender: .bot))), lastError: .set(errText), isSending: .set(true))
+                        self.state = self.state.copy(isLoading: .set(false), toast: .set(Toast(style: .error, message: "Failed")))
                     }
                 }
             }
         }
     }
-
-    @MainActor
-    func addLocalMessage(text: String, sender: Sender = .bot) {
-        self.state = self.state.copy(messages: .set(self.state.messages.add(Message(text: text, sender: sender))))
-    }
     
     @MainActor
-    func addWelcomeMessage() {
-        self.state = self.state.copy(messages: .set(self.state.messages.add(Message(text: "Hi — ask me anything about AI or prompt the model.", sender: .bot))))
-    }
-    
-    @BackgroundActor
-    private func generateContent(prompt: String) async throws -> String {
-        guard !prompt.isEmpty else { return "" }
-
-        let urlString = "\(Const.GEMINI_URL)/\(Const.GEMINI_MODEL):generateContent?key=\(SecureConst.GEMINI_API_KEY)"
-        guard let url = URL(string: urlString) else {
-            throw GeminiError.invalidURL
-        }
-
-        let payload = GeminiRequest(contents: [
-            .init(parts: [.init(text: prompt)])
-        ])
-        do {
-            let geminiResponse: GeminiResponse = try await url.createPOSTRequest(body: payload).performRequest()
-            
-            if let text = geminiResponse.candidates?.first?.content.parts.first?.text {
-                return text.trimmingCharacters(in: .whitespacesAndNewlines)
-            } else {
-                throw GeminiError.noContent
-            }
-
-        } catch {
-            throw GeminiError.invalidResponse
+    func onAiSessionsCreated(_ new: AiSessionData) {
+        let updatedList = self.state.aiSessions.add(new).sorted(by: { $0.updatedAt > $1.updatedAt })
+        withAnimation {
+            self.state = self.state.copy(aiSessions: .set(updatedList))
         }
     }
     
@@ -194,14 +138,22 @@ final class HomeObserve : BaseObserver {
         }
     }
     
+    @MainActor
+    func updateVideos(_ shortVideos: [ShortVideo]) {
+        withAnimation {
+            self.state = self.state.copy(shortVideos: .set(shortVideos))
+        }
+    }
+    
     struct HomeObserveState {
 
         private(set) var isLoading: Bool = false
         private(set) var toast: Toast? = nil
         
-        private(set) var messages: [Message] = []
-        private(set) var lastError: String?
-        private(set) var isSending: Bool = false
+        private(set) var courses: [Course] = Course.temp
+        private(set) var shortVideos: [ShortVideo] = ShortVideo.temp
+
+        private(set) var aiSessions: [AiSessionData] = []
 
         private(set) var user: User? = nil
         private(set) var isEditSheet: Bool = false
@@ -210,17 +162,20 @@ final class HomeObserve : BaseObserver {
         mutating func copy(
             isLoading: Update<Bool> = .keep,
             toast: Update<Toast?> = .keep,
-            messages: Update<[Message]> = .keep,
-            lastError: Update<String?> = .keep,
-            isSending: Update<Bool> = .keep,
+            courses: Update<[Course]> = .keep,
+            shortVideos: Update<[ShortVideo]> = .keep,
+            aiSessions: Update<[AiSessionData]> = .keep,
             user: Update<User?> = .keep,
             isEditSheet: Update<Bool> = .keep
         ) -> Self {
             if case .set(let value) = isLoading { self.isLoading = value }
             if case .set(let value) = toast { self.toast = value }
-            if case .set(let value) = messages { self.messages = value }
-            if case .set(let value) = lastError { self.lastError = value }
-            if case .set(let value) = isSending { self.isSending = value }
+            
+            if case .set(let value) = courses { self.courses = value }
+            if case .set(let value) = shortVideos { self.shortVideos = value }
+
+            if case .set(let value) = aiSessions { self.aiSessions = value }
+
             if case .set(let value) = user { self.user = value }
             if case .set(let value) = isEditSheet { self.isEditSheet = value }
             return self

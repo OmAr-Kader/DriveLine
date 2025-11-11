@@ -9,10 +9,12 @@ import SwiftUI
 import SwiftUISturdy
 
 struct ProfileView: View {
-    
-    var app: BaseAppObserve
-    var obs: HomeObserve = HomeObserve()
-        
+
+    let navigator: Navigator
+
+    @Binding var app: BaseAppObserve
+    @Binding var obs: HomeObserve
+
     @State private var path = NavigationPath()
 
     var locationText: String {

@@ -14,8 +14,7 @@ struct Main: View, Navigator {
     
     typealias Route = Screen
 
-    var app: BaseAppObserve
-        
+    @State var app: BaseAppObserve
     
     @NavState<Screen>
     private var navigationPath: NavigationPath
@@ -27,6 +26,11 @@ struct Main: View, Navigator {
         return { screen in
             self.navigationPath.append(screen)
         }
+    }
+    
+    @MainActor
+    func navigateTo<T: Hashable>(screen: T) {
+        self.navigationPath.append(screen)
     }
 
     var navigateToScreen: @MainActor (ScreenConfig, Screen) -> Void {
@@ -76,9 +80,11 @@ struct Main: View, Navigator {
         //let isSplash = app.state.homeScreen == Screen.SPLASH_SCREEN_ROUTE
         NavigationStack(path: $navigationPath) {
             targetScreen(
-                _navigationPath.mainScreen, app, navigator: self
+                _navigationPath.mainScreen, $app, navigator: self
             ).navigationDestination(for: Screen.self) { route in
-                targetScreen(route, app, navigator: self)
+                targetScreen(route, $app, navigator: self)
+            }.navigationDestination(for: AiSessionData.self) { session in
+                ChatScreen(app: $app, currentSessionId: session.idCloud)
             }
         }.tint(theme.textHintColor)/*.onAppear {
             UIScrollView.appearance().bounces = false
@@ -113,116 +119,136 @@ struct SplashScreen : View {
 
 struct HomeScreen: View {
     
-    var app: BaseAppObserve
+    @Binding var app: BaseAppObserve
     let navigator: Navigator
-    private let obs: HomeObserve = HomeObserve()
 
-    @State private var selectedTab = 0
-    @State private var isLoading = true
+    @State private var obs: HomeObserve = HomeObserve()
 
-    @Inject
-    private var theme: Theme
     var body: some View {
         Group {
             if #available(iOS 18.0, *) {
-                TabView(selection: $selectedTab) {
-                    Tab(value: 0) {
-                        HomeView(obs: obs).initialHomeScreen()
-                    } label: {
-                        Label("Home", systemImage: "house.fill")
-                    }
-                    Tab("Schedule", systemImage: "calendar.and.person", value: 1) {
-                        ScheduleView(app: app, navigator: navigator).initialHomeScreen()
-                    }
-                    Tab("Assistant", systemImage: "waveform", value: 2) {
-                        ChatView(obs: obs).initialHomeScreen()
-                    }
-                    Tab("Profile", systemImage: "person.fill", value: 3, role: .search) {
-                        ProfileView(app: app, obs: obs).initialHomeScreen()
-                    }
-                    /*
-                    Tab("Search", systemImage: "magnifyingglass", value: 1) {
-                        SearchView(app: app, navigator: navigator)
-                    }
-                    Tab("Favorites", systemImage: "heart.fill", value: 2) {
-                        FavoritesView(app: app, navigator: navigator)
-                    }*/
-                }.apply {
-                    if selectedTab == 3 {
-                        $0.visibleToolbar()
-                            .toolbar {
-                                ToolbarItem(placement: .topBarTrailing) {
-                                    Button {
-                                        guard obs.state.user != nil else { return }
-                                        self.obs.sheet(isEditSheet: true)
-                                    } label: {
-                                        Image.initial("pencil".forImage(tint: .textOfApp, isSystem: true))
-                                            .frame(size: 24)}
-                                }
-                            }
-                    } else {
-                        $0.hideToolbar()
-                    }
-                }
+                home18
             } else {
-                TabView(selection: $selectedTab) {
-                    HomeView(obs: obs)
-                        .initialHomeScreen()
-                        .tabItem {
-                            Image(systemName: "house.fill")
-                            Text("Home")
-                        }
-                        .tag(0)
-                    
-                    ScheduleView(app: app, navigator: navigator)
-                        .initialHomeScreen()
-                        .tabItem {
-                            Image(systemName: "calendar.and.person")
-                            Text("Schedule")
-                        }
-                        .tag(1)
-                    
-                    ChatView(obs: obs)
-                        .initialHomeScreen()
-                        .tabItem {
-                            Image(systemName: "waveform")
-                            Text("Assistant")
-                        }
-                        .tag(2)
-                    
-                    ProfileView(app: app, obs: obs)
-                        .initialHomeScreen()
-                        .tabItem {
-                            Image(systemName: "person.fill")
-                            Text("Profile")
-                        }
-                        .tag(3)
-                }.apply {
-                    if selectedTab == 3 {
-                        $0.visibleToolbar()
-                            .toolbar {
-                                ToolbarItem(placement: .topBarTrailing) {
-                                    Button {
-                                        guard obs.state.user != nil else { return }
-                                        self.obs.sheet(isEditSheet: true)
-                                    } label: {
-                                        Image.initial("pencil".forImage(tint: .textOfApp, isSystem: true))
-                                            .frame(size: 24)}
-                                }
-                            }
-                    } else {
-                        $0.hideToolbar()
-                    }
-                }
+                home
             }
-        }.tint(.primaryOfApp)
-            /*.onDisappear {
-                Task {
-                    obs.shortVideos.forEach {
-                        $0.player = nil
-                    }
+        }.tint(.primaryOfApp).id("TabView").apply {
+            switch obs.selectedTab {
+            case .session: $0.visibleToolbar().toolbar(content: toolBarAiChatView)
+            case .profile: $0.visibleToolbar().toolbar(content: toolBarProfileView)
+            default: $0.hideToolbar()
+            }
+        }.onChange(obs.selectedTab, onSelectedChange)
+    }
+    
+    private func onSelectedChange(_ new: HomeTabs) {
+        switch new {
+        case .session: forSession()
+        default: break
+        }
+    }
+    
+    private func forSession() {
+        guard obs.state.aiSessions.isEmpty else { return }
+        obs.fetchAiSessions(app.state.userBase)
+    }
+    
+    @available(iOS 18.0, *)
+    @ViewBuilder
+    var home18: some View {
+        TabView(selection: obs.selectedTabBinding) {
+            Tab("Home", systemImage: "house.fill", value: HomeTabs.home) {
+                homeView
+            }
+            Tab("Schedule", systemImage: "calendar.and.person", value: HomeTabs.schedule) {
+                scheduleView
+            }
+            Tab("Assistant", systemImage: "waveform", value: HomeTabs.session) {
+                sessionView
+            }
+            Tab("Profile", systemImage: "person.fill", value: HomeTabs.profile, role: .search) {
+                profileView
+            }
+        }
+    }
+    
+    @ViewBuilder
+    var home: some View {
+        TabView(selection: obs.selectedTabBinding) {
+            homeView
+                .tabItem {
+                    Image(systemName: "house.fill")
+                    Text("Home")
                 }
-            }*/
+                .tag(HomeTabs.home)
+            
+            scheduleView
+                .tabItem {
+                    Image(systemName: "calendar.and.person")
+                    Text("Schedule")
+                }
+                .tag(HomeTabs.schedule)
+            
+            sessionView
+                .tabItem {
+                    Image(systemName: "waveform")
+                    Text("Assistant")
+                }
+                .tag(HomeTabs.session)
+            
+            profileView
+                .tabItem {
+                    Image(systemName: "person.fill")
+                    Text("Profile")
+                }
+                .tag(HomeTabs.profile)
+        }
+    }
+    
+    @ViewBuilder
+    private var homeView: some View {
+        HomeView(navigator: navigator, obs: $obs)
+            .initialHomeScreen()
+    }
+    
+    @ViewBuilder
+    private var scheduleView: some View {
+        ScheduleView(navigator: navigator, obs: $obs)
+            .initialHomeScreen()
+    }
+    
+    @ViewBuilder
+    private var sessionView: some View {
+        SessionView(navigator: navigator, app: $app, obs: $obs)
+            .initialHomeScreen()
+    }
+    
+    @ViewBuilder
+    private var profileView: some View {
+        ProfileView(navigator: navigator, app: $app, obs: $obs)
+            .initialHomeScreen()
+    }
+   
+    @ToolbarContentBuilder
+    func toolBarAiChatView() -> some ToolbarContent {
+        ToolbarItem(placement: .topBarTrailing) {
+            Button {
+                navigator.navigateTo(.CHAT_SCREEN_ROUTE)
+            } label: {
+                Image.initial("plus".forImage(tint: .textOfApp, isSystem: true))
+                .frame(size: 24)}
+        }
+    }
+    
+    @ToolbarContentBuilder
+    func toolBarProfileView() -> some ToolbarContent {
+        ToolbarItem(placement: .topBarTrailing) {
+            Button {
+                guard obs.state.user != nil else { return }
+                self.obs.sheet(isEditSheet: true)
+            } label: {
+                Image.initial("pencil".forImage(tint: .textOfApp, isSystem: true))
+                .frame(size: 24)}
+        }
     }
 }
 

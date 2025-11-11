@@ -1,5 +1,5 @@
 //
-//  Test.swift
+//  ChatScreen.swift
 //  SwiftUITemplate
 //
 //  Created by OmAr Kader on 05/11/2025.
@@ -9,62 +9,75 @@ import SwiftUI
 import SwiftUISturdy
 
 @MainActor
-struct ChatView: View {
-
-    private let obs: HomeObserve
+struct ChatScreen: View {
+    
+    @Binding
+    private var app: BaseAppObserve
+    
+    @State
+    private var obs: ChatObserve = ChatObserve()
+    
+    private let currentSessionId: String?
+    
+    @State
     private var speech: SpeechManagerObservation = SpeechManagerObservation()
+    
     @FocusState private var inputFocused: Bool
     @State private var scrollProxy: ScrollViewProxy? = nil
 
-    init(obs: HomeObserve) {
-        self.obs = obs
+    init(app: Binding<BaseAppObserve>, currentSessionId: String? = nil) {
+        self._app = app
+        self.currentSessionId = currentSessionId
     }
     
     var body: some View {
-        VStack(spacing: 0) {
-            Divider()
-            
-            messagesView
-            
-            Divider()
-            
+        ZStack {
+            VStack(spacing: 0) {
+                ScrollViewReader { proxy in
+                    ScrollView {
+                        LazyVStack(spacing: 0) {
+                            ForEach(obs.state.messages) { msg in
+                                MessageRow(message: msg)
+                                    .id(msg.id)
+                            }
+                            
+                            // bottom spacer to ensure last message has some padding
+                            Rectangle()
+                                .foregroundColor(.clear)
+                                .frame(height: 8)
+                                .id("bottom")
+                        }
+                        .padding(.vertical, 8)
+                    }
+                    .onAppear {
+                        self.scrollProxy = proxy
+                    }
+                }
+                Divider()
+            }.safeAreaInset(edge: .bottom, content: inputBar)
+            LoadingScreen(color: .primaryOfApp, backDarkAlpha: .backDarkAlpha, isLoading: obs.state.isLoading)
         }
-        .safeAreaInset(edge: .bottom, content: inputBar)
         .onChange(obs.state.messages) { _ in
             // scroll to bottom when messages change
             scrollToBottom(animated: true)
-            if let last = obs.state.messages.last, last.sender == .bot {
+            if let last = obs.state.messages.last, !last.isUser {
                 speech.speak(last.text)
             }
         }
-        .onAppear {
-            //scrollToBottom(animated: false)
-        }
-    }
-
-
-    private var messagesView: some View {
-        ScrollViewReader { proxy in
-            ScrollView {
-                LazyVStack(spacing: 0) {
-                    ForEach(obs.state.messages) { msg in
-                        MessageRow(message: msg)
-                            .id(msg.id)
+        .onAppeared {
+            if let currentSessionId, let userBase = app.state.userBase {
+                obs.fetchMessages(userBase, sessionId: currentSessionId) {
+                    TaskBackSwitcher {
+                        await Task.sleep(seconds: 0.3)
+                        TaskMainSwitcher {
+                            scrollToBottom(animated: false)
+                        }
                     }
-
-                    // bottom spacer to ensure last message has some padding
-                    Rectangle()
-                        .foregroundColor(.clear)
-                        .frame(height: 8)
-                        .id("bottom")
                 }
-                .padding(.vertical, 8)
-            }
-            .onAppear {
-                self.scrollProxy = proxy
             }
         }
     }
+
 
     @ViewBuilder func inputBar() -> some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -79,14 +92,8 @@ struct ChatView: View {
                     .tint(.accentColor)               // caret and selection color
                     .font(.body)
                     .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.gray.opacity(0.4)))
-                    .disabled(obs.state.isSending)
-                    .onSubmit {
-                        Task {
-                            await obs.send(text: speech.transcribedText) {
-                                speech.transcribedText = ""
-                            }
-                        }
-                    }
+                    .disabled(obs.state.isSending || obs.state.isLoading)
+                    .onSubmit(self.onSubmit)
                 Spacer().width(6)
                 Button {
                     Task {
@@ -108,13 +115,14 @@ struct ChatView: View {
                     .clipShape(Circle())
                     .shadow(radius: 2)
                 }
-                .disabled(obs.state.isSending)
+                .disabled(obs.state.isSending || obs.state.isLoading)
                 .animation(.easeInOut(duration: 0.2), value: obs.state.isSending)
                 .accessibilityLabel(buttonAccessibilityLabel)
             }
         }.padding(.horizontal)
             .padding(.vertical, 8)
             .background(.regularMaterial)
+            .visibleToolbar()
             .onChange(inputFocused) { inputFocused in
                 if inputFocused, speech.isListening {
                     speech.stopListening()
@@ -126,6 +134,25 @@ struct ChatView: View {
                     }
                 }
             }
+    }
+    
+    private func onSubmit() {
+        guard !speech.transcribedText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+        sendToGemini()
+    }
+    
+    private func sendToGemini() {
+        if let sessionId = obs.state.currentSessionId {
+            obs.send(app.state.userBase, text: speech.transcribedText, sessionId: sessionId) {
+                app.setForUpdateSessions((newSession: nil, needUpdateOnly: true))
+                speech.transcribedText = ""
+            }
+        } else {
+            obs.send(app.state.userBase, text: speech.transcribedText) { new in
+                app.setForUpdateSessions((newSession: new, needUpdateOnly: true))
+                speech.transcribedText = ""
+            }
+        }
     }
     
     private var buttonImage: String {
@@ -178,15 +205,9 @@ struct ChatView: View {
         if speech.isListening {
             speech.stopListening()
         } else {
-            let text = speech.transcribedText.trimmingCharacters(in: .whitespacesAndNewlines)
-            if !text.isEmpty {
-                await obs.send(text: text) {
-                    speech.transcribedText = ""
-                }
-                //inputFocused = true
-            } else {
-                speech.startListening()
-            }
+            let tirmmed = speech.transcribedText.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !tirmmed.isEmpty else { speech.startListening(); return }
+            sendToGemini()
         }
     }
     
@@ -203,11 +224,11 @@ struct ChatView: View {
 
 @MainActor
 struct MessageRow: View {
-    let message: Message
+    let message: AiMessageData
 
     var body: some View {
         HStack {
-            if message.sender == .bot { Spacer() } // bot messages on right? change below for your preference
+            if !message.isUser { Spacer() } // bot messages on right? change below for your preference
 
             VStack(alignment: .leading, spacing: 6) {
                 Text(.init(message.text))
@@ -223,20 +244,20 @@ struct MessageRow: View {
                     .foregroundColor(.secondary)
                     .padding(.leading, 6)
             }
-            .frame(maxWidth: 520, alignment: message.sender == .user ? .trailing : .leading) // limit width
+            .frame(maxWidth: 520, alignment: message.isUser ? .trailing : .leading) // limit width
 
-            if message.sender == .user { Spacer() } // user messages on left? adjust to taste
+            if message.isUser { Spacer() } // user messages on left? adjust to taste
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 6)
     }
 
     private var bubbleBackground: Color {
-        message.sender == .user ? Color("UserBubble", default: Color.blue.opacity(0.8)) : Color("BotBubble", default: Color(.secondarySystemBackground))
+        message.isUser ? Color("UserBubble", default: Color.blue.opacity(0.8)) : Color("BotBubble", default: Color(.secondarySystemBackground))
     }
 
     private var bubbleTextColor: Color {
-        message.sender == .user ? .white : .primary
+        message.isUser ? .white : .primary
     }
 
     private var formattedDate: String {

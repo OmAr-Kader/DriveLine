@@ -11,7 +11,7 @@ import SwiftUISturdy
 @MainActor
 struct AuthScreen: View {
 
-    var app: BaseAppObserve
+    @Binding var app: BaseAppObserve
     let navigator: Navigator
     
     let obs: AuthAppObserve = AuthAppObserve()
