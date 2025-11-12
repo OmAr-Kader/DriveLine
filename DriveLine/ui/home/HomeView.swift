@@ -48,7 +48,7 @@ struct HomeView: View {
     @ViewBuilder
     private var headerView: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text("Welcome back,")
+            Text("Welcome back")
                 .font(.title2)
                 .foregroundColor(.secondary)
             Text("Domen")
@@ -112,13 +112,15 @@ struct HomeView: View {
         let columnsCount = isPortrait ? 3 : 6
         let gridItem = Array(repeating: GridItem(.flexible(), spacing: 12), count: columnsCount)
         LazyVGrid(columns: gridItem, spacing: 12) {
-            ForEach(obs.state.shortVideos) { item in
+            ForEach(Array(obs.state.shortVideos.enumerated()), id: \.offset) { index, item in
                 ShortVideoTile(item: item) { player in
-                    let edit = obs.state.shortVideos.editItem(where: { $0.videoURL == item.videoURL }, edit: { $0.player = player })
+                    let edit = obs.state.shortVideos.editItem(where: { $0.videoLink == item.videoLink }, edit: { $0.player = player })
                     withAnimation {
                         obs.updateVideos(edit)
                     }
-                }.frame(height: isPortrait ? 140 : 120)
+                }.frame(height: isPortrait ? 140 : 120).onTapGesture {
+                    self.obs.setFeedIndex((index, true))
+                }
             }
         }.padding([.horizontal, .bottom])
     }
@@ -214,7 +216,7 @@ fileprivate struct ShortVideoTile: View {
             }
         } else {
             guard sinkCancel == nil else { return }
-            let player = AVPlayer(url: item.videoURL)
+            let player = AVPlayer(url: item.videoURL!)
             player.isMuted = true
             sinkCancel = player.currentItem?.publisher(for: \.status)
                 .sink { status in

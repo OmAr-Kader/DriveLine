@@ -19,6 +19,7 @@ struct Const : Sendable {
     
     nonisolated static let GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models"
     nonisolated static let GEMINI_MODEL : String = "gemini-2.5-flash"
+    nonisolated static let AI_MESSAGE_LOCAL : String = "Local-AI"
 
 }
 

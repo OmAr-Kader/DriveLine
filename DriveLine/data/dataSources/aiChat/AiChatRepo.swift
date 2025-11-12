@@ -27,5 +27,8 @@ internal protocol AiChatRepo : Sendable {
     func deleteMessage(userBase: UserBase, id: String, invoke: @escaping (BaseSuccessResponse) -> Void, failed: @escaping (String) -> Void) async
     
     @BackgroundActor
+    func deleteMessage(userBase: UserBase, id: [String], invoke: @escaping (BaseSuccessResponse) -> Void, failed: @escaping (String) -> Void) async
+    
+    @BackgroundActor
     func deleteSession(userBase: UserBase, id: String, invoke: @escaping (BaseSuccessResponse) -> Void, failed: @escaping (String) -> Void) async
 }

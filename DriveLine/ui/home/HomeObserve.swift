@@ -26,6 +26,14 @@ final class HomeObserve : BaseObserver {
         }
     }
     
+    var currentIndex: Binding<Int> {
+        Binding {
+            self.state.currentIndex.index
+        } set: {
+            self.state = self.state.copy(currentIndex: .set(($0, self.state.currentIndex.isFeed)))
+        }
+    }
+    
     init() {
         @Inject
         var pro: Project
@@ -145,6 +153,13 @@ final class HomeObserve : BaseObserver {
         }
     }
     
+    @MainActor
+    func setFeedIndex(_ currentIndex: (Int, Bool)) {
+        withAnimation {
+            self.state = self.state.copy(currentIndex: .set(currentIndex))
+        }
+    }
+    
     struct HomeObserveState {
 
         private(set) var isLoading: Bool = false
@@ -152,6 +167,7 @@ final class HomeObserve : BaseObserver {
         
         private(set) var courses: [Course] = Course.temp
         private(set) var shortVideos: [ShortVideo] = ShortVideo.temp
+        private(set) var currentIndex: (index: Int, isFeed: Bool) = (0, false)
 
         private(set) var aiSessions: [AiSessionData] = []
 
@@ -164,6 +180,7 @@ final class HomeObserve : BaseObserver {
             toast: Update<Toast?> = .keep,
             courses: Update<[Course]> = .keep,
             shortVideos: Update<[ShortVideo]> = .keep,
+            currentIndex: Update<(index: Int, isFeed: Bool)> = .keep,
             aiSessions: Update<[AiSessionData]> = .keep,
             user: Update<User?> = .keep,
             isEditSheet: Update<Bool> = .keep
@@ -173,6 +190,7 @@ final class HomeObserve : BaseObserver {
             
             if case .set(let value) = courses { self.courses = value }
             if case .set(let value) = shortVideos { self.shortVideos = value }
+            if case .set(let value) = currentIndex { self.currentIndex = value }
 
             if case .set(let value) = aiSessions { self.aiSessions = value }
 

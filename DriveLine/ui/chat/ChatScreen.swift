@@ -34,43 +34,57 @@ struct ChatScreen: View {
         ZStack {
             VStack(spacing: 0) {
                 ScrollViewReader { proxy in
-                    ScrollView {
-                        LazyVStack(spacing: 0) {
-                            ForEach(obs.state.messages) { msg in
-                                MessageRow(message: msg)
-                                    .id(msg.id)
+                    List(obs.state.messages) { msg in
+                        MessageRow(message: msg)
+                            .listRowSeparator(.hidden)
+                            .id(msg.id)
+                            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                Button {
+                                    LogKit.print(obs.state.isSending)
+                                    LogKit.print(obs.state.currentSessionId)
+                                    guard !obs.state.isSending, let sessionId = obs.state.currentSessionId else { return }
+                                    obs.removeMsgAndGetQuestion(app.state.userBase, msg) { question in
+                                        obs.send(app.state.userBase, text: question, sessionId: sessionId) {
+                                            app.setForUpdateSessions((newSession: nil, needUpdateOnly: true))
+                                        }
+                                    }
+                                } label: {
+                                    Label("Regenrate", systemImage: "repeat")
+                                }.tint(.blue.opacity(0.8))
+                                Button {
+                                    UIPasteboard.general.string = msg.text
+                                } label: {
+                                    Label("Copy", systemImage: "document.on.document")
+                                }.tint(.green.opacity(0.8))
                             }
-                            
-                            // bottom spacer to ensure last message has some padding
-                            Rectangle()
-                                .foregroundColor(.clear)
-                                .frame(height: 8)
-                                .id("bottom")
+                    }.listStyle(PlainListStyle())
+                        .listRowSeparator(.hidden)
+                        .scrollContentBackground(.hidden)
+                        .background(Color.clear)
+                        .padding(.bottom, 8)
+                        .onAppear {
+                            self.scrollProxy = proxy
                         }
-                        .padding(.vertical, 8)
-                    }
-                    .onAppear {
-                        self.scrollProxy = proxy
-                    }
                 }
                 Divider()
             }.safeAreaInset(edge: .bottom, content: inputBar)
             LoadingScreen(color: .primaryOfApp, backDarkAlpha: .backDarkAlpha, isLoading: obs.state.isLoading)
         }
-        .onChange(obs.state.messages) { _ in
+        .onChange(obs.state.messages) { new in
+            guard let last = new.last else { return }
             // scroll to bottom when messages change
-            scrollToBottom(animated: true)
-            if let last = obs.state.messages.last, !last.isUser {
+            scrollToBottom(last.id , animated: true)
+            if !last.isUser {
                 speech.speak(last.text)
             }
         }
         .onAppeared {
             if let currentSessionId, let userBase = app.state.userBase {
-                obs.fetchMessages(userBase, sessionId: currentSessionId) {
+                obs.fetchMessages(userBase, sessionId: currentSessionId) { lastId in
                     TaskBackSwitcher {
                         await Task.sleep(seconds: 0.3)
                         TaskMainSwitcher {
-                            scrollToBottom(animated: false)
+                            scrollToBottom(lastId, animated: false)
                         }
                     }
                 }
@@ -78,10 +92,8 @@ struct ChatScreen: View {
         }
     }
 
-
     @ViewBuilder func inputBar() -> some View {
         VStack(alignment: .leading, spacing: 4) {
-            
             HStack(alignment: .bottom, spacing: 4) {
                 TextField(String("How i can i help you?"), text: Binding(get: { speech.transcribedText }, set: { speech.transcribedText = $0 }), axis: .vertical)
                     .lineLimit(6)
@@ -212,11 +224,12 @@ struct ChatScreen: View {
     }
     
     
-    private func scrollToBottom(animated: Bool) {
-        guard let proxy = scrollProxy else { return }
+    private func scrollToBottom(_ id: String?, animated: Bool) {
+        guard let proxy = scrollProxy, let id else { return }
         DispatchQueue.main.async {
             withAnimation(animated ? .easeOut : nil) {
-                proxy.scrollTo("bottom", anchor: .bottom)
+                proxy.scrollTo(id)
+                //proxy.scrollTo("bottom", anchor: .bottom)
             }
         }
     }

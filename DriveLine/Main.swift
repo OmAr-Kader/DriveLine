@@ -8,6 +8,8 @@
 import SwiftUI
 import SwiftUISturdy
 import UniformTypeIdentifiers
+import AVKit
+import Combine
 
 @MainActor
 struct Main: View, Navigator {
@@ -123,13 +125,20 @@ struct HomeScreen: View {
     let navigator: Navigator
 
     @State private var obs: HomeObserve = HomeObserve()
-
+    
     var body: some View {
-        Group {
-            if #available(iOS 18.0, *) {
-                home18
-            } else {
-                home
+        ZStack {
+            Group {
+                if #available(iOS 18.0, *) {
+                    home18
+                } else {
+                    home
+                }
+            }
+            if self.obs.state.currentIndex.isFeed {
+                VideoFeed(currentIndex: self.obs.currentIndex, shortVideos: self.obs.state.shortVideos) {
+                    obs.setFeedIndex((0, false))
+                }
             }
         }.tint(.primaryOfApp).id("TabView").apply {
             switch obs.selectedTab {
@@ -232,6 +241,7 @@ struct HomeScreen: View {
     func toolBarAiChatView() -> some ToolbarContent {
         ToolbarItem(placement: .topBarTrailing) {
             Button {
+                guard !obs.state.isLoading else { return }
                 navigator.navigateTo(.CHAT_SCREEN_ROUTE)
             } label: {
                 Image.initial("plus".forImage(tint: .textOfApp, isSystem: true))
@@ -269,6 +279,85 @@ extension View {
                 } else if #available(iOS 17.0, *) {
                     $0.contentMargins(.top, 1, for: .scrollContent)
                 }
+            }
+    }
+}
+
+
+@MainActor
+struct VideoFeed: View {
+    
+    @Binding var currentIndex: Int
+    let shortVideos: [ShortVideo]
+    let onDismiss: () -> Void
+    @State private var player: AVPlayer? = nil
+    @State private var currentReadyLink: String = ""
+    @State private var sinkCancel: AnyCancellable?
+    @State private var boundaryObserverToken: Any?
+    
+    var body: some View {
+        
+        MediaViewerVertical(items: shortVideos, currentIndex: $currentIndex, onDismiss: {
+            sinkCancel?.cancel()
+            sinkCancel = nil
+            onDismiss()
+        }) { item in
+            ZStack {
+                if let player, currentReadyLink == item.videoLink {
+                    VideoPlayer(player: player)
+                        .safeAreaPadding(.vertical, 50)
+                } else {
+                    LoadingScreen(color: .textOfApp, backDarkAlpha: .backDarkAlpha, isLoading: true)
+                }
+            }.background(.black)
+        }.onAppeared {
+            guard  let url = shortVideos[currentIndex].videoURL else { return }
+            do {
+                try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
+                try AVAudioSession.sharedInstance().setActive(true)
+            } catch {}
+            
+            let player = AVPlayer(url: url)
+            player.actionAtItemEnd = .none
+            sinkCancel = player.currentItem?.publisher(for: \.status)
+                .sink { status in
+                    let _ = LogKit.print("-- publisher --", status == .readyToPlay)
+                    guard status == .readyToPlay else { return }
+                    
+                    self.player = player
+                    player.play()
+                    sinkCancel?.cancel()
+                    sinkCancel = nil
+                    currentReadyLink = shortVideos[currentIndex].videoLink
+                }
+            
+        }.onChange(currentIndex, onChangeIndex)
+            .onDisappear {
+                player?.pause()
+                player = nil
+            }
+    }
+    
+    @MainActor
+    private func onChangeIndex(_ new: Int) {
+        let _ = LogKit.print("-- onChangeIndex --", shortVideos[new].videoLink)
+        guard let url = shortVideos[new].videoURL else { return }
+        let newItem = AVPlayerItem(url: url)
+        sinkCancel?.cancel()
+        sinkCancel = nil
+        if player?.timeControlStatus != .paused {
+            player?.pause()
+        }
+        player?.replaceCurrentItem(with: newItem)
+        sinkCancel = player?.currentItem?.publisher(for: \.status)
+            .sink { [weak player] status in
+                let _ = LogKit.print("-- publisher --", status == .readyToPlay)
+                guard status == .readyToPlay else { return }
+                
+                player?.play()
+                sinkCancel?.cancel()
+                sinkCancel = nil
+                currentReadyLink = shortVideos[currentIndex].videoLink
             }
     }
 }

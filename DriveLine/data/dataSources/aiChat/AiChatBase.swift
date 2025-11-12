@@ -42,6 +42,11 @@ final class AiChatBase {
     }
     
     @BackgroundActor
+    func deleteMessage(_ userBase: UserBase, id: [String], invoke: @escaping (BaseSuccessResponse) -> Void, failed: @escaping (String) -> Void) async {
+        await repo.deleteMessage(userBase: userBase, id: id, invoke: invoke, failed: failed)
+    }
+    
+    @BackgroundActor
     func deleteSession(_ userBase: UserBase, id: String, invoke: @escaping (BaseSuccessResponse) -> Void, failed: @escaping (String) -> Void) async {
         await repo.deleteSession(userBase: userBase, id: id, invoke: invoke, failed: failed)
     }

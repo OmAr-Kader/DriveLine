@@ -32,11 +32,11 @@ final class ChatObserve : BaseObserver {
     }
     
     @MainActor
-    func fetchMessages(_ userBase: UserBase, sessionId: String, invoke: @escaping @Sendable @BackgroundActor () -> Void) {
+    func fetchMessages(_ userBase: UserBase, sessionId: String, invoke: @escaping @Sendable @BackgroundActor (String?) -> Void) {
         self.state = self.state.copy(isLoading: .set(true))
         self.tasker.back {
             await self.project.aiChat.getSessionMessages(userBase, sessionId: sessionId) { new in
-                invoke()
+                invoke(new.last?.id)
                 self.mainSync {
                     let newList = new.map({ AiMessageData($0) })
                     withAnimation {
@@ -127,7 +127,12 @@ final class ChatObserve : BaseObserver {
                     }
                 }
                 await self.project.aiChat.addMessage(userBase, body: .init(sessionId: sessionId, text: response, isUser: false)) { msg in
-                    
+                    self.mainSync { [self] in
+                        let newList =  self.state.messages.editItem(where: { dataBotMessage == $0.createdAt }, edit: { $0.idCloud = msg.id })
+                        withAnimation {
+                            self.state = self.state.copy(messages: .set(newList))
+                        }
+                    }
                 } failed: { _ in
                     self.mainSync { [self] in
                         let newList =  self.state.messages.editItem(where: { dataBotMessage == $0.createdAt }, edit: { $0.isFailedToUpload = true })
@@ -142,7 +147,7 @@ final class ChatObserve : BaseObserver {
                     let failedMsg = AiMessageData(text: errText, isUser: false)
                     let newList = self.state.messages.add(failedMsg)
                     withAnimation {
-                        self.state = self.state.copy(messages: .set(newList), lastError: .set(errText), isSending: .set(true))
+                        self.state = self.state.copy(messages: .set(newList), lastError: .set(errText), isSending: .set(false))
                     }
                 }
             }
@@ -153,7 +158,12 @@ final class ChatObserve : BaseObserver {
     private func uploadUserQuestion(_ userBase: UserBase, sessionId: String, userMessage: AiMessageData) -> @Sendable @BackgroundActor () async -> Void {
         return {
             await self.project.aiChat.addMessage(userBase, body: .init(sessionId: sessionId, text: userMessage.text, isUser: true)) { msg in
-                
+                self.mainSync { [self] in
+                    let newList =  self.state.messages.editItem(where: { userMessage.createdAt == $0.createdAt }, edit: { $0.idCloud = msg.id })
+                    withAnimation {
+                        self.state = self.state.copy(messages: .set(newList))
+                    }
+                }
             } failed: { _ in
                 self.mainSync { [self] in
                     let newList =  self.state.messages.editItem(where: { userMessage.createdAt == $0.createdAt }, edit: { $0.isFailedToUpload = true })
@@ -165,15 +175,55 @@ final class ChatObserve : BaseObserver {
         }
     }
     
-    /*@MainActor
-    func addLocalMessage(text: String, isUser: Bool = false) {
-        self.state = self.state.copy(messages: .set(self.state.messages.add(AiMessage(sessionId: "", text: text, isUser: isUser))))
+    @MainActor
+    func removeMsgAndGetQuestion(_ userBase: UserBase?, _ msg: AiMessageData, invoke: @escaping @Sendable @MainActor (String) -> Void) {
+        self.tasker.mainSync {
+            if msg.isUser {
+                guard let index = self.state.messages.firstIndex(where:  { $0.idCloud == msg.idCloud }), let answer = self.state.messages[safe: index + 1], !answer.isUser else {
+                    invoke(msg.text); return
+                }
+                let ids = self.idsForDelete([msg.idCloud, answer.idCloud])
+                let text = msg.text
+                var messages = self.state.messages
+                invoke(text)
+                messages.removeAll(where: { $0.idCloud == answer.idCloud || $0.idCloud == msg.idCloud })
+                withAnimation {
+                    self.state = self.state.copy(messages: .set(messages))
+                }
+                self.deleteFromCloud(userBase, id: ids)
+            } else {
+                guard let index = self.state.messages.firstIndex(where:  { $0.idCloud == msg.idCloud }), let question = self.state.messages[safe: index - 1], question.isUser else {
+                    return
+                }
+                let ids = self.idsForDelete([question.idCloud, msg.idCloud])
+
+                var messages = self.state.messages
+                messages.removeAll(where: { $0.idCloud == msg.idCloud })
+                invoke(question.text)
+                withAnimation {
+                    self.state = self.state.copy(messages: .set(messages))
+                }
+                self.deleteFromCloud(userBase, id: ids)
+            }
+        }
     }
     
-    @MainActor
-    func addWelcomeMessage() {
-        self.state = self.state.copy(messages: .set(self.state.messages.add(AiMessage(sessionId: "", text: "Hi — ask me anything about AI or prompt the model.", isUser: false))))
-    }*/
+    private func idsForDelete(_ ids: [String]) -> [String] {
+        var filterIds: [String] = ids
+        filterIds.removeAll(where: { $0.contains(Const.AI_MESSAGE_LOCAL) })
+        return filterIds
+    }
+    
+    private func deleteFromCloud(_ userBase: UserBase?, id: [String]) {
+        guard let userBase else { return }
+        self.tasker.back {
+            await self.project.aiChat.deleteMessage(userBase, id: id) {_ in 
+                
+            } failed: { _ in
+                
+            }
+        }
+    }
     
     
     @MainActor

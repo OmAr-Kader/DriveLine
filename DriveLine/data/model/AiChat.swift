@@ -142,7 +142,7 @@ struct AiMessage: Codable {
 
 @MainActor
 struct AiMessageData: Identifiable, Equatable, Sendable {
-    let idCloud: String
+    var idCloud: String
     let text: String
     let isUser: Bool
     let createdAt: Date
@@ -157,15 +157,15 @@ struct AiMessageData: Identifiable, Equatable, Sendable {
     }
     
     init(text: String, isUser: Bool, createdAt: Date = .now) {
-        self.idCloud = ""
+        self.idCloud = Const.AI_MESSAGE_LOCAL + UUID().uuidString
         self.text = text
         self.isUser = isUser
         self.createdAt = createdAt
         self.isFailedToUpload = false
     }
 
-    init(id: String, text: String, isUser: Bool, createdAt: Date = .now, isFailedToUpload: Bool = false) {
-        self.idCloud = id
+    init(idCloud: String, text: String, isUser: Bool, createdAt: Date = .now, isFailedToUpload: Bool = false) {
+        self.idCloud = idCloud
         self.text = text
         self.isUser = isUser
         self.createdAt = createdAt
@@ -181,7 +181,7 @@ struct AiMessageData: Identifiable, Equatable, Sendable {
     }
     
     func copy(isFailedToUpload: Bool) -> Self {
-        .init(id: id, text: text, isUser: isUser, createdAt: createdAt, isFailedToUpload: isFailedToUpload)
+        .init(idCloud: idCloud, text: text, isUser: isUser, createdAt: createdAt, isFailedToUpload: isFailedToUpload)
     }
 }
 

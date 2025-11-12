@@ -81,6 +81,13 @@ final class AiChatRepoImp : AiChatRepo {
     }
     
     @BackgroundActor
+    func deleteMessage(userBase: UserBase, id: [String], invoke: @escaping (BaseSuccessResponse) -> Void, failed: @escaping (String) -> Void) async {
+        for it in id {
+            await deleteMessage(userBase: userBase, id: it, invoke: invoke, failed: failed)
+        }
+    }
+    
+    @BackgroundActor
     func deleteSession(userBase: UserBase, id: String, invoke: @escaping (BaseSuccessResponse) -> Void, failed: @escaping (String) -> Void) async {
         guard let url = URL(string: SecureConst.BASE_URL + Endpoint.SESSION + id) else {
             LogKit.print("deleteMessage Invalid URL"); failed("Failed")
