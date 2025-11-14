@@ -35,6 +35,7 @@ enum Screen : String, Hashable {
     case AUTH_SCREEN_ROUTE = "AUTH_SCREEN_ROUTE"
     case HOME_SCREEN_ROUTE = "HOME_SCREEN_ROUTE"
     case CHAT_SCREEN_ROUTE = "CHAT_SCREEN_ROUTE"
+    case COURCES_LIST_SCREEN_ROUTE = "COURCES_LIST_SCREEN_ROUTE"
 }
 
 
@@ -49,6 +50,7 @@ extension View {
        case .AUTH_SCREEN_ROUTE: AuthScreen(app: app, navigator: navigator)
        case .HOME_SCREEN_ROUTE: HomeScreen(app: app, navigator: navigator)
        case .CHAT_SCREEN_ROUTE: ChatScreen(app: app)
+       case .COURCES_LIST_SCREEN_ROUTE: CoursesListScreen(app: app)
        }
    }
 }

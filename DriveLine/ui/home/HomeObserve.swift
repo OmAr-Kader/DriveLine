@@ -26,6 +26,10 @@ final class HomeObserve : BaseObserver {
         }
     }
     
+    var selectedCato: Binding<FixCategory> {
+        Binding(get: { self.state.currentCato }, set: { self.setCurrentCato($0) })
+    }
+    
     var currentIndex: Binding<Int> {
         Binding {
             self.state.currentIndex.index
@@ -160,6 +164,14 @@ final class HomeObserve : BaseObserver {
         }
     }
     
+    @MainActor
+    func setCurrentCato(_ currentCato: FixCategory) {
+        let newServices = self.state.services.filter { $0.category == currentCato }
+        withAnimation(.easeInOut) {
+            self.state = self.state.copy(currentServices: .set(newServices), currentCato: .set(currentCato))
+        }
+    }
+    
     struct HomeObserveState {
 
         private(set) var isLoading: Bool = false
@@ -169,6 +181,10 @@ final class HomeObserve : BaseObserver {
         private(set) var shortVideos: [ShortVideo] = ShortVideo.temp
         private(set) var currentIndex: (index: Int, isFeed: Bool) = (0, false)
 
+        private(set) var services: [FixService] = FixService.sampleServices() // MARK: Change
+        private(set) var currentServices: [FixService] = []
+        private(set) var currentCato: FixCategory = .maintenance
+        
         private(set) var aiSessions: [AiSessionData] = []
 
         private(set) var user: User? = nil
@@ -181,6 +197,9 @@ final class HomeObserve : BaseObserver {
             courses: Update<[Course]> = .keep,
             shortVideos: Update<[ShortVideo]> = .keep,
             currentIndex: Update<(index: Int, isFeed: Bool)> = .keep,
+            services: Update<[FixService]> = .keep,
+            currentServices: Update<[FixService]> = .keep,
+            currentCato: Update<FixCategory> = .keep,
             aiSessions: Update<[AiSessionData]> = .keep,
             user: Update<User?> = .keep,
             isEditSheet: Update<Bool> = .keep
@@ -191,6 +210,10 @@ final class HomeObserve : BaseObserver {
             if case .set(let value) = courses { self.courses = value }
             if case .set(let value) = shortVideos { self.shortVideos = value }
             if case .set(let value) = currentIndex { self.currentIndex = value }
+
+            if case .set(let value) = services { self.services = value }
+            if case .set(let value) = currentServices { self.currentServices = value }
+            if case .set(let value) = currentCato { self.currentCato = value }
 
             if case .set(let value) = aiSessions { self.aiSessions = value }
 

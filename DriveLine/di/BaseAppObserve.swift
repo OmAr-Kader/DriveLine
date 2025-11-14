@@ -219,5 +219,5 @@ final class BaseAppObserve: BaseObserver {
 
 
 enum HomeTabs: Hashable {
-    case home, schedule, session, profile
+    case home, fix, session, profile, upload
 }

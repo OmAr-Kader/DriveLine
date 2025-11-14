@@ -20,40 +20,42 @@ struct HomeView: View {
     @Binding var obs: HomeObserve
 
     @State private var selectedPage = 0
-    
+    @Orientation private var orientation
+
     // For adaptive grid columns based on orientation/size
     @Environment(\.horizontalSizeClass) private var hSizeClass
     @Environment(\.verticalSizeClass) private var vSizeClass
     
     var body: some View {
-        GeometryReader { geo in
-            ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
-                    headerView
-                    paidCoursesPager
-                    pagerIndicator
-                    Text("GearUp Reels")
-                        .font(.title2)
-                        .bold()
-                        .padding(.horizontal)
-                    
-                    videosGrid(for: geo.size)
-                }
-                .padding(.top, 20)
-            }
-            .frame(width: geo.size.width, height: geo.size.height)
+        ScrollView {
+            VStack(alignment: .leading) {
+                headerView
+                Spacer().height(24)
+                paidCoursesPager
+                Spacer().height(24)
+                pagerIndicator
+                Spacer().height(24)
+                Text("GearUp Reels")
+                    .font(.title2)
+                    .bold()
+                    .padding(.horizontal)
+                Spacer().height(24)
+                videosGrid()
+            }.padding(.all, 0)
         }
     }
     
     @ViewBuilder
     private var headerView: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading) {
             Text("Welcome back")
                 .font(.title2)
                 .foregroundColor(.secondary)
+            Spacer().height(6)
             Text("Domen")
                 .font(.largeTitle)
                 .bold()
+            Spacer().height(6)
             Text("10,12,2023")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
@@ -68,24 +70,24 @@ struct HomeView: View {
                 Text("Our all course:")
                     .font(.headline)
                 Spacer()
-                Button(action: {
-                    // action for view all
-                }) {
+                Button {
+                    navigator.navigateTo(.COURCES_LIST_SCREEN_ROUTE)
+                } label: {
                     Text("view all")
                         .font(.subheadline)
                         .foregroundColor(Color.blue)
                 }
-            }
-            .padding(.horizontal)
+            }.padding(.horizontal)
             
             TabView(selection: $selectedPage) {
-                ForEach(Array(obs.state.courses.enumerated()), id: \.1.id) { idx, course in
-                    CourseCardView(course: course)
-                        .padding(.horizontal, 16)
+                ForEach(Array(obs.state.courses.enumerated()), id: \.offset) { idx, course in
+                    CourseCardItem(course: course)
+                        .frame(height: 160)
+                        .padding(15)
                         .tag(idx)
                 }
             }
-            .frame(height: 160)
+            .frame(height: 190)
             .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
         }
     }
@@ -105,10 +107,9 @@ struct HomeView: View {
     }
     
     @ViewBuilder
-    private func videosGrid(for size: CGSize) -> some View {
+    private func videosGrid() -> some View {
         // Determine orientation: portrait if height >= width
-        let isPortrait = size.height >= size.width
-        // Columns: 3 in portrait, 6 in landscape
+        let isPortrait = orientation.isPortrait
         let columnsCount = isPortrait ? 3 : 6
         let gridItem = Array(repeating: GridItem(.flexible(), spacing: 12), count: columnsCount)
         LazyVGrid(columns: gridItem, spacing: 12) {
@@ -126,36 +127,6 @@ struct HomeView: View {
     }
 }
 
-fileprivate struct CourseCardView: View {
-    let course: Course
-    
-    var body: some View {
-        ZStack(alignment: .leading) {
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .fill(LinearGradient(gradient: Gradient(colors: course.gradient),
-                                     startPoint: .topLeading,
-                                     endPoint: .bottomTrailing))
-                .shadow(color: Color.black.opacity(0.12), radius: 6, x: 0, y: 4)
-            VStack(alignment: .leading, spacing: 6) {
-                Text(String(format: "%02d", course.index))
-                    .font(.title2)
-                    .bold()
-                    .foregroundColor(.white.opacity(0.95))
-                Text(course.title)
-                    .foregroundColor(.white)
-                    .font(.subheadline)
-                    .lineLimit(2)
-                Spacer()
-                Text(course.price)
-                    .font(.title3)
-                    .bold()
-                    .foregroundColor(.white)
-            }
-            .padding(18)
-        }
-        .frame(maxWidth: .infinity)
-    }
-}
 
 fileprivate struct ShortVideoTile: View {
     let item: ShortVideo
@@ -200,7 +171,7 @@ fileprivate struct ShortVideoTile: View {
                 .cornerRadius(6)
                 .padding(8)
         }.onAppear {
-            startPlayingMuted()
+            //startPlayingMuted()
         }.onDisappear {
             stopAndCleanup()
         }

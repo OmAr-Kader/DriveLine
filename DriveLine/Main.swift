@@ -8,7 +8,6 @@
 import SwiftUI
 import SwiftUISturdy
 import UniformTypeIdentifiers
-import AVKit
 import Combine
 
 @MainActor
@@ -88,7 +87,10 @@ struct Main: View, Navigator {
             }.navigationDestination(for: AiSessionData.self) { session in
                 ChatScreen(app: $app, currentSessionId: session.idCloud)
             }
-        }.tint(theme.textHintColor)/*.onAppear {
+        }.tint(theme.textHintColor)
+            .toolbarColorScheme(theme.isDarkMode ? .dark : .light, for: .tabBar)
+            .toolbarColorScheme(theme.isDarkMode ? .dark : .light, for: .navigationBar)
+        /*.onAppear {
             UIScrollView.appearance().bounces = false
         }*/
         /*.prepareStatusBarConfigurator(
@@ -135,23 +137,27 @@ struct HomeScreen: View {
                     home
                 }
             }
-            if self.obs.state.currentIndex.isFeed {
-                VideoFeed(currentIndex: self.obs.currentIndex, shortVideos: self.obs.state.shortVideos) {
-                    obs.setFeedIndex((0, false))
-                }
-            }
         }.tint(.primaryOfApp).id("TabView").apply {
             switch obs.selectedTab {
+            case .fix: $0.visibleToolbar().toolbar(content: toolBarFixView)
             case .session: $0.visibleToolbar().toolbar(content: toolBarAiChatView)
             case .profile: $0.visibleToolbar().toolbar(content: toolBarProfileView)
             default: $0.hideToolbar()
             }
         }.onChange(obs.selectedTab, onSelectedChange)
+            .navigationDestination(isPresented: Binding(get: {
+                self.obs.state.currentIndex.isFeed
+            }, set: {
+                self.obs.setFeedIndex((0, $0))
+            })) {
+                VideoFeed(currentIndex: self.obs.currentIndex, shortVideos: self.obs.state.shortVideos)
+            }
     }
     
     private func onSelectedChange(_ new: HomeTabs) {
         switch new {
         case .session: forSession()
+        case .profile: forProfile()
         default: break
         }
     }
@@ -161,6 +167,11 @@ struct HomeScreen: View {
         obs.fetchAiSessions(app.state.userBase)
     }
     
+    private func forProfile() {
+        guard obs.state.user == nil else { return }
+        obs.fetchUser(app.state.userBase)
+    }
+    
     @available(iOS 18.0, *)
     @ViewBuilder
     var home18: some View {
@@ -168,14 +179,17 @@ struct HomeScreen: View {
             Tab("Home", systemImage: "house.fill", value: HomeTabs.home) {
                 homeView
             }
-            Tab("Schedule", systemImage: "calendar.and.person", value: HomeTabs.schedule) {
-                scheduleView
+            Tab("Care & Fix", systemImage: "wrench.and.screwdriver", value: HomeTabs.fix) {
+                fixView
             }
             Tab("Assistant", systemImage: "waveform", value: HomeTabs.session) {
                 sessionView
             }
-            Tab("Profile", systemImage: "person.fill", value: HomeTabs.profile, role: .search) {
+            Tab("Profile", systemImage: "person.fill", value: HomeTabs.profile) {
                 profileView
+            }
+            Tab("Push", systemImage: "square.and.arrow.up", value: HomeTabs.upload, role: .search) {
+                uploadView
             }
         }
     }
@@ -190,12 +204,12 @@ struct HomeScreen: View {
                 }
                 .tag(HomeTabs.home)
             
-            scheduleView
+            fixView
                 .tabItem {
-                    Image(systemName: "calendar.and.person")
-                    Text("Schedule")
+                    Image(systemName: "wrench.and.screwdriver")
+                    Text("Care & Fix")
                 }
-                .tag(HomeTabs.schedule)
+                .tag(HomeTabs.fix)
             
             sessionView
                 .tabItem {
@@ -210,6 +224,13 @@ struct HomeScreen: View {
                     Text("Profile")
                 }
                 .tag(HomeTabs.profile)
+            
+            uploadView
+                .tabItem {
+                    Image(systemName: "square.and.arrow.up")
+                    Text("Push")
+                }
+                .tag(HomeTabs.upload)
         }
     }
     
@@ -220,8 +241,8 @@ struct HomeScreen: View {
     }
     
     @ViewBuilder
-    private var scheduleView: some View {
-        ScheduleView(navigator: navigator, obs: $obs)
+    private var fixView: some View {
+        FixView(navigator: navigator, obs: $obs)
             .initialHomeScreen()
     }
     
@@ -235,6 +256,23 @@ struct HomeScreen: View {
     private var profileView: some View {
         ProfileView(navigator: navigator, app: $app, obs: $obs)
             .initialHomeScreen()
+    }
+    
+    @ViewBuilder
+    private var uploadView: some View {
+        UploadView(navigator: navigator, app: $app, obs: $obs)
+            .initialHomeScreen()
+    }
+    
+    @ToolbarContentBuilder
+    func toolBarFixView() -> some ToolbarContent {
+        ToolbarItem(placement: .topBarTrailing) {
+            Button {
+                
+            } label: {
+                Text("Join")
+            }
+        }
     }
    
     @ToolbarContentBuilder
@@ -279,85 +317,6 @@ extension View {
                 } else if #available(iOS 17.0, *) {
                     $0.contentMargins(.top, 1, for: .scrollContent)
                 }
-            }
-    }
-}
-
-
-@MainActor
-struct VideoFeed: View {
-    
-    @Binding var currentIndex: Int
-    let shortVideos: [ShortVideo]
-    let onDismiss: () -> Void
-    @State private var player: AVPlayer? = nil
-    @State private var currentReadyLink: String = ""
-    @State private var sinkCancel: AnyCancellable?
-    @State private var boundaryObserverToken: Any?
-    
-    var body: some View {
-        
-        MediaViewerVertical(items: shortVideos, currentIndex: $currentIndex, onDismiss: {
-            sinkCancel?.cancel()
-            sinkCancel = nil
-            onDismiss()
-        }) { item in
-            ZStack {
-                if let player, currentReadyLink == item.videoLink {
-                    VideoPlayer(player: player)
-                        .safeAreaPadding(.vertical, 50)
-                } else {
-                    LoadingScreen(color: .textOfApp, backDarkAlpha: .backDarkAlpha, isLoading: true)
-                }
-            }.background(.black)
-        }.onAppeared {
-            guard  let url = shortVideos[currentIndex].videoURL else { return }
-            do {
-                try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
-                try AVAudioSession.sharedInstance().setActive(true)
-            } catch {}
-            
-            let player = AVPlayer(url: url)
-            player.actionAtItemEnd = .none
-            sinkCancel = player.currentItem?.publisher(for: \.status)
-                .sink { status in
-                    let _ = LogKit.print("-- publisher --", status == .readyToPlay)
-                    guard status == .readyToPlay else { return }
-                    
-                    self.player = player
-                    player.play()
-                    sinkCancel?.cancel()
-                    sinkCancel = nil
-                    currentReadyLink = shortVideos[currentIndex].videoLink
-                }
-            
-        }.onChange(currentIndex, onChangeIndex)
-            .onDisappear {
-                player?.pause()
-                player = nil
-            }
-    }
-    
-    @MainActor
-    private func onChangeIndex(_ new: Int) {
-        let _ = LogKit.print("-- onChangeIndex --", shortVideos[new].videoLink)
-        guard let url = shortVideos[new].videoURL else { return }
-        let newItem = AVPlayerItem(url: url)
-        sinkCancel?.cancel()
-        sinkCancel = nil
-        if player?.timeControlStatus != .paused {
-            player?.pause()
-        }
-        player?.replaceCurrentItem(with: newItem)
-        sinkCancel = player?.currentItem?.publisher(for: \.status)
-            .sink { [weak player] status in
-                let _ = LogKit.print("-- publisher --", status == .readyToPlay)
-                guard status == .readyToPlay else { return }
-                
-                player?.play()
-                sinkCancel?.cancel()
-                sinkCancel = nil
-                currentReadyLink = shortVideos[currentIndex].videoLink
             }
     }
 }
