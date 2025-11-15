@@ -266,7 +266,7 @@ struct MessageRow: View {
     }
 
     private var bubbleBackground: Color {
-        message.isUser ? Color("UserBubble", default: Color.blue.opacity(0.8)) : Color("BotBubble", default: Color(.secondarySystemBackground))
+        message.isUser ? Color.blue.opacity(0.8) : Color(.secondarySystemBackground)
     }
 
     private var bubbleTextColor: Color {
@@ -277,15 +277,5 @@ struct MessageRow: View {
         let fmt = DateFormatter()
         fmt.timeStyle = .short
         return fmt.string(from: message.createdAt)
-    }
-}
-
-extension Color {
-    init(_ name: String, default defaultColor: Color) {
-        if let _ = UIColor(named: name) {
-            self = Color(name)
-        } else {
-            self = defaultColor
-        }
     }
 }

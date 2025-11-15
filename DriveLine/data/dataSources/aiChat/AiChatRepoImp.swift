@@ -109,17 +109,3 @@ final class AiChatRepoImp : AiChatRepo {
     }
     
 }
-
-extension URL {
-    
-    
-    /// Creates a DELETE request with JSON headers.
-    /// - Returns: A configured `URLRequest` using the DELETE method.
-    @BackgroundActor
-    public func createDELETERequest() throws -> URLRequest {
-        var request = URLRequest(url: self)
-        request.httpMethod = "DELETE"
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        return request
-    }
-}

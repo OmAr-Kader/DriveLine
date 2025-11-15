@@ -103,13 +103,6 @@ fileprivate struct ServiceCardImage: View {
     }
 }
 
-/*extension UISegmentedControl {
-    override open func didMoveToSuperview() {
-        super.didMoveToSuperview()
-        self.setContentHuggingPriority(.defaultLow, for: .vertical)  // << here !!
-    }
-}*/
-
 struct ScrollableSegmentedPicker: View {
     let options: [FixCategory]
     @Binding var selectedOption: FixCategory

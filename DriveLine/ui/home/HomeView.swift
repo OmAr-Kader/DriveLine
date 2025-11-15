@@ -249,4 +249,3 @@ fileprivate struct SimpleVideoFill: UIViewRepresentable {
         uiView.configure(player: player)
     }
 }
-
