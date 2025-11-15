@@ -72,7 +72,7 @@ final class BaseAppObserve: BaseObserver {
             }
         }
     }
-
+    
     private func fetchUserBase(_ list: [Preference]) -> UserBase? {
         let id = list.last { it in it.keyString == Const.PREF_USER_ID }?.value
         let name = list.last { it in it.keyString == Const.PREF_USER_NAME }?.value

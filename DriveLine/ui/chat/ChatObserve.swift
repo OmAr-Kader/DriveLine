@@ -15,7 +15,7 @@ import SwiftUI
 final class ChatObserve : BaseObserver {
     
     @MainActor
-    private(set) var state: HomeObserveState = HomeObserveState()
+    private(set) var state: ChatObserveState = ChatObserveState()
 
     init() {
         @Inject
@@ -257,7 +257,7 @@ final class ChatObserve : BaseObserver {
         }
     }
     
-    struct HomeObserveState {
+    struct ChatObserveState {
 
         private(set) var isLoading: Bool = false
         private(set) var toast: Toast? = nil

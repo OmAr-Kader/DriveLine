@@ -11,18 +11,18 @@ import SwiftUISturdy
 
 @MainActor
 struct FixView: View {
-
+    
     let navigator: Navigator
-
+    
     @Binding var obs: HomeObserve
-
+    
     private var columns: [GridItem] {
         let colCount: Int
-        #if os(iOS)
+#if os(iOS)
         colCount = (UIDevice.current.userInterfaceIdiom == .pad) ? 4 : 2
-        #else
+#else
         colCount = 3
-        #endif
+#endif
         return Array(repeating: GridItem(.flexible(), spacing: 12), count: colCount)
     }
     
@@ -31,15 +31,15 @@ struct FixView: View {
             Spacer().height(10)
             ScrollableSegmentedPicker(options: FixCategory.allCases, selectedOption: obs.selectedCato)
                 .padding(.horizontal)
-
+            
             ScrollView {
                 LazyVGrid(columns: columns, spacing: 12) {
                     ForEach(obs.state.currentServices) { svc in
                         ServiceCardImage(service: svc)
-                        .aspectRatio(1, contentMode: .fit)
-                        .onTapGesture {
-                            print("Tapped \(svc.title)")
-                        }
+                            .aspectRatio(1, contentMode: .fit)
+                            .onTapGesture {
+                                navigator.navigateToScreen(ServicesListConfig(service: svc), .SERVICES_LIST_SCREEN)
+                            }
                     }
                 }
                 .padding(.top, 20)
@@ -52,7 +52,7 @@ struct FixView: View {
     }
 }
 
-struct ServiceCardImage: View {
+fileprivate struct ServiceCardImage: View {
     let service: FixService
     
     var body: some View {

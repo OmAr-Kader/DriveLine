@@ -30,12 +30,32 @@ struct SplashConfig: ScreenConfig {
 }
 
 @MainActor
+struct CreateEditFixServiceConfig: ScreenConfig {
+    let editService: ProvideServiceRequest?
+    let serviceAdminId: Int
+}
+
+@MainActor
+struct ServicesListConfig: ScreenConfig {
+    let service: FixService
+}
+
+@MainActor
+struct ServiceConfig: ScreenConfig {
+    let service: ViewServiceData
+}
+
+@MainActor
 enum Screen : String, Hashable {
     
     case AUTH_SCREEN_ROUTE = "AUTH_SCREEN_ROUTE"
     case HOME_SCREEN_ROUTE = "HOME_SCREEN_ROUTE"
     case CHAT_SCREEN_ROUTE = "CHAT_SCREEN_ROUTE"
     case COURCES_LIST_SCREEN_ROUTE = "COURCES_LIST_SCREEN_ROUTE"
+    
+    case CREATE_EDIT_FIX_SCREEN_ROUTE = "CREATE_EDIT_FIX_SCREEN_ROUTE"
+    case SERVICES_LIST_SCREEN = "SERVICES_LIST_SCREEN"
+    case SERVICE_SCREEN = "SERVICE_SCREEN"
 }
 
 
@@ -51,6 +71,9 @@ extension View {
        case .HOME_SCREEN_ROUTE: HomeScreen(app: app, navigator: navigator)
        case .CHAT_SCREEN_ROUTE: ChatScreen(app: app)
        case .COURCES_LIST_SCREEN_ROUTE: CoursesListScreen(app: app)
+       case .CREATE_EDIT_FIX_SCREEN_ROUTE: CreateEditServiceScreen(app: app, navigator: navigator)
+       case .SERVICES_LIST_SCREEN: FixServicesListScreen(app: app, navigator: navigator)
+       case .SERVICE_SCREEN: ViewServiceScreen(navigator: navigator)
        }
    }
 }

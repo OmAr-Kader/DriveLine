@@ -31,6 +31,58 @@ struct LoginResponse: Codable, Sendable {
 }
 
 @BackgroundActor
+struct UpdateUser: Codable, Sendable {
+    let name: String?
+    let role: String?
+    let age: Int?
+    let image: String?
+    let location: UserLocation?
+
+    init(name: String? = nil, role: String? = nil, age: Int? = nil, image: String? = nil, location: UserLocation? = nil) {
+        self.name = name
+        self.role = role
+        self.age = age
+        self.image = image
+        self.location = location
+    }
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.name = try container.decodeIfPresent(String.self, forKey: .name)
+        self.role = try container.decodeIfPresent(String.self, forKey: .role)
+        self.age = try container.decodeIfPresent(Int.self, forKey: .age)
+        self.image = try container.decodeIfPresent(String.self, forKey: .image)
+        self.location = try container.decodeIfPresent(UserLocation.self, forKey: .location)
+    }
+    
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encodeIfPresent(name, forKey: .name)
+        try container.encodeIfPresent(role, forKey: .role)
+        try container.encodeIfPresent(age, forKey: .age)
+        try container.encodeIfPresent(image, forKey: .image)
+        try container.encodeIfPresent(location, forKey: .location)
+    }
+    
+    init(userBase: UserBase, userEdit: UserEdit) {
+        self.name = userEdit.name
+        self.role = userBase.accountType
+        self.age = userEdit.age
+        self.image = userEdit.image
+        self.location = UserLocation(city: userEdit.city, unit: userEdit.unit, street: userEdit.street, building: userEdit.building)
+    }
+    
+    enum CodingKeys: String, CodingKey {
+        case name
+        case role
+        case age
+        case image
+        case location
+    }
+
+    
+}
+
+@BackgroundActor
 struct User: Codable, Sendable {
     let id: String
     let name: String
@@ -83,7 +135,7 @@ struct User: Codable, Sendable {
 
 
 @BackgroundActor
-struct UserLocation: Codable, Sendable {
+struct UserLocation: Codable, Sendable, Hashable {
     let city: String?
     let unit: String?
     let street: String?

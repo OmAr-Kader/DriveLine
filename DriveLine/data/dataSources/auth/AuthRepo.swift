@@ -21,4 +21,8 @@ protocol AuthRepo :Sendable {
     
     @BackgroundActor
     func updateUserById(token: String, user: User, invoke: @escaping @BackgroundActor (BaseMessageResponse) -> Void, failed: @BackgroundActor (String) -> Void) async
+    
+    @BackgroundActor
+    func updateUserById(userBase: UserBase, user: UpdateUser, invoke: @escaping @BackgroundActor (BaseMessageResponse) -> Void, failed: @BackgroundActor (String) -> Void) async
+
 }

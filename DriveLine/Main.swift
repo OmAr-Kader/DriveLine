@@ -139,7 +139,6 @@ struct HomeScreen: View {
             }
         }.tint(.primaryOfApp).id("TabView").apply {
             switch obs.selectedTab {
-            case .fix: $0.visibleToolbar().toolbar(content: toolBarFixView)
             case .session: $0.visibleToolbar().toolbar(content: toolBarAiChatView)
             case .profile: $0.visibleToolbar().toolbar(content: toolBarProfileView)
             default: $0.hideToolbar()
@@ -264,17 +263,6 @@ struct HomeScreen: View {
             .initialHomeScreen()
     }
     
-    @ToolbarContentBuilder
-    func toolBarFixView() -> some ToolbarContent {
-        ToolbarItem(placement: .topBarTrailing) {
-            Button {
-                
-            } label: {
-                Text("Join")
-            }
-        }
-    }
-   
     @ToolbarContentBuilder
     func toolBarAiChatView() -> some ToolbarContent {
         ToolbarItem(placement: .topBarTrailing) {

@@ -45,6 +45,7 @@ struct HomeView: View {
         }
     }
     
+    
     @ViewBuilder
     private var headerView: some View {
         VStack(alignment: .leading) {

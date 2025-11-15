@@ -67,4 +67,17 @@ final class AuthRepoImp : AuthRepo {
         }
     }
     
+    @BackgroundActor
+    func updateUserById(userBase: UserBase, user: UpdateUser, invoke: @escaping @BackgroundActor (BaseMessageResponse) -> Void, failed: @BackgroundActor (String) -> Void) async {
+        guard let url = URL(string: SecureConst.BASE_URL + Endpoint.USERS + userBase.id) else {
+            LogKit.print("updateUserById Invalid URL"); failed("Failed")
+            return
+        }
+        do {
+            let response: BaseMessageResponse = try await url.createPATCHRequest(body: user).addAuthorizationHeader(userBase).performRequest()
+            invoke(response)
+        } catch {
+            LogKit.print("Failed ->", error.localizedDescription); failed("Failed")
+        }
+    }
 }

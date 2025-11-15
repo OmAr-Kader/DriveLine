@@ -19,43 +19,17 @@ public enum Cloud<T> : @unchecked Sendable {
 /// A response wrapper containing a single message string from API calls.
 /// Encodes and decodes as a bare string value rather than a JSON object.
 @BackgroundActor
-public struct BaseMessageResponse: @BackgroundActor Codable {
+public struct BaseMessageResponse: Codable {
     public let message: String
     
-    public init(message: String) {
-        self.message = message
-    }
-    
-    public init(from decoder: any Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        self.message = try container.decode(String.self)
-    }
-    
-    public func encode(to encoder: any Encoder) throws {
-        var container = encoder.singleValueContainer()
-        try container.encode(message)
-    }
 }
 
 /// A response wrapper containing a boolean success indicator from API calls.
 /// Encodes and decodes as a bare boolean value rather than a JSON object.
 @BackgroundActor
-public struct BaseSuccessResponse: @BackgroundActor Codable {
+public struct BaseSuccessResponse: Codable {
     public let success: Bool
     
-    public init(success: Bool) {
-        self.success = success
-    }
-    
-    public init(from decoder: any Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        self.success = try container.decode(Bool.self)
-    }
-    
-    public func encode(to encoder: any Encoder) throws {
-        var container = encoder.singleValueContainer()
-        try container.encode(success)
-    }
 }
 
 public extension KeyedDecodingContainer {

@@ -37,4 +37,8 @@ final class AuthBase {
         await repo.updateUserById(token: token, user: user, invoke: invoke, failed: failed)
     }
     
+    @BackgroundActor
+    func updateUserById(userBase: UserBase, user: UpdateUser, invoke: @escaping @BackgroundActor (BaseMessageResponse) -> Void, failed: @BackgroundActor (String) -> Void) async {
+        await repo.updateUserById(userBase: userBase, user: user, invoke: invoke, failed: failed)
+    }
 }

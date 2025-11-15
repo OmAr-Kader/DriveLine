@@ -9,7 +9,13 @@ import SwiftUI
 import Foundation
 import SwiftUISturdy
 
-struct ProvideNewServiceRequest: Codable {
+@BackgroundActor
+struct ProvideServiceRequestRootRespond: Codable {
+    let data: [ProvideServiceRequest]
+}
+
+@BackgroundActor
+struct ProvideServiceRequest: Codable {
     let techId: String
     let serviceAdminId: Int
     let description: String
@@ -17,6 +23,7 @@ struct ProvideNewServiceRequest: Codable {
     let currency: String
     let durationMinutes: Int
     let isActive: Bool// false of all days nil
+    let images: [String]?
     let monday: AvailabilityInterval?
     let tuesday: AvailabilityInterval?
     let wednesday: AvailabilityInterval?
@@ -24,12 +31,50 @@ struct ProvideNewServiceRequest: Codable {
     let friday: AvailabilityInterval?
     let saturday: AvailabilityInterval?
     let sunday: AvailabilityInterval?
+    
+    init(data: ProvideServiceData) {
+        self.techId = data.techId
+        self.serviceAdminId = data.serviceAdminId
+        self.description = data.description
+        self.price = data.price
+        self.currency = data.currency
+        self.durationMinutes = data.durationMinutes
+        self.isActive = data.isActive
+        self.images = data.images
+        self.monday = data.monday
+        self.tuesday = data.tuesday
+        self.wednesday = data.wednesday
+        self.thursday = data.thursday
+        self.friday = data.friday
+        self.saturday = data.saturday
+        self.sunday = data.sunday
+    }
+    
+    init(techId: String, serviceAdminId: Int, description: String, price: String, currency: String, durationMinutes: Int, images: [String]?, monday: AvailabilityInterval?, tuesday: AvailabilityInterval?, wednesday: AvailabilityInterval?, thursday: AvailabilityInterval?, friday: AvailabilityInterval?, saturday: AvailabilityInterval?, sunday: AvailabilityInterval?) {
+        self.techId = techId
+        self.serviceAdminId = serviceAdminId
+        self.description = description
+        self.price = price
+        self.currency = currency
+        self.durationMinutes = durationMinutes
+        self.isActive = monday != nil || tuesday != nil || wednesday != nil || thursday != nil || friday != nil || saturday != nil || sunday != nil
+        self.images = images
+        self.monday = monday
+        self.tuesday = tuesday
+        self.wednesday = wednesday
+        self.thursday = thursday
+        self.friday = friday
+        self.saturday = saturday
+        self.sunday = sunday
+    }
 }
 
+@BackgroundActor
 struct UpdateProvidedServiceRequest: Codable {
     let price: Double?
     let currency: String?
     let durationMinutes: Int?
+    let images: [String]?
     let isActive: Bool// false of all days nil
     let monday: AvailabilityInterval?
     let tuesday: AvailabilityInterval?
@@ -39,13 +84,31 @@ struct UpdateProvidedServiceRequest: Codable {
     let saturday: AvailabilityInterval?
     let sunday: AvailabilityInterval?
     
+    init(price: Double? = nil, currency: String? = nil, durationMinutes: Int? = nil, images: [String]? = nil, monday: AvailabilityInterval? = nil, tuesday: AvailabilityInterval?, wednesday: AvailabilityInterval?, thursday: AvailabilityInterval?, friday: AvailabilityInterval?, saturday: AvailabilityInterval?, sunday: AvailabilityInterval?) {
+        self.price = price
+        self.currency = currency
+        self.durationMinutes = durationMinutes
+        self.images = images
+        self.isActive = monday != nil || tuesday != nil || wednesday != nil || thursday != nil || friday != nil || saturday != nil || sunday != nil
+        self.monday = monday
+        self.tuesday = tuesday
+        self.wednesday = wednesday
+        self.thursday = thursday
+        self.friday = friday
+        self.saturday = saturday
+        self.sunday = sunday
+    }
+    
 }
 
 //=>////////////////////////////////////////////////
 
+@BackgroundActor
 struct GetAServiceRootRespond: Codable {
     let data: [GetAServiceRespond]
 }
+
+@BackgroundActor
 struct GetAServiceRespond: Codable {
     let id: String
     let tech: Tech
@@ -54,7 +117,8 @@ struct GetAServiceRespond: Codable {
     let price: String
     let currency: String
     let durationMinutes: Int
-    let isActive: Bool// false of all days nil
+    let images: [String]?
+    let isActive: Bool
     let monday: AvailabilityInterval?
     let tuesday: AvailabilityInterval?
     let wednesday: AvailabilityInterval?
@@ -80,6 +144,27 @@ struct GetAServiceRespond: Codable {
             case image
             case location
         }
+        
+        
+        init(id: String, name: String, email: String, role: String, age: Int?, image: String?, location: UserLocation?) {
+            self.id = id
+            self.name = name
+            self.email = email
+            self.role = role
+            self.age = age
+            self.image = image
+            self.location = location
+        }
+        
+        init(data: GetAServiceData.Tech) {
+            self.id = data.id
+            self.name = data.name
+            self.email = data.email
+            self.role = data.role
+            self.age = data.age
+            self.image = data.image
+            self.location = data.location
+        }
     }
 
     enum CodingKeys: String, CodingKey {
@@ -91,6 +176,7 @@ struct GetAServiceRespond: Codable {
         case currency
         case durationMinutes
         case isActive
+        case images
         case monday
         case tuesday
         case wednesday
@@ -101,9 +187,172 @@ struct GetAServiceRespond: Codable {
     }
 }
 
-struct AvailabilityInterval: Codable, Hashable {
+struct AvailabilityInterval: Codable, Hashable, Sendable {
     var startUTC: Int
     var endUTC: Int
+}
+
+//=>////////////////////////////////////////////////
+
+@MainActor
+struct ProvideServiceData: Identifiable, Sendable {
+    let techId: String
+    let serviceAdminId: Int
+    let description: String
+    let price: String
+    let currency: String
+    let durationMinutes: Int
+    let isActive: Bool// false of all days nil
+    let images: [String]?
+    let monday: AvailabilityInterval?
+    let tuesday: AvailabilityInterval?
+    let wednesday: AvailabilityInterval?
+    let thursday: AvailabilityInterval?
+    let friday: AvailabilityInterval?
+    let saturday: AvailabilityInterval?
+    let sunday: AvailabilityInterval?
+    
+    var id: String {
+        techId + String(serviceAdminId) + price + description
+    }
+    
+    init(cloud: ProvideServiceRequest) {
+        self.techId = cloud.techId
+        self.serviceAdminId = cloud.serviceAdminId
+        self.description = cloud.description
+        self.price = cloud.price
+        self.currency = cloud.currency
+        self.durationMinutes = cloud.durationMinutes
+        self.isActive = cloud.isActive
+        self.images = cloud.images
+        self.monday = cloud.monday
+        self.tuesday = cloud.tuesday
+        self.wednesday = cloud.wednesday
+        self.thursday = cloud.thursday
+        self.friday = cloud.friday
+        self.saturday = cloud.saturday
+        self.sunday = cloud.sunday
+    }
+    
+    
+    init(techId: String, serviceAdminId: Int, description: String, price: String, currency: String, durationMinutes: Int, images: [String]?, monday: AvailabilityInterval?, tuesday: AvailabilityInterval?, wednesday: AvailabilityInterval?, thursday: AvailabilityInterval?, friday: AvailabilityInterval?, saturday: AvailabilityInterval?, sunday: AvailabilityInterval?) {
+        self.techId = techId
+        self.serviceAdminId = serviceAdminId
+        self.description = description
+        self.price = price
+        self.currency = currency
+        self.durationMinutes = durationMinutes
+        self.isActive = monday != nil || tuesday != nil || wednesday != nil || thursday != nil || friday != nil || saturday != nil || sunday != nil
+        self.images = images
+        self.monday = monday
+        self.tuesday = tuesday
+        self.wednesday = wednesday
+        self.thursday = thursday
+        self.friday = friday
+        self.saturday = saturday
+        self.sunday = sunday
+    }
+}
+
+@MainActor
+struct ViewServiceData: Sendable, Hashable {
+    let fix: FixService
+    let data: GetAServiceData
+    
+    // availabilities: single source of truth. Values store HOURS directly.
+    private(set) var availabilities: [WeekDay: AvailabilityInterval?]
+    
+    init(fix: FixService, data: GetAServiceData) {
+        self.fix = fix
+        self.data = data
+        self.availabilities = {
+            var d = [WeekDay: AvailabilityInterval?]()
+            WeekDay.allCases.forEach { d[$0] = nil }
+            return d
+        }()
+        availabilities[.monday] = data.monday
+        availabilities[.tuesday] = data.tuesday
+        availabilities[.wednesday] = data.wednesday
+        availabilities[.thursday] = data.thursday
+        availabilities[.friday] = data.friday
+        availabilities[.saturday] = data.saturday
+        availabilities[.sunday] = data.sunday
+    }
+}
+
+@MainActor
+struct GetAServiceData: Identifiable, Sendable, Hashable {
+    let id: String
+    let tech: Tech
+    let serviceAdminId: Int
+    let description: String
+    let price: String
+    let currency: String
+    let durationMinutes: Int
+    let images: [String]
+    let isActive: Bool
+    let monday: AvailabilityInterval?
+    let tuesday: AvailabilityInterval?
+    let wednesday: AvailabilityInterval?
+    let thursday: AvailabilityInterval?
+    let friday: AvailabilityInterval?
+    let saturday: AvailabilityInterval?
+    let sunday: AvailabilityInterval?
+    
+    struct Tech: Identifiable, Sendable, Hashable {
+        let id: String
+        let name: String
+        let email: String
+        let role: String
+        let age: Int?
+        let image: String?
+        let location: UserLocation?
+        
+        var locationStr: String? {
+            guard let location = location else { return nil }
+            let components = [location.building ?? "", location.street ?? "", location.city ?? ""].filter { !$0.isEmpty }
+            return (location.unit != nil ? "Unit: \(location.unit!) - " : "") + components.joined(separator: ", ")
+        }
+        
+        init(id: String, name: String, email: String, role: String, age: Int?, image: String?, location: UserLocation?) {
+            self.id = id
+            self.name = name
+            self.email = email
+            self.role = role
+            self.age = age
+            self.image = image
+            self.location = location
+        }
+        
+        init(cloud: GetAServiceRespond.Tech) {
+            self.id = cloud.id
+            self.name = cloud.name
+            self.email = cloud.email
+            self.role = cloud.role
+            self.age = cloud.age
+            self.image = cloud.image
+            self.location = cloud.location
+        }
+    }
+    
+    init(cloud: GetAServiceRespond) {
+        self.id = cloud.id
+        self.tech = GetAServiceData.Tech(cloud: cloud.tech)
+        self.serviceAdminId = cloud.serviceAdminId
+        self.description = cloud.description
+        self.price = cloud.price
+        self.currency = cloud.currency
+        self.durationMinutes = cloud.durationMinutes
+        self.images = cloud.images ?? ["https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRPEgUGIRO5X5zExd2A0tAclSkQY8koUSVohw&s"]
+        self.isActive = cloud.isActive
+        self.monday = cloud.monday
+        self.tuesday = cloud.tuesday
+        self.wednesday = cloud.wednesday
+        self.thursday = cloud.thursday
+        self.friday = cloud.friday
+        self.saturday = cloud.saturday
+        self.sunday = cloud.sunday
+    }
 }
 
 //=>////////////////////////////////////////////////
@@ -165,35 +414,51 @@ enum FixCategory: Int, CaseIterable, Identifiable {
     var id: Int { rawValue }
 }
 
+enum WeekDay: Int, CaseIterable, Identifiable {
+    case monday = 1, tuesday, wednesday, thursday, friday, saturday, sunday
+    var id: Int { rawValue }
+    var short: String {
+        switch self {
+        case .monday: return "Mon"
+        case .tuesday: return "Tue"
+        case .wednesday: return "Wed"
+        case .thursday: return "Thu"
+        case .friday: return "Fri"
+        case .saturday: return "Sat"
+        case .sunday: return "Sun"
+        }
+    }
+}
+
 
 extension FixService {
     static func sampleServices() -> [FixService] {
         [
-            FixService(categoryId: FixCategory.maintenance.rawValue, title: "Oil Change", iconName: "drop.fill", color: .orange, durationMinutes: 30, priceEstimate: "$40 - $80"),
-            FixService(categoryId: FixCategory.performance.rawValue, title: "Tire Rotation", iconName: "arrow.2.squarepath", color: .mint, durationMinutes: 45, priceEstimate: "$20 - $50"),
-            FixService(categoryId: FixCategory.performance.rawValue, title: "Brake Service", iconName: "exclamationmark.triangle.fill", color: .red, durationMinutes: 60, priceEstimate: "$80 - $300"),
-            FixService(categoryId: FixCategory.systems.rawValue, title: "Battery Check", iconName: "bolt.car.fill", color: .yellow, durationMinutes: 15, priceEstimate: "$40 - $80"),
-            FixService(categoryId: FixCategory.systems.rawValue, title: "Engine Diagnostics", iconName: "cpu.fill", color: .indigo, durationMinutes: 50, priceEstimate: "$40 - $80"),
-            FixService(categoryId: FixCategory.systems.rawValue, title: "Transmission Service", iconName: "gearshape.fill", color: .purple, durationMinutes: 120, priceEstimate: "$40 - $80"),
-            FixService(categoryId: FixCategory.comfortCare.rawValue, title: "AC Service", iconName: "snow", color: .cyan, durationMinutes: 45, priceEstimate: "$40 - $80"),
-            FixService(categoryId: FixCategory.performance.rawValue, title: "Suspension Check", iconName: "car.2.fill", color: .teal, durationMinutes: 40, priceEstimate: "$40 - $80"),
-            FixService(categoryId: FixCategory.performance.rawValue, title: "Wheel Alignment", iconName: "ruler.fill", color: .brown, durationMinutes: 50, priceEstimate: "$40 - $80"),
-            FixService(categoryId: FixCategory.maintenance.rawValue, title: "Fluid Top-Up", iconName: "drop.triangle.fill", color: .blue, durationMinutes: 20, priceEstimate: "$40 - $80"),
-            FixService(categoryId: FixCategory.maintenance.rawValue, title: "Filter Replace", iconName: "wind", color: .gray, durationMinutes: 25, priceEstimate: "$40 - $80"),
-            FixService(categoryId: FixCategory.systems.rawValue, title: "Light Check", iconName: "lightbulb.fill", color: .yellow, durationMinutes: 15, priceEstimate: "$40 - $80"),
-            FixService(categoryId: FixCategory.systems.rawValue, title: "Wiper Replace", iconName: "windshield.front.and.wiper", color: .cyan, durationMinutes: 10, priceEstimate: "$40 - $80"),
-            FixService(categoryId: FixCategory.systems.rawValue, title: "Exhaust Check", iconName: "tuningfork", color: .orange, durationMinutes: 25, priceEstimate: "$40 - $80"),
-            FixService(categoryId: FixCategory.maintenance.rawValue, title: "Safety Inspect", iconName: "checkmark.shield.fill", color: .green, durationMinutes: 30, priceEstimate: "$40 - $80"),
-            FixService(categoryId: FixCategory.maintenance.rawValue, title: "Full Service", iconName: "wrench.and.screwdriver.fill", color: .pink, durationMinutes: 180, priceEstimate: "$40 - $80"),
-            FixService(categoryId: FixCategory.performance.rawValue, title: "Tire Balance", iconName: "circle.grid.cross", color: .mint, durationMinutes: 30, priceEstimate: "$40 - $80"),
-            FixService(categoryId: FixCategory.performance.rawValue, title: "Tire Repair", iconName: "bandage.fill", color: .red, durationMinutes: 35, priceEstimate: "$40 - $80"),
-            FixService(categoryId: FixCategory.performance.rawValue, title: "Steering Check", iconName: "steeringwheel", color: .indigo, durationMinutes: 30, priceEstimate: "$40 - $80"),
-            FixService(categoryId: FixCategory.comfortCare.rawValue, title: "Heating Check", iconName: "thermometer", color: .red, durationMinutes: 25, priceEstimate: "$40 - $80"),
-            FixService(categoryId: FixCategory.systems.rawValue, title: "Emission Test", iconName: "leaf.fill", color: .green, durationMinutes: 20, priceEstimate: "$40 - $80"),
-            FixService(categoryId: FixCategory.comfortCare.rawValue, title: "Car Wash", iconName: "sparkles", color: .blue, durationMinutes: 25, priceEstimate: "$40 - $80"),
-            FixService(categoryId: FixCategory.comfortCare.rawValue, title: "Interior Clean", iconName: "square.stack.3d.up.fill", color: .gray, durationMinutes: 45, priceEstimate: "$40 - $80"),
-            FixService(categoryId: FixCategory.systems.rawValue, title: "Battery Jumpstart", iconName: "battery.100.bolt", color: .yellow, durationMinutes: 15, priceEstimate: "$40 - $80"),
-            FixService(categoryId: FixCategory.comfortCare.rawValue, title: "Roadside Assist", iconName: "phone.fill", color: .red, durationMinutes: 60, priceEstimate: "$40 - $80")
+            FixService(adminId: 0, categoryId: FixCategory.maintenance.rawValue, title: "Oil Change", iconName: "drop.fill", color: .orange, durationMinutes: 30, priceEstimate: "$40 - $80"),
+            FixService(adminId: 1, categoryId: FixCategory.performance.rawValue, title: "Tire Rotation", iconName: "arrow.2.squarepath", color: .mint, durationMinutes: 45, priceEstimate: "$20 - $50"),
+            FixService(adminId: 2, categoryId: FixCategory.performance.rawValue, title: "Brake Service", iconName: "exclamationmark.triangle.fill", color: .red, durationMinutes: 60, priceEstimate: "$80 - $300"),
+            FixService(adminId: 3, categoryId: FixCategory.systems.rawValue, title: "Battery Check", iconName: "bolt.car.fill", color: .yellow, durationMinutes: 15, priceEstimate: "$40 - $80"),
+            FixService(adminId: 4, categoryId: FixCategory.systems.rawValue, title: "Engine Diagnostics", iconName: "cpu.fill", color: .indigo, durationMinutes: 50, priceEstimate: "$40 - $80"),
+            FixService(adminId: 5, categoryId: FixCategory.systems.rawValue, title: "Transmission Service", iconName: "gearshape.fill", color: .purple, durationMinutes: 120, priceEstimate: "$40 - $80"),
+            FixService(adminId: 6, categoryId: FixCategory.comfortCare.rawValue, title: "AC Service", iconName: "snow", color: .cyan, durationMinutes: 45, priceEstimate: "$40 - $80"),
+            FixService(adminId: 7, categoryId: FixCategory.performance.rawValue, title: "Suspension Check", iconName: "car.2.fill", color: .teal, durationMinutes: 40, priceEstimate: "$40 - $80"),
+            FixService(adminId: 8, categoryId: FixCategory.performance.rawValue, title: "Wheel Alignment", iconName: "ruler.fill", color: .brown, durationMinutes: 50, priceEstimate: "$40 - $80"),
+            FixService(adminId: 9, categoryId: FixCategory.maintenance.rawValue, title: "Fluid Top-Up", iconName: "drop.triangle.fill", color: .blue, durationMinutes: 20, priceEstimate: "$40 - $80"),
+            FixService(adminId: 10, categoryId: FixCategory.maintenance.rawValue, title: "Filter Replace", iconName: "wind", color: .gray, durationMinutes: 25, priceEstimate: "$40 - $80"),
+            FixService(adminId: 11, categoryId: FixCategory.systems.rawValue, title: "Light Check", iconName: "lightbulb.fill", color: .yellow, durationMinutes: 15, priceEstimate: "$40 - $80"),
+            FixService(adminId: 12, categoryId: FixCategory.systems.rawValue, title: "Wiper Replace", iconName: "windshield.front.and.wiper", color: .cyan, durationMinutes: 10, priceEstimate: "$40 - $80"),
+            FixService(adminId: 13, categoryId: FixCategory.systems.rawValue, title: "Exhaust Check", iconName: "tuningfork", color: .orange, durationMinutes: 25, priceEstimate: "$40 - $80"),
+            FixService(adminId: 14, categoryId: FixCategory.maintenance.rawValue, title: "Safety Inspect", iconName: "checkmark.shield.fill", color: .green, durationMinutes: 30, priceEstimate: "$40 - $80"),
+            FixService(adminId: 15, categoryId: FixCategory.maintenance.rawValue, title: "Full Service", iconName: "wrench.and.screwdriver.fill", color: .pink, durationMinutes: 180, priceEstimate: "$40 - $80"),
+            FixService(adminId: 16, categoryId: FixCategory.performance.rawValue, title: "Tire Balance", iconName: "circle.grid.cross", color: .mint, durationMinutes: 30, priceEstimate: "$40 - $80"),
+            FixService(adminId: 17, categoryId: FixCategory.performance.rawValue, title: "Tire Repair", iconName: "bandage.fill", color: .red, durationMinutes: 35, priceEstimate: "$40 - $80"),
+            FixService(adminId: 18, categoryId: FixCategory.performance.rawValue, title: "Steering Check", iconName: "steeringwheel", color: .indigo, durationMinutes: 30, priceEstimate: "$40 - $80"),
+            FixService(adminId: 19, categoryId: FixCategory.comfortCare.rawValue, title: "Heating Check", iconName: "thermometer", color: .red, durationMinutes: 25, priceEstimate: "$40 - $80"),
+            FixService(adminId: 20, categoryId: FixCategory.systems.rawValue, title: "Emission Test", iconName: "leaf.fill", color: .green, durationMinutes: 20, priceEstimate: "$40 - $80"),
+            FixService(adminId: 21, categoryId: FixCategory.comfortCare.rawValue, title: "Car Wash", iconName: "sparkles", color: .blue, durationMinutes: 25, priceEstimate: "$40 - $80"),
+            FixService(adminId: 22, categoryId: FixCategory.comfortCare.rawValue, title: "Interior Clean", iconName: "square.stack.3d.up.fill", color: .gray, durationMinutes: 45, priceEstimate: "$40 - $80"),
+            FixService(adminId: 23, categoryId: FixCategory.systems.rawValue, title: "Battery Jumpstart", iconName: "battery.100.bolt", color: .yellow, durationMinutes: 15, priceEstimate: "$40 - $80"),
+            FixService(adminId: 24, categoryId: FixCategory.comfortCare.rawValue, title: "Roadside Assist", iconName: "phone.fill", color: .red, durationMinutes: 60, priceEstimate: "$40 - $80")
         ]
     }
 }

@@ -59,7 +59,6 @@ final class HomeObserve : BaseObserver {
             self.sheet(isEditSheet: $0)
         }
     }
-
     
     @MainActor
     func fetchAiSessions(_ userBase: UserBase?) {
