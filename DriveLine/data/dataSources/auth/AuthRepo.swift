@@ -18,6 +18,9 @@ protocol AuthRepo :Sendable {
     
     @BackgroundActor
     func fetchUserById(user: UserBase, invoke: @escaping @BackgroundActor (User) -> Void, failed: @BackgroundActor (String) -> Void) async
+
+    @BackgroundActor
+    func fetchProfileById(user: UserBase, invoke: @escaping @BackgroundActor (Profile) -> Void, failed: @BackgroundActor (String) -> Void) async
     
     @BackgroundActor
     func updateUserById(token: String, user: User, invoke: @escaping @BackgroundActor (BaseMessageResponse) -> Void, failed: @BackgroundActor (String) -> Void) async

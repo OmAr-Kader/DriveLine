@@ -65,6 +65,15 @@ struct Main: View, Navigator {
         }
     }
     
+    var backPressWithUpdate: @MainActor () -> Void {
+        return {
+            if !self.navigationPath.isEmpty {
+                self.app.setNeedUpdate(true)
+                self.navigationPath.removeLast()
+            }
+        }
+    }
+    
     var screenConfig: @MainActor (Screen) -> (any ScreenConfig)? {
         return { screen in
             return app.findArg(screen: screen)
@@ -168,7 +177,7 @@ struct HomeScreen: View {
     
     private func forProfile() {
         guard obs.state.user == nil else { return }
-        obs.fetchUser(app.state.userBase)
+        obs.fetchProfile(app.state.userBase)
     }
     
     @available(iOS 18.0, *)

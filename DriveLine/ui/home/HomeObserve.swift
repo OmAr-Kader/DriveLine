@@ -93,6 +93,43 @@ final class HomeObserve : BaseObserver {
     }
     
     @MainActor
+    func fetchProfile(_ userBase: UserBase?) {
+        guard let userBase else { return }
+        self.state = self.state.copy(isLoading: .set(true))
+        self.tasker.back {
+            await self.project.auth.fetchProfileById(user: userBase) { profile in
+                self.mainSync {
+                    do {
+                        let fixs = FixService.sampleServices()
+                        let newServices = try profile.services.map ({ item in
+                            ProfileServiceData(service: ProvideServiceData(cloud: item), fix: try fixs.firstOrThrow(where: { $0.adminId == item.serviceAdminId }))
+                        })
+                        
+                        let courses = Course.sampleCourses
+                        let newProvided = try profile.courses.map ({ item in
+                            ProfileCourseData(providedCourse: ProvideCourseData(cloud: item), course: try courses.firstOrThrow(where: { $0.adminId == item.courseAdminId }))
+                        })
+
+                        
+                        self.state = self.state.copy(isLoading: .set(false), user: .set(profile.user), profileService: .set(newServices), profileCourses: .set(newProvided))
+                    } catch {
+                        withAnimation {
+                            self.state = self.state.copy(isLoading: .set(false), toast: .set(Toast(style: .error, message: "Failed")))
+                        }
+                    }
+                }
+            } failed: { msg in
+                self.mainSync {
+                    withAnimation {
+                        self.state = self.state.copy(isLoading: .set(false), toast: .set(Toast(style: .error, message: "Failed")))
+                    }
+                }
+            }
+
+        }
+    }
+    
+    @MainActor
     func fetchUser(_ userBase: UserBase?) {
         guard let userBase else { return }
         self.state = self.state.copy(isLoading: .set(true))
@@ -104,6 +141,67 @@ final class HomeObserve : BaseObserver {
                     }
                 }
             } failed: { _ in
+                self.mainSync {
+                    withAnimation {
+                        self.state = self.state.copy(isLoading: .set(false), toast: .set(Toast(style: .error, message: "Failed")))
+                    }
+                }
+            }
+        }
+    }
+    
+    @MainActor
+    func fetchTechServices(_ userBase: UserBase?) {
+        guard let userBase else { return }
+        self.state = self.state.copy(isLoading: .set(true))
+        self.tasker.back {
+            await self.project.fix.getServicesByTech(userBase: userBase, techId: userBase.id) { list in
+                self.mainSync {
+                    do {
+                        let fixs = FixService.sampleServices()
+                        let newServices = try list.map ({ item in
+                            ProfileServiceData(service: ProvideServiceData(cloud: item), fix: try fixs.firstOrThrow(where: { $0.adminId == item.serviceAdminId }))
+                        })
+                        self.state = self.state.copy(isLoading: .set(false), profileService: .set(newServices))
+                    } catch {
+                        withAnimation {
+                            self.state = self.state.copy(isLoading: .set(false), toast: .set(Toast(style: .error, message: "Failed")))
+                        }
+                    }
+                }
+                
+            } failed: { msg in
+                self.mainSync {
+                    withAnimation {
+                        self.state = self.state.copy(isLoading: .set(false), toast: .set(Toast(style: .error, message: "Failed")))
+                    }
+                }
+            }
+        }
+    }
+    
+    
+    @MainActor
+    func fetchTechCourses(_ userBase: UserBase?) {
+        guard let userBase else { return }
+        self.state = self.state.copy(isLoading: .set(true))
+        self.tasker.back {
+            await self.project.course.getCoursesByTech(userBase: userBase, techId: userBase.id) { list in
+                self.mainSync {
+                    do {
+                        let courses = Course.sampleCourses
+                        let newProvided = try list.map ({ item in
+                            ProfileCourseData(providedCourse: ProvideCourseData(cloud: item), course: try courses.firstOrThrow(where: { $0.adminId == item.courseAdminId }))
+                        })
+                        self.state = self.state.copy(isLoading: .set(false), profileCourses: .set(newProvided))
+                    } catch {
+                        withAnimation {
+                            self.state = self.state.copy(isLoading: .set(false), toast: .set(Toast(style: .error, message: "Failed")))
+                        }
+                    }
+                }
+                
+            } failed: { msg in
                 self.mainSync {
                     withAnimation {
                         self.state = self.state.copy(isLoading: .set(false), toast: .set(Toast(style: .error, message: "Failed")))
@@ -171,6 +269,37 @@ final class HomeObserve : BaseObserver {
         }
     }
     
+    
+    @MainActor
+    func updateTechService(_ userBase: UserBase?, ) {
+        guard let userBase else { return }
+        self.state = self.state.copy(isLoading: .set(true))
+        self.tasker.back {
+            await self.project.fix.getServicesByTech(userBase: userBase, techId: userBase.id) { list in
+                self.mainSync {
+                    do {
+                        let fixs = FixService.sampleServices()
+                        let newServices = try list.map ({ item in
+                            ProfileServiceData(service: ProvideServiceData(cloud: item), fix: try fixs.firstOrThrow(where: { $0.adminId == item.serviceAdminId }))
+                        })
+                        self.state = self.state.copy(isLoading: .set(false), profileService: .set(newServices))
+                    } catch {
+                        withAnimation {
+                            self.state = self.state.copy(isLoading: .set(false), toast: .set(Toast(style: .error, message: "Failed")))
+                        }
+                    }
+                }
+                //
+            } failed: { msg in
+                self.mainSync {
+                    withAnimation {
+                        self.state = self.state.copy(isLoading: .set(false), toast: .set(Toast(style: .error, message: "Failed")))
+                    }
+                }
+            }
+        }
+    }
+    
     struct HomeObserveState {
 
         private(set) var isLoading: Bool = false
@@ -187,6 +316,8 @@ final class HomeObserve : BaseObserver {
         private(set) var aiSessions: [AiSessionData] = []
 
         private(set) var user: User? = nil
+        private(set) var profileService: [ProfileServiceData] = []
+        private(set) var profileCourses: [ProfileCourseData] = []
         private(set) var isEditSheet: Bool = false
         
         @MainActor
@@ -201,6 +332,8 @@ final class HomeObserve : BaseObserver {
             currentCato: Update<FixCategory> = .keep,
             aiSessions: Update<[AiSessionData]> = .keep,
             user: Update<User?> = .keep,
+            profileService: Update<[ProfileServiceData]> = .keep,
+            profileCourses: Update<[ProfileCourseData]> = .keep,
             isEditSheet: Update<Bool> = .keep
         ) -> Self {
             if case .set(let value) = isLoading { self.isLoading = value }
@@ -217,6 +350,8 @@ final class HomeObserve : BaseObserver {
             if case .set(let value) = aiSessions { self.aiSessions = value }
 
             if case .set(let value) = user { self.user = value }
+            if case .set(let value) = profileService { self.profileService = value }
+            if case .set(let value) = profileCourses { self.profileCourses = value }
             if case .set(let value) = isEditSheet { self.isEditSheet = value }
             return self
         }

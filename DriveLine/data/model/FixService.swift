@@ -16,6 +16,7 @@ struct ProvideServiceRequestRootRespond: Codable {
 
 @BackgroundActor
 struct ProvideServiceRequest: Codable {
+    let _id: String
     let techId: String
     let serviceAdminId: Int
     let description: String
@@ -33,6 +34,7 @@ struct ProvideServiceRequest: Codable {
     let sunday: AvailabilityInterval?
     
     init(data: ProvideServiceData) {
+        self._id = data._id
         self.techId = data.techId
         self.serviceAdminId = data.serviceAdminId
         self.description = data.description
@@ -51,6 +53,7 @@ struct ProvideServiceRequest: Codable {
     }
     
     init(techId: String, serviceAdminId: Int, description: String, price: String, currency: String, durationMinutes: Int, images: [String]?, monday: AvailabilityInterval?, tuesday: AvailabilityInterval?, wednesday: AvailabilityInterval?, thursday: AvailabilityInterval?, friday: AvailabilityInterval?, saturday: AvailabilityInterval?, sunday: AvailabilityInterval?) {
+        self._id = ""
         self.techId = techId
         self.serviceAdminId = serviceAdminId
         self.description = description
@@ -67,15 +70,40 @@ struct ProvideServiceRequest: Codable {
         self.saturday = saturday
         self.sunday = sunday
     }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        
+        try container.encode(techId, forKey: .techId)
+        try container.encode(serviceAdminId, forKey: .serviceAdminId)
+        try container.encode(description, forKey: .description)
+        try container.encode(price, forKey: .price)
+        try container.encode(currency, forKey: .currency)
+        try container.encode(durationMinutes, forKey: .durationMinutes)
+        try container.encode(isActive, forKey: .isActive)
+        
+        // Optional properties
+        try container.encodeIfPresent(images, forKey: .images)
+        try container.encodeIfPresent(monday, forKey: .monday)
+        try container.encodeIfPresent(tuesday, forKey: .tuesday)
+        try container.encodeIfPresent(wednesday, forKey: .wednesday)
+        try container.encodeIfPresent(thursday, forKey: .thursday)
+        try container.encodeIfPresent(friday, forKey: .friday)
+        try container.encodeIfPresent(saturday, forKey: .saturday)
+        try container.encodeIfPresent(sunday, forKey: .sunday)
+    }
+    
+
 }
 
 @BackgroundActor
 struct UpdateProvidedServiceRequest: Codable {
-    let price: Double?
+    let description: String?
+    let price: String?
     let currency: String?
     let durationMinutes: Int?
     let images: [String]?
-    let isActive: Bool// false of all days nil
+    let isActive: Bool?// false of all days nil
     let monday: AvailabilityInterval?
     let tuesday: AvailabilityInterval?
     let wednesday: AvailabilityInterval?
@@ -84,7 +112,8 @@ struct UpdateProvidedServiceRequest: Codable {
     let saturday: AvailabilityInterval?
     let sunday: AvailabilityInterval?
     
-    init(price: Double? = nil, currency: String? = nil, durationMinutes: Int? = nil, images: [String]? = nil, monday: AvailabilityInterval? = nil, tuesday: AvailabilityInterval?, wednesday: AvailabilityInterval?, thursday: AvailabilityInterval?, friday: AvailabilityInterval?, saturday: AvailabilityInterval?, sunday: AvailabilityInterval?) {
+    init(description: String? = nil, price: String? = nil, currency: String? = nil, durationMinutes: Int? = nil, images: [String]? = nil, monday: AvailabilityInterval? = nil, tuesday: AvailabilityInterval?, wednesday: AvailabilityInterval?, thursday: AvailabilityInterval?, friday: AvailabilityInterval?, saturday: AvailabilityInterval?, sunday: AvailabilityInterval?) {
+        self.description = description
         self.price = price
         self.currency = currency
         self.durationMinutes = durationMinutes
@@ -99,7 +128,78 @@ struct UpdateProvidedServiceRequest: Codable {
         self.sunday = sunday
     }
     
+    
+    init(original: ProvideServiceData, description: String? = nil, price: String?, currency: String?, durationMinutes: Int?, images: [String]?, isActive: Bool, monday: AvailabilityInterval?, tuesday: AvailabilityInterval?, wednesday: AvailabilityInterval?, thursday: AvailabilityInterval?, friday: AvailabilityInterval?, saturday: AvailabilityInterval?, sunday: AvailabilityInterval?) {
+        self.description = if original.description == description {
+            nil
+        } else {
+            description
+        }
+        self.price = if original.price == price {
+            nil
+        } else {
+            price
+        }
+        self.currency = if original.currency == currency {
+            nil
+        } else {
+            currency
+        }
+
+        self.durationMinutes = if original.durationMinutes == durationMinutes {
+            nil
+        } else {
+            durationMinutes
+        }
+        self.images = if original.images == images {
+            nil
+        } else {
+            images
+        }
+        self.isActive = if original.isActive == isActive {
+            nil
+        } else {
+            isActive
+        }
+        self.monday = if original.monday?.startUTC == monday?.startUTC && original.monday?.endUTC == monday?.endUTC {
+            nil
+        } else {
+            monday
+        }
+        self.tuesday = if original.tuesday?.startUTC == tuesday?.startUTC && original.tuesday?.endUTC == tuesday?.endUTC {
+            nil
+        } else {
+            tuesday
+        }
+        self.wednesday = if original.wednesday?.startUTC == wednesday?.startUTC && original.wednesday?.endUTC == wednesday?.endUTC {
+            nil
+        } else {
+            wednesday
+        }
+        self.thursday = if original.thursday?.startUTC == thursday?.startUTC && original.thursday?.endUTC == thursday?.endUTC {
+            nil
+        } else {
+            thursday
+        }
+        self.friday = if original.friday?.startUTC == friday?.startUTC && original.friday?.endUTC == friday?.endUTC {
+            nil
+        } else {
+            friday
+        }
+        self.saturday = if original.saturday?.startUTC == saturday?.startUTC && original.saturday?.endUTC == saturday?.endUTC {
+            nil
+        } else {
+            saturday
+        }
+        self.sunday = if original.sunday?.startUTC == sunday?.startUTC && original.sunday?.endUTC == sunday?.endUTC {
+            nil
+        } else {
+            sunday
+        }
+    }
+    
 }
+
 
 //=>////////////////////////////////////////////////
 
@@ -131,7 +231,7 @@ struct GetAServiceRespond: Codable {
         let id: String
         let name: String
         let email: String
-        let role: String
+        let phone: String
         let age: Int?
         let image: String?
         let location: UserLocation?
@@ -139,18 +239,18 @@ struct GetAServiceRespond: Codable {
             case id = "_id"
             case name
             case email
-            case role
+            case phone
             case age
             case image
             case location
         }
         
         
-        init(id: String, name: String, email: String, role: String, age: Int?, image: String?, location: UserLocation?) {
+        init(id: String, name: String, email: String, phone: String, age: Int?, image: String?, location: UserLocation?) {
             self.id = id
             self.name = name
             self.email = email
-            self.role = role
+            self.phone = phone
             self.age = age
             self.image = image
             self.location = location
@@ -160,7 +260,7 @@ struct GetAServiceRespond: Codable {
             self.id = data.id
             self.name = data.name
             self.email = data.email
-            self.role = data.role
+            self.phone = data.phone
             self.age = data.age
             self.image = data.image
             self.location = data.location
@@ -195,7 +295,17 @@ struct AvailabilityInterval: Codable, Hashable, Sendable {
 //=>////////////////////////////////////////////////
 
 @MainActor
-struct ProvideServiceData: Identifiable, Sendable {
+struct ProfileServiceData: Identifiable, Sendable, Hashable {
+    let service: ProvideServiceData
+    let fix: FixService
+    var id: String {
+        "\(fix.adminId)" + service.id + service.price + service.currency + "\(service.durationMinutes)" + service.description
+    }
+}
+
+@MainActor
+struct ProvideServiceData: Identifiable, Sendable, Hashable {
+    let _id: String
     let techId: String
     let serviceAdminId: Int
     let description: String
@@ -217,6 +327,7 @@ struct ProvideServiceData: Identifiable, Sendable {
     }
     
     init(cloud: ProvideServiceRequest) {
+        self._id = cloud._id
         self.techId = cloud.techId
         self.serviceAdminId = cloud.serviceAdminId
         self.description = cloud.description
@@ -235,7 +346,7 @@ struct ProvideServiceData: Identifiable, Sendable {
     }
     
     
-    init(techId: String, serviceAdminId: Int, description: String, price: String, currency: String, durationMinutes: Int, images: [String]?, monday: AvailabilityInterval?, tuesday: AvailabilityInterval?, wednesday: AvailabilityInterval?, thursday: AvailabilityInterval?, friday: AvailabilityInterval?, saturday: AvailabilityInterval?, sunday: AvailabilityInterval?) {
+    /*init(techId: String, serviceAdminId: Int, description: String, price: String, currency: String, durationMinutes: Int, images: [String]?, monday: AvailabilityInterval?, tuesday: AvailabilityInterval?, wednesday: AvailabilityInterval?, thursday: AvailabilityInterval?, friday: AvailabilityInterval?, saturday: AvailabilityInterval?, sunday: AvailabilityInterval?) {
         self.techId = techId
         self.serviceAdminId = serviceAdminId
         self.description = description
@@ -251,7 +362,7 @@ struct ProvideServiceData: Identifiable, Sendable {
         self.friday = friday
         self.saturday = saturday
         self.sunday = sunday
-    }
+    }*/
 }
 
 @MainActor
@@ -303,7 +414,7 @@ struct GetAServiceData: Identifiable, Sendable, Hashable {
         let id: String
         let name: String
         let email: String
-        let role: String
+        let phone: String
         let age: Int?
         let image: String?
         let location: UserLocation?
@@ -314,11 +425,11 @@ struct GetAServiceData: Identifiable, Sendable, Hashable {
             return (location.unit != nil ? "Unit: \(location.unit!) - " : "") + components.joined(separator: ", ")
         }
         
-        init(id: String, name: String, email: String, role: String, age: Int?, image: String?, location: UserLocation?) {
+        init(id: String, name: String, phone: String, email: String, age: Int?, image: String?, location: UserLocation?) {
             self.id = id
             self.name = name
             self.email = email
-            self.role = role
+            self.phone = phone
             self.age = age
             self.image = image
             self.location = location
@@ -328,7 +439,7 @@ struct GetAServiceData: Identifiable, Sendable, Hashable {
             self.id = cloud.id
             self.name = cloud.name
             self.email = cloud.email
-            self.role = cloud.role
+            self.phone = cloud.phone
             self.age = cloud.age
             self.image = cloud.image
             self.location = cloud.location
@@ -357,7 +468,7 @@ struct GetAServiceData: Identifiable, Sendable, Hashable {
 
 //=>////////////////////////////////////////////////
 
-struct FixService: Identifiable, Hashable {
+struct FixService: Identifiable, Sendable, Hashable {
     let id: String
     let adminId: Int // 0,1,2
     let categoryId: Int

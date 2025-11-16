@@ -1,62 +1,71 @@
 //
-//  FixServicesListScreen.swift
+//  CoursesProvidersScreen.swift
 //  DriveLine
 //
-//  Created by OmAr Kader on 15/11/2025.
+//  Created by OmAr Kader on 16/11/2025.
 //
+
 
 import SwiftUI
 import SwiftUISturdy
 import Foundation
 
-struct FixServicesListScreen: View {
+struct CoursesProvidersScreen: View {
     
     @Binding var app: BaseAppObserve
     let navigator: Navigator
     
     @State
-    private var obs: FixServicesObserve = FixServicesObserve()
+    private var obs: CoursesProvidersObserve = CoursesProvidersObserve()
    
     var body: some View {
         ZStack {
             VStack {
                 List {
-                    ForEach(obs.state.listOfService) { item in
-                        ServiceCardImage(data: item)
+                    ForEach(obs.state.listOfCourses) { item in
+                        CourseCardImage(data: item)
                             .listRowBackground(Color.clear)
                             .onTapGesture {
-                                guard let service = obs.state.service else { return }
-                                navigator.navigateToScreen(ServiceConfig(service: ViewServiceData(fix: service, data: item)), .SERVICE_SCREEN)
+                                guard let course = obs.state.course else { return }
+                                navigator.navigateToScreen(CourseConfig(providedCourse: ViewCourseData(course: course, data: item)), .COURSE_SCREEN)
                             }
                     }
                 }
             }
             LoadingScreen(color: .primaryOfApp, backDarkAlpha: .backDarkAlpha, isLoading: obs.state.isLoading)
         }.visibleToolbar()
-            .navigationTitle(obs.state.service?.title ?? "")
+            .navigationTitle(obs.state.course?.title ?? "")
             .onAppeared {
-                guard let config = navigator.screenConfig(.SERVICES_LIST_SCREEN) as? ServicesListConfig, let userBase = app.state.userBase else {
-                    return
-                }
-                LogKit.print(config.service.title)
-                obs.loadFixServices(userBase: userBase, service: config.service)
+                load()
             }.toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        guard let service = obs.state.service else { return }
-                        navigator.navigateToScreen(CreateEditFixServiceConfig(editService: nil, serviceAdminId: service.adminId), .CREATE_EDIT_FIX_SCREEN_ROUTE)
+                        guard let course = obs.state.course else { return }
+                        navigator.navigateToScreen(CreateEditCourseConfig(editCourse: nil, courseAdminId: course.adminId), .CREATE_EDIT_COURSE_ROUTE)
                     } label: {
                         Text("Join")
                     }
                 }
+            }.onAppear {
+                guard app.state.needUpdate else { return }
+                app.setNeedUpdate(false)
+                load()
             }
+    }
+    
+    private func load() {
+        guard let config = navigator.screenConfig(.PROVICED_COURSE_LIST_SCREEN) as? ProvidedCoursesListConfig, let userBase = app.state.userBase else {
+            return
+        }
+        LogKit.print(config.course.title)
+        obs.loadProvicedCourses(userBase: userBase, course: config.course)
     }
 }
 
 
-fileprivate struct ServiceCardImage: View {
-    //let service: FixService
-    let data: GetAServiceData
+fileprivate struct CourseCardImage: View {
+
+    let data: GetACourseData
 
     var body: some View {
         ZStack(alignment: .bottomLeading) {
@@ -83,7 +92,7 @@ fileprivate struct ServiceCardImage: View {
                             .multilineTextAlignment(.leading)
                             .fixedSize(horizontal: true, vertical: false)
                     }.foregroundColor(.white)
-                    Label("\(data.durationMinutes) m", systemImage: "clock")
+                    Label("\(data.sessions) Sessions", systemImage: "flag")
                         .font(.subheadline)
                         .foregroundStyle(.textHint)
                         .labelStyle(HorizontalLabelStyle(spacing: 4))

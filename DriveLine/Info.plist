@@ -2,30 +2,11 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>NSCalendarsUsageDescription</key>
-    <string>DriveLine needs access to your calendar to schedule driving lessons and car maintenance events.</string>
-
-    <key>NSRemindersUsageDescription</key>
-    <string>DriveLine uses reminders to notify you of upcoming lessons, car service appointments, and other important tasks.</string>
-
-    <!-- Optional but recommended if your app uses location or contacts -->
-    <key>NSLocationWhenInUseUsageDescription</key>
-    <string>DriveLine uses your location to plan routes and identify driving school pickup or service locations.</string>
-
-    <key>NSContactsUsageDescription</key>
-    <string>DriveLine may access your contacts to link lessons or service appointments with specific instructors or mechanics.</string>
-    
-    <key>NSSpeechRecognitionUsageDescription</key>
-    <string>We need speech recognition to understand your voice commands while driving</string>
-    <key>NSMicrophoneUsageDescription</key>
-    <string>We need microphone access to listen to your commands</string>
-    <key>GEMINI_API_KEY</key>
-    <string>$(GEMINI_API_KEY)</string>
-    <key>BASE_URL</key>
-    <string>$(BASE_URL)</string>
-    <key>BASE_TOKEN</key>
-    <string>$(BASE_TOKEN)</string>
-    <!--key>UIDesignRequiresCompatibility</key>
-    <true/-->
+	<key>BASE_TOKEN</key>
+	<string>$(BASE_TOKEN)</string>
+	<key>BASE_URL</key>
+	<string>$(BASE_URL)</string>
+	<key>GEMINI_API_KEY</key>
+	<string>$(GEMINI_API_KEY)</string>
 </dict>
 </plist>

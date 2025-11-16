@@ -1,38 +1,38 @@
 //
-//  ViewServiceScreen.swift
+//  ViewCourseScreen.swift
 //  DriveLine
 //
-//  Created by OmAr Kader on 15/11/2025.
+//  Created by OmAr Kader on 16/11/2025.
 //
 
 import SwiftUI
 import SwiftUISturdy
 
-struct ViewServiceScreen: View {
+struct ViewCourseScreen: View {
     
     let navigator: Navigator
     
-    @State private var data: ViewServiceData?
+    @State private var data: ViewCourseData?
     
     var body: some View {
         ZStack {
             if let data = data {
-                ViewService(navigator: navigator, data: data)
+                ViewCourse(navigator: navigator, data: data)
             }
-        }.visibleToolbar().navigationTitle(data?.fix.title ?? "").onAppear {
+        }.visibleToolbar().navigationTitle(data?.course.title ?? "").onAppear {
             // Example load (simulate edit). Only load once.
-            guard let config = navigator.screenConfig(.SERVICE_SCREEN) as? ServiceConfig else { return }
-            self.data = config.service
+            guard let config = navigator.screenConfig(.COURSE_SCREEN) as? CourseConfig else { return }
+            self.data = config.providedCourse
         }
     }
 }
 
 
-fileprivate struct ViewService : View {
+fileprivate struct ViewCourse : View {
     
     let navigator: Navigator
     
-    let data: ViewServiceData
+    let data: ViewCourseData
     
     @State private var selectedPage: Int = 0
   
@@ -44,7 +44,7 @@ fileprivate struct ViewService : View {
                 if !data.data.images.isEmpty {
                     VStack {
                         TabView(selection: $selectedPage) {
-                            ServiceCardImage(service: data.fix, tech: data.data.tech)
+                            CourseCardImage(course: data.course, tech: data.data.tech)
                                 .frame(height: 140)
                                 .tag(0)
                             ForEach(Array(data.data.images.enumerated()), id: \.offset) { idx, url in
@@ -82,20 +82,20 @@ fileprivate struct ViewService : View {
                         .padding(.top, 6)
                     }.padding(.horizontal, 20)
                 } else {
-                    ServiceCardImage(service: data.fix, tech: data.data.tech)
+                    CourseCardImage(course: data.course, tech: data.data.tech)
                         .frame(height: 140)
                         .padding(.horizontal, 20)
                 }
             }
             Form {
-                Section(header: Text("Service info")) {
+                Section(header: Text("Course info")) {
                     Text(data.data.description)
                         .font(.headline)
                     
                     HStack {
                         Text("\(data.data.price) \(data.data.currency)")
                         Spacer()
-                        Text("\(data.data.durationMinutes) minutes")
+                        Text("\(data.data.sessions) minutes")
                     }
                 }
                 
@@ -173,15 +173,15 @@ fileprivate struct ViewService : View {
     }
 }
 
-fileprivate struct ServiceCardImage: View {
-    let service: FixService
-    let tech: GetAServiceData.Tech?
+fileprivate struct CourseCardImage: View {
+    let course: Course
+    let tech: GetACourseData.Tech?
 
     var body: some View {
         ZStack(alignment: .bottomLeading) {
             HStack {
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .fill(LinearGradient(colors: [service.color.opacity(0.25), Color(.systemBackground).opacity(0.16)], startPoint: .topLeading, endPoint: .bottomTrailing))
+                    .fill(LinearGradient(colors: [(course.gradient.first ?? .gray).opacity(0.25), Color(.systemBackground).opacity(0.16)], startPoint: .topLeading, endPoint: .bottomTrailing))
                     .background(.ultraThinMaterial)
                     .overlay(
                         RoundedRectangle(cornerRadius: 16)
@@ -202,16 +202,6 @@ fileprivate struct ServiceCardImage: View {
                             .multilineTextAlignment(.leading)
                             .fixedSize(horizontal: false, vertical: true)
                     }.foregroundColor(.white)
-                    Spacer()
-                    HStack(alignment: .center, spacing: 10) {
-                        Image(systemName: service.iconName)
-                            .font(.title2).bold()
-                            .padding(8)
-                            .background(Color.white.opacity(0.16))
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
-                        
-                        Spacer()
-                    }
                 }.padding(12)
                 Spacer()
                 if let image = tech?.image,  let url = URL(string: image) {

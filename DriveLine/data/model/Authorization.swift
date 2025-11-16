@@ -33,13 +33,15 @@ struct LoginResponse: Codable, Sendable {
 @BackgroundActor
 struct UpdateUser: Codable, Sendable {
     let name: String?
+    let phone: String?
     let role: String?
     let age: Int?
     let image: String?
     let location: UserLocation?
 
-    init(name: String? = nil, role: String? = nil, age: Int? = nil, image: String? = nil, location: UserLocation? = nil) {
+    init(name: String? = nil, phone: String? = nil, role: String? = nil, age: Int? = nil, image: String? = nil, location: UserLocation? = nil) {
         self.name = name
+        self.phone = phone
         self.role = role
         self.age = age
         self.image = image
@@ -48,6 +50,7 @@ struct UpdateUser: Codable, Sendable {
     init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.name = try container.decodeIfPresent(String.self, forKey: .name)
+        self.phone = try container.decodeIfPresent(String.self, forKey: .phone)
         self.role = try container.decodeIfPresent(String.self, forKey: .role)
         self.age = try container.decodeIfPresent(Int.self, forKey: .age)
         self.image = try container.decodeIfPresent(String.self, forKey: .image)
@@ -57,6 +60,7 @@ struct UpdateUser: Codable, Sendable {
     func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encodeIfPresent(name, forKey: .name)
+        try container.encodeIfPresent(phone, forKey: .phone)
         try container.encodeIfPresent(role, forKey: .role)
         try container.encodeIfPresent(age, forKey: .age)
         try container.encodeIfPresent(image, forKey: .image)
@@ -65,6 +69,7 @@ struct UpdateUser: Codable, Sendable {
     
     init(userBase: UserBase, userEdit: UserEdit) {
         self.name = userEdit.name
+        self.phone = userEdit.phone
         self.role = userBase.accountType
         self.age = userEdit.age
         self.image = userEdit.image
@@ -73,6 +78,7 @@ struct UpdateUser: Codable, Sendable {
     
     enum CodingKeys: String, CodingKey {
         case name
+        case phone
         case role
         case age
         case image
@@ -83,29 +89,40 @@ struct UpdateUser: Codable, Sendable {
 }
 
 @BackgroundActor
+struct Profile: Codable, Sendable {
+    let user: User
+    let services: [ProvideServiceRequest]
+    let courses: [ProvideCourseRequest]
+}
+
+@BackgroundActor
 struct User: Codable, Sendable {
     let id: String
     let name: String
     let email: String
+    let phone: String
     let role: String
     let age: Int?
     let image: String?
     let location: UserLocation?
 
-    init(id: String, name: String, email: String, role: String, age: Int?, image: String?, location: UserLocation?) {
+    init(id: String, name: String, email: String, phone: String, role: String, age: Int?, image: String?, location: UserLocation?) {
         self.id = id
         self.name = name
         self.email = email
+        self.phone = phone
         self.role = role
         self.age = age
         self.image = image
         self.location = location
     }
+    
     init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.id = try container.decode(String.self, forKey: .id)
         self.name = try container.decode(String.self, forKey: .name)
         self.email = try container.decode(String.self, forKey: .email)
+        self.phone = try container.decode(String.self, forKey: .phone)
         self.role = try container.decode(String.self, forKey: .role)
         self.age = try container.decodeIfPresent(Int.self, forKey: .age)
         self.image = try container.decodeIfPresent(String.self, forKey: .image)
@@ -116,6 +133,7 @@ struct User: Codable, Sendable {
         self.id = userBase.id
         self.name = userEdit.name
         self.email = userBase.email
+        self.phone = userEdit.phone
         self.role = userBase.accountType
         self.age = userEdit.age
         self.image = userEdit.image
@@ -127,6 +145,7 @@ struct User: Codable, Sendable {
         case name
         case email
         case role
+        case phone
         case age
         case image
         case location
@@ -151,6 +170,7 @@ struct UserEdit: Sendable, Identifiable {
     }
     
     var name: String
+    var phone: String
     var age: Int?
     var city: String?
     var street: String?
@@ -158,8 +178,9 @@ struct UserEdit: Sendable, Identifiable {
     var unit: String?
     var image: String?
     
-    init(name: String, age: Int? = nil, city: String? = nil, street: String? = nil, building: String? = nil, unit: String? = nil, image: String? = nil) {
+    init(name: String, phone: String, age: Int? = nil, city: String? = nil, street: String? = nil, building: String? = nil, unit: String? = nil, image: String? = nil) {
         self.name = name
+        self.phone = phone
         self.age = age
         self.city = city
         self.street = street
@@ -170,6 +191,7 @@ struct UserEdit: Sendable, Identifiable {
     
     init(user: User) {
         self.name = user.name
+        self.phone = user.phone
         self.age = user.age
         self.city = user.location?.city
         self.street = user.location?.street
@@ -182,6 +204,7 @@ struct UserEdit: Sendable, Identifiable {
     mutating func copy(
         name: Update<String> = .keep,
         age: Update<Int> = .keep,
+        phone: Update<String> = .keep,
         city: Update<String> = .keep,
         street: Update<String> = .keep,
         building: Update<String> = .keep,
@@ -189,6 +212,7 @@ struct UserEdit: Sendable, Identifiable {
         image: Update<String> = .keep,
     ) -> Self {
         if case .set(let value) = name { self.name = value }
+        if case .set(let value) = phone { self.phone = value }
         if case .set(let value) = age { self.age = value }
         if case .set(let value) = city { self.city = value }
         if case .set(let value) = street { self.street = value }

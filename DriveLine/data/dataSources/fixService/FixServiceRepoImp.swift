@@ -37,7 +37,6 @@ final class FixServiceRepoImp : FixServiceRepo {
         } catch {
             LogKit.print("Failed ->", error.localizedDescription); failed("Failed")
         }
-        
     }
     @BackgroundActor
     func getServiceById(userBase: UserBase, serviceProvidId: String, invoke: @escaping (GetAServiceRespond) -> Void, failed: @escaping (String) -> Void) async {

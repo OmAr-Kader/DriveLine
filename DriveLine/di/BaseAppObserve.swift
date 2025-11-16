@@ -136,6 +136,18 @@ final class BaseAppObserve: BaseObserver {
         }
     }
     
+    func tempUpdateUser() {
+        guard let userBase = state.userBase else { return }
+        self.tasker.back {
+            await self.project.auth.updateUserById(userBase: userBase, user: UpdateUser(phone: "+201093937621")) { _ in
+                
+            } failed: { _ in
+                
+            }
+
+        }
+    }
+    
     func updatePref(key: String, newValue: String, _ invoke: @MainActor @escaping () -> ()) {
         self.tasker.back {
             _ = await self.project.pref.updatePref(Preference(keyString: key, value: newValue), newValue: newValue)
@@ -158,6 +170,12 @@ final class BaseAppObserve: BaseObserver {
     @MainActor
     func setForUpdateSessions(_ forUpdateSessions: (newSession: AiSessionData?, needUpdateOnly: Bool)?) {
         state = state.copy(forUpdateSessions: .set(forUpdateSessions))
+    }
+    
+    
+    @MainActor
+    func setNeedUpdate(_ needUpdate: Bool) {
+        state = state.copy(needUpdate: .set(needUpdate))
     }
     
     @MainActor
@@ -188,18 +206,23 @@ final class BaseAppObserve: BaseObserver {
         private(set) var userBase: UserBase? = nil
         private(set) var forUpdateSessions: (newSession: AiSessionData?, needUpdateOnly: Bool)?
         private(set) var args = [Screen : any ScreenConfig]()
-        
+
+        private(set) var needUpdate: Bool = false
+
         @MainActor
         mutating func copy(
             preferences: Update<[Preference]> = .keep,
             userBase: Update<UserBase?> = .keep,
             forUpdateSessions: Update<(newSession: AiSessionData?, needUpdateOnly: Bool)?> = .keep,
-            args: Update<[Screen : any ScreenConfig]> = .keep
+            args: Update<[Screen : any ScreenConfig]> = .keep,
+            needUpdate: Update<Bool> = .keep,
         ) -> Self {
             if case .set(let value) = preferences { self.preferences = value }
             if case .set(let value) = userBase { self.userBase = value }
             if case .set(let value) = forUpdateSessions { self.forUpdateSessions = value }
             if case .set(let value) = args { self.args = value }
+            
+            if case .set(let value) = needUpdate { self.needUpdate = value }
             return self
         }
         

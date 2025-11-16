@@ -54,6 +54,20 @@ final class AuthRepoImp : AuthRepo {
     }
     
     @BackgroundActor
+    func fetchProfileById(user: UserBase, invoke: @escaping @BackgroundActor (Profile) -> Void, failed: @BackgroundActor (String) -> Void) async {
+        guard let url = URL(string: SecureConst.BASE_URL + Endpoint.profile(user.id)) else {
+            LogKit.print("fetchProfileById Invalid URL"); failed("Failed")
+            return
+        }
+        do {
+            let response: Profile = try await url.createGETRequest().addAuthorizationHeader(user).performRequest()
+            invoke(response)
+        } catch {
+            LogKit.print("Failed ->", error.localizedDescription); failed("Failed")
+        }
+    }
+    
+    @BackgroundActor
     func updateUserById(token: String, user: User, invoke: @escaping @BackgroundActor (BaseMessageResponse) -> Void, failed: @BackgroundActor (String) -> Void) async {
         guard let url = URL(string: SecureConst.BASE_URL + Endpoint.USERS + user.id) else {
             LogKit.print("updateUserById Invalid URL"); failed("Failed")

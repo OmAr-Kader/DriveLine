@@ -13,6 +13,7 @@ struct Project : Sendable {
     let auth: AuthBase
     let aiChat: AiChatBase
     let fix: FixServiceBase
+    let course: CourseBase
 }
 
 func buildContainer() -> Container {
@@ -22,7 +23,8 @@ func buildContainer() -> Container {
         pref: PreferenceBase(repository: PrefRepoImp(db: try? CouchbaseLocal())),
         auth: AuthBase(repo: AuthRepoImp()),
         aiChat: AiChatBase(repo: AiChatRepoImp()),
-        fix: FixServiceBase(repo: FixServiceRepoImp())
+        fix: FixServiceBase(repo: FixServiceRepoImp()),
+        course: CourseBase(repo: CourseRepoImp())
     )
     let theme = Theme(isDarkMode: UITraitCollection.current.userInterfaceStyle.isDarkMode)
     container.register(Project.self) { _  in

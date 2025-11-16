@@ -1,30 +1,31 @@
 //
-//  ServiceObserve.swift
+//  CreateEditCourseObserve.swift
 //  DriveLine
 //
-//  Created by OmAr Kader on 14/11/2025.
+//  Created by OmAr Kader on 16/11/2025.
 //
 
 import SwiftUI
 import SwiftUISturdy
+import Combine
 import Observation
 
 @MainActor
 @Observable
-final class CreateEditServiceObserve: BaseObserver {
+final class CreateEditCourseObserve: BaseObserver {
     var selectedPage: Int = 0
     var isLoading: Bool = false
     var toast: Toast?
-    var serviceAdminId: Int?
+    var courseAdminId: Int?
     
-    var original: ProvideServiceData?
+    var original: ProvideCourseData?
 
     var vmHasLoadedOnce = false
 
     var descriptionText: String = ""
     var priceText: String = ""
     var currency: String = "USD"
-    var durationMinutes: Int = 60
+    var sessions: Int = 2
     var images: [String] = []
     
     // availabilities: single source of truth. Values store HOURS directly.
@@ -59,13 +60,13 @@ final class CreateEditServiceObserve: BaseObserver {
         availabilities[day] = nil
     }
 
-    // Load existing ProvideNewServiceRequest (edit mode).
-    func loadFromExisting(_ existing: ProvideServiceData) {
+    // Load existing ProvideCourseData (edit mode).
+    func loadFromExisting(_ existing: ProvideCourseData) {
         original = existing
         descriptionText = existing.description
         priceText = existing.price
         currency = existing.currency
-        durationMinutes = existing.durationMinutes
+        sessions = existing.sessions
         images = existing.images ?? []
         availabilities[.monday] = existing.monday
         availabilities[.tuesday] = existing.tuesday
@@ -81,7 +82,7 @@ final class CreateEditServiceObserve: BaseObserver {
 
     // Build request
     @MainActor
-    func makeRequest(userBase: UserBase, serviceAdminId: Int, invoke: @escaping @Sendable @MainActor () -> Void) {
+    func makeRequest(userBase: UserBase, courseAdminId: Int, invoke: @escaping @Sendable @MainActor () -> Void) {
         guard validateAll() else { return }
         func val(_ d: WeekDay) -> AvailabilityInterval? { availabilities[d] ?? nil }
         withAnimation {
@@ -89,11 +90,10 @@ final class CreateEditServiceObserve: BaseObserver {
         }
         
         let techId = userBase.id
-        let serviceAdminId = serviceAdminId
         let description = descriptionText
         let price = priceText
         let currency = currency
-        let durationMinutes = durationMinutes
+        let sessions = sessions
         let images = images
         let monday = val(.monday)
         let tuesday = val(.tuesday)
@@ -103,13 +103,13 @@ final class CreateEditServiceObserve: BaseObserver {
         let saturday = val(.saturday)
         let sunday = val(.sunday)
         self.tasker.back {
-            let body = ProvideServiceRequest(
+            let body = ProvideCourseRequest(
                 techId: techId,
-                serviceAdminId: serviceAdminId,
+                courseAdminId: courseAdminId,
                 description: description,
                 price: price,
                 currency: currency,
-                durationMinutes: durationMinutes,
+                sessions: sessions,
                 images: images,
                 monday: monday,
                 tuesday: tuesday,
@@ -119,7 +119,7 @@ final class CreateEditServiceObserve: BaseObserver {
                 saturday: saturday,
                 sunday: sunday
             )
-            await self.project.fix.createService(userBase: userBase, body: body) { new in
+            await self.project.course.createCourse(userBase: userBase, body: body) { new in
                 self.mainSync {
                     invoke()
                     withAnimation {
@@ -140,7 +140,7 @@ final class CreateEditServiceObserve: BaseObserver {
     }
     
     @MainActor
-    func update(userBase: UserBase, serviceAdminId: Int, invoke: @escaping @Sendable @MainActor () -> Void) {
+    func update(userBase: UserBase, courseAdminId: Int, invoke: @escaping @Sendable @MainActor () -> Void) {
         guard validateAll(), let original else { return }
         func val(_ d: WeekDay) -> AvailabilityInterval? { availabilities[d] ?? nil }
         withAnimation {
@@ -150,7 +150,7 @@ final class CreateEditServiceObserve: BaseObserver {
         let description = descriptionText
         let price = priceText
         let currency = currency
-        let durationMinutes = durationMinutes
+        let sessions = sessions
         let images = images
         let monday = val(.monday)
         let tuesday = val(.tuesday)
@@ -162,9 +162,9 @@ final class CreateEditServiceObserve: BaseObserver {
         self.tasker.back {
             let isActive = monday != nil || tuesday != nil || wednesday != nil || thursday != nil || friday != nil || saturday != nil || sunday != nil
 
-            let body = UpdateProvidedServiceRequest(original: original, description: description, price: price, currency: currency, durationMinutes: durationMinutes, images: images, isActive: isActive, monday: monday, tuesday: tuesday, wednesday: wednesday, thursday: thursday, friday: friday, saturday:  saturday, sunday: sunday)
+            let body = UpdateProvidedCourseRequest(original: original, description: description, price: price, currency: currency, sessions: sessions, images: images, isActive: isActive, monday: monday, tuesday: tuesday, wednesday: wednesday, thursday: thursday, friday: friday, saturday:  saturday, sunday: sunday)
             
-            await self.project.fix.updateService(userBase: userBase, serviceProvidId: original._id, body: body) { new in
+            await self.project.course.updateCourse(userBase: userBase, courseProvidedId: original._id, body: body) { new in
                 self.mainSync {
                     withAnimation {
                         invoke()
@@ -192,8 +192,8 @@ final class CreateEditServiceObserve: BaseObserver {
             LogKit.print("Price must not be empty.")
             return false
         }
-        guard durationMinutes > 0 else {
-            LogKit.print("Duration must be greater than 0.")
+        guard sessions > 0 else {
+            LogKit.print("Sessions Number must be greater than 0.")
             return false
         }
         for day in WeekDay.allCases {

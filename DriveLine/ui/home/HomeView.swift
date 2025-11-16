@@ -86,6 +86,9 @@ struct HomeView: View {
                         .frame(height: 160)
                         .padding(15)
                         .tag(idx)
+                        .onTapGesture {
+                            navigator.navigateToScreen(ProvidedCoursesListConfig(course: course), .PROVICED_COURSE_LIST_SCREEN)
+                        }
                 }
             }
             .frame(height: 190)

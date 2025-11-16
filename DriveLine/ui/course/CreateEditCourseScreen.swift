@@ -1,8 +1,8 @@
 //
-//  CreateEditServiceScreen.swift
+//  CreateEditCourseScreen.swift
 //  DriveLine
 //
-//  Created by OmAr Kader on 14/11/2025.
+//  Created by OmAr Kader on 16/11/2025.
 //
 
 import SwiftUI
@@ -10,12 +10,12 @@ import Foundation
 import Combine
 import SwiftUISturdy
 
-struct CreateEditServiceScreen: View {
+struct CreateEditCourseScreen: View {
     
     @Binding var app: BaseAppObserve
     let navigator: Navigator
 
-    @State private var obs = CreateEditServiceObserve()
+    @State private var obs = CreateEditCourseObserve()
 
     var body: some View {
         ZStack {
@@ -78,7 +78,7 @@ struct CreateEditServiceScreen: View {
                     .padding(.horizontal, 20)
                     .listRowBackground(Color.clear)
                     
-                    Section(header: Text("Service info")) {
+                    Section(header: Text("Course info")) {
                         TextField("Short description", text: $obs.descriptionText)
                             .textInputAutocapitalization(.sentences)
                             .multilineTextAlignment(.leading)
@@ -102,7 +102,7 @@ struct CreateEditServiceScreen: View {
                                 }
                             }
                         }
-                        Stepper("\(obs.durationMinutes) minutes", value: $obs.durationMinutes, in: 10...480, step: 5)
+                        Stepper("\(obs.sessions) Sessions", value: $obs.sessions, in: 1...50, step: 1)
                     }
                     
                     Section(header: Text("Edit availability — pick a day")) {
@@ -177,9 +177,9 @@ struct CreateEditServiceScreen: View {
                     
                     Section {
                         Button {
-                            guard let userBase = app.state.userBase, let serviceAdminId = obs.serviceAdminId else { return }
+                            guard let userBase = app.state.userBase, let courseAdminId = obs.courseAdminId else { return }
                             if obs.vmHasLoadedOnce {
-                                obs.update(userBase: userBase, serviceAdminId: serviceAdminId) {
+                                obs.update(userBase: userBase, courseAdminId: courseAdminId) {
                                     TaskBackSwitcher {
                                         await Task.sleep(seconds: 1)
                                         TaskMainSwitcher {
@@ -188,7 +188,7 @@ struct CreateEditServiceScreen: View {
                                     }
                                 }
                             } else {
-                                obs.makeRequest(userBase: userBase, serviceAdminId: serviceAdminId) {
+                                obs.makeRequest(userBase: userBase, courseAdminId: courseAdminId) {
                                     TaskBackSwitcher {
                                         await Task.sleep(seconds: 1)
                                         TaskMainSwitcher {
@@ -217,16 +217,16 @@ struct CreateEditServiceScreen: View {
                 }
             }.navigationBarTitleDisplayMode(.inline)
             LoadingScreen(color: .primaryOfApp, backDarkAlpha: .backDarkAlpha, isLoading: obs.isLoading)
-        }.navigationTitle(obs.vmHasLoadedOnce ? "Edit Service" : "Create Service")
+        }.navigationTitle(obs.vmHasLoadedOnce ? "Edit Course" : "Create Course")
             .onAppeared {
                 // Example load (simulate edit). Only load once.
-                guard !obs.vmHasLoadedOnce, let config = navigator.screenConfig(.CREATE_EDIT_FIX_SCREEN_ROUTE) as? CreateEditFixServiceConfig else {
+                guard !obs.vmHasLoadedOnce, let config = navigator.screenConfig(.CREATE_EDIT_COURSE_ROUTE) as? CreateEditCourseConfig else {
                     navigator.backPress()
                     return
                 }
-                obs.serviceAdminId = config.serviceAdminId
-                if !obs.vmHasLoadedOnce, let editService = config.editService  {
-                    obs.loadFromExisting(editService)
+                obs.courseAdminId = config.courseAdminId
+                if !obs.vmHasLoadedOnce, let editCourse = config.editCourse  {
+                    obs.loadFromExisting(editCourse)
                 }
             }
     }
