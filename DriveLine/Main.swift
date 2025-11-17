@@ -152,6 +152,8 @@ struct HomeScreen: View {
             case .profile: $0.visibleToolbar().toolbar(content: toolBarProfileView)
             default: $0.hideToolbar()
             }
+        }.onAppeared {
+            obs.loadShorts(app.state.userBase)
         }.onChange(obs.selectedTab, onSelectedChange)
             .navigationDestination(isPresented: Binding(get: {
                 self.obs.state.currentIndex.isFeed

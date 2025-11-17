@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftUISturdy
+import AVKit
 
 // MARK: - DayAvailability (no @State inside)
 struct DayAvailability: View {
@@ -359,5 +360,45 @@ struct CourseCardItem: View {
             }
             .padding(18)
         }.onCenter()
+    }
+}
+
+
+final class FillPlayerView: UIView {
+    override class var layerClass: AnyClass { AVPlayerLayer.self }
+    
+    var player: AVPlayer? {
+        get { (layer as! AVPlayerLayer).player }
+        set {
+            (layer as! AVPlayerLayer).player = newValue
+        }
+    }
+    
+    func configure(player: AVPlayer, gravity: AVLayerVideoGravity = .resizeAspectFill) {
+        self.player = player
+        let playerLayer = layer as! AVPlayerLayer
+        playerLayer.videoGravity = gravity
+        // ensure the layer matches view bounds
+        playerLayer.frame = bounds
+        playerLayer.needsDisplayOnBoundsChange = true
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        (layer as! AVPlayerLayer).frame = bounds
+    }
+}
+
+struct SimpleVideoFill: UIViewRepresentable {
+    let player: AVPlayer
+    
+    func makeUIView(context: Context) -> FillPlayerView {
+        let view = FillPlayerView()
+        view.configure(player: player)
+        return view
+    }
+    
+    func updateUIView(_ uiView: FillPlayerView, context: Context) {
+        uiView.configure(player: player)
     }
 }

@@ -22,10 +22,6 @@ struct HomeView: View {
     @State private var selectedPage = 0
     @Orientation private var orientation
 
-    // For adaptive grid columns based on orientation/size
-    @Environment(\.horizontalSizeClass) private var hSizeClass
-    @Environment(\.verticalSizeClass) private var vSizeClass
-    
     var body: some View {
         ScrollView {
             VStack(alignment: .leading) {
@@ -119,7 +115,7 @@ struct HomeView: View {
         LazyVGrid(columns: gridItem, spacing: 12) {
             ForEach(Array(obs.state.shortVideos.enumerated()), id: \.offset) { index, item in
                 ShortVideoTile(item: item) { player in
-                    let edit = obs.state.shortVideos.editItem(where: { $0.videoLink == item.videoLink }, edit: { $0.player = player })
+                    let edit = obs.state.shortVideos.editItem(where: { $0.link == item.link }, edit: { $0.player = player })
                     withAnimation {
                         obs.updateVideos(edit)
                     }
@@ -133,7 +129,7 @@ struct HomeView: View {
 
 
 fileprivate struct ShortVideoTile: View {
-    let item: ShortVideo
+    let item: ShortVideoUserData
     let addPlayer: @MainActor (AVPlayer) -> Void
     
     @State private var sinkCancel: AnyCancellable?
@@ -150,14 +146,17 @@ fileprivate struct ShortVideoTile: View {
                                 .clipped()
                                 .animation(.smooth, value: true)
                         } else {
-                            if UIImage(named: item.thumbImageName) != nil {
+                            KingsFisherImage(urlString: item.thumbImageName)
+                                .scaledToFill()
+                                .clipped()
+                            /*if UIImage(named: item.thumbImageName) != nil {
                                 Image(item.thumbImageName)
                                     .resizable()
                                     .scaledToFill()
                                     .clipped()
                             } else {
                                 LinearGradient(gradient: Gradient(colors: [Color.purple.opacity(0.6), Color.blue.opacity(0.4)]), startPoint: .top, endPoint: .bottom)
-                            }
+                            }*/
                         }
                     }
                 ).cornerRadius(8).contentShape(Rectangle())
@@ -167,7 +166,7 @@ fileprivate struct ShortVideoTile: View {
                 endPoint: .bottom
             ).cornerRadius(10)
             
-            Text(item.viewsText)
+            Text(item.title)
                 .font(.caption)
                 .foregroundColor(.white)
                 .padding(6)
@@ -211,44 +210,5 @@ fileprivate struct ShortVideoTile: View {
     private func stopAndCleanup() {
         showPlayer = false
         item.player?.pause()
-    }
-}
-
-fileprivate final class FillPlayerView: UIView {
-    override class var layerClass: AnyClass { AVPlayerLayer.self }
-    
-    var player: AVPlayer? {
-        get { (layer as! AVPlayerLayer).player }
-        set {
-            (layer as! AVPlayerLayer).player = newValue
-        }
-    }
-    
-    func configure(player: AVPlayer, gravity: AVLayerVideoGravity = .resizeAspectFill) {
-        self.player = player
-        let playerLayer = layer as! AVPlayerLayer
-        playerLayer.videoGravity = gravity
-        // ensure the layer matches view bounds
-        playerLayer.frame = bounds
-        playerLayer.needsDisplayOnBoundsChange = true
-    }
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        (layer as! AVPlayerLayer).frame = bounds
-    }
-}
-
-fileprivate struct SimpleVideoFill: UIViewRepresentable {
-    let player: AVPlayer
-    
-    func makeUIView(context: Context) -> FillPlayerView {
-        let view = FillPlayerView()
-        view.configure(player: player)
-        return view
-    }
-    
-    func updateUIView(_ uiView: FillPlayerView, context: Context) {
-        uiView.configure(player: player)
     }
 }

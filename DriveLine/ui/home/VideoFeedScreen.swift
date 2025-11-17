@@ -14,7 +14,7 @@ import SwiftUISturdy
 struct VideoFeed: View {
     
     @Binding var currentIndex: Int
-    let shortVideos: [ShortVideo]
+    let shortVideos: [ShortVideoUserData]
 
     @State private var player: AVPlayer? = nil
     @State private var currentReadyLink: String = ""
@@ -27,7 +27,7 @@ struct VideoFeed: View {
                 LazyVStack(spacing: 0.0) {
                     ForEach(Array(shortVideos.enumerated()), id: \.offset) { index, item in
                         ZStack {
-                            if let player, currentReadyLink == item.videoLink {
+                            if let player, currentReadyLink == item.link {
                                 VideoPlayer(player: player)
                                     .safeAreaPadding(.bottom, 50)
                                     .safeAreaPadding(.top, 80)
@@ -66,7 +66,7 @@ struct VideoFeed: View {
                         player.play()
                         sinkCancel?.cancel()
                         sinkCancel = nil
-                        currentReadyLink = shortVideos[currentIndex].videoLink
+                        currentReadyLink = shortVideos[currentIndex].link
                     }
                 
             }.onChange(currentIndex, onChangeIndex)
@@ -95,7 +95,7 @@ struct VideoFeed: View {
     
     @MainActor
     private func onChangeIndex(_ new: Int) {
-        let _ = LogKit.print("-- onChangeIndex --", shortVideos[new].videoLink)
+        let _ = LogKit.print("-- onChangeIndex --", shortVideos[new].link)
         guard let url = shortVideos[new].videoURL else { return }
         let newItem = AVPlayerItem(url: url)
         sinkCancel?.cancel()
@@ -112,7 +112,7 @@ struct VideoFeed: View {
                 player?.play()
                 sinkCancel?.cancel()
                 sinkCancel = nil
-                currentReadyLink = shortVideos[currentIndex].videoLink
+                currentReadyLink = shortVideos[currentIndex].link
             }
     }
 }

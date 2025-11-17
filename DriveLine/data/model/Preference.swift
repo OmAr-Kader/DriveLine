@@ -9,19 +9,41 @@ import SwiftUISturdy
 import CouchbaseLiteSwift
 import Foundation
 
-struct Preference: Codable, Sendable {
+@MainActor
+struct PreferenceData: Identifiable, Hashable, Sendable, Equatable {
     let id: String
     let keyString: String
     var value: String
     
-    @BackgroundActor
+    init(id: String, keyString: String, value: String) {
+        self.id = id
+        self.keyString = keyString
+        self.value = value
+    }
+    
+    init(_ pref: Preference) {
+        self.id = pref.id
+        self.keyString = pref.keyString
+        self.value = pref.value
+    }
+    
+    static func == (lhs: PreferenceData, rhs: PreferenceData) -> Bool {
+        lhs.id == rhs.id && lhs.keyString == rhs.keyString
+    }
+}
+
+@BackgroundActor
+struct Preference: Codable {
+    let id: String
+    let keyString: String
+    var value: String
+    
     init(id: String = "pref::\(Date().timeIntervalSince1970 * 1000)", keyString: String, value: String) {
         self.id = id
         self.keyString = keyString
         self.value = value
     }
     
-    @BackgroundActor
     func toDocument() -> MutableDocument {
         let doc = MutableDocument(id: id)
         doc.setString(keyString, forKey: Preference.CodingKeys.keyString.rawValue)
@@ -29,7 +51,6 @@ struct Preference: Codable, Sendable {
         return doc
     }
     
-    @BackgroundActor
     static func fromDocument(_ doc: Document) -> Preference {
         return Preference(
             id: doc.id,

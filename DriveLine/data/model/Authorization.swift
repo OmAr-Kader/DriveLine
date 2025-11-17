@@ -93,6 +93,7 @@ struct Profile: Codable, Sendable {
     let user: User
     let services: [ProvideServiceRequest]
     let courses: [ProvideCourseRequest]
+    let shorts: [ShortVideo]
 }
 
 @BackgroundActor

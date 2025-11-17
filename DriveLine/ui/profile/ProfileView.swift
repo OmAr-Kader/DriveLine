@@ -7,6 +7,8 @@
 
 import SwiftUI
 import SwiftUISturdy
+import AVKit
+import Combine
 
 struct ProfileView: View {
 
@@ -18,7 +20,9 @@ struct ProfileView: View {
     @State private var path = NavigationPath()
 
     @State private var selectedPage: Int = 0
-    
+    @State private var selectedCoursePage: Int = 0
+    @Orientation private var orientation
+
     var locationText: String {
         guard let location = obs.state.user?.location else { return "" }
         let components = [location.building ?? "", location.street ?? "", location.city ?? ""].filter { !$0.isEmpty }
@@ -89,16 +93,34 @@ struct ProfileView: View {
                             .frame(maxWidth: .infinity)
                             .padding(.top, 6)
                         }.padding(.horizontal, 20)
+                        Spacer().height(10)
+                        VStack(spacing: 0) {
+                            TabView(selection: $selectedCoursePage) {
+                                ForEach(Array(obs.state.profileCourses.enumerated()), id: \.offset) { idx, data in
+                                    CourseCardImage(data: data)
+                                        .onTapGesture {
+                                            navigator.navigateToScreen(CreateEditCourseConfig(editCourse: data.providedCourse, courseAdminId: data.course.adminId), .CREATE_EDIT_COURSE_ROUTE)
+                                        }
+                                }
+                            }
+                            .frame(height: 140)
+                            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+                            Spacer().height(10)
+                            HStack(spacing: 8) {
+                                ForEach(0..<(obs.state.profileCourses.count), id: \.self) { idx in
+                                    Circle()
+                                        .fill(idx == selectedCoursePage ? Color.blue : Color.gray.opacity(0.3))
+                                        .frame(width: idx == selectedCoursePage ? 10 : 8, height: idx == selectedCoursePage ? 10 : 8)
+                                        .animation(.easeInOut, value: selectedCoursePage)
+                                }
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.top, 6)
+                        }.padding(.horizontal, 20)
                         
                         Spacer().height(10)
                         VStack {
-                            ForEach(obs.state.profileCourses) { item in
-                                CourseCardImage(data: item)
-                                    .listRowBackground(Color.clear)
-                                    .onTapGesture {
-                                        navigator.navigateToScreen(CreateEditCourseConfig(editCourse: item.providedCourse, courseAdminId: item.course.adminId), .CREATE_EDIT_COURSE_ROUTE)
-                                    }
-                            }
+                            videosGrid()
                         }.padding(.horizontal, 20)
                         Spacer()
                     }
@@ -134,6 +156,26 @@ struct ProfileView: View {
         }
     }
     
+    
+    @ViewBuilder
+    private func videosGrid() -> some View {
+        // Determine orientation: portrait if height >= width
+        let isPortrait = orientation.isPortrait
+        let columnsCount = isPortrait ? 3 : 6
+        let gridItem = Array(repeating: GridItem(.flexible(), spacing: 12), count: columnsCount)
+        LazyVGrid(columns: gridItem, spacing: 12) {
+            ForEach(Array(obs.state.profileShorts.enumerated()), id: \.offset) { index, item in
+                ShortVideoTile(item: item) { player in
+                    let edit = obs.state.profileShorts.editItem(where: { $0.link == item.link }, edit: { $0.player = player })
+                    withAnimation {
+                        obs.updateProfileVideos(edit)
+                    }
+                }.frame(height: isPortrait ? 140 : 120).onTapGesture {
+                    self.obs.setFeedIndex((index, true))
+                }
+            }
+        }.padding([.horizontal, .bottom])
+    }
 }
 
 struct EditProfileSheet: View {
@@ -432,5 +474,92 @@ fileprivate struct CourseCardImage: View {
         }
         .cornerRadius(14)
         .shadow(color: Color.black.opacity(0.12), radius: 8, x: 0, y: 6)
+    }
+}
+
+
+
+fileprivate struct ShortVideoTile: View {
+    let item: ShortVideoData
+    let addPlayer: @MainActor (AVPlayer) -> Void
+    
+    @State private var sinkCancel: AnyCancellable?
+    @State private var showPlayer: Bool = false
+    
+    var body: some View {
+        ZStack(alignment: .bottom) {
+            Rectangle()
+                .foregroundColor(Color.gray.opacity(0.15))
+                .overlay(
+                    Group {
+                        if let player = item.player, showPlayer {
+                            SimpleVideoFill(player: player)
+                                .clipped()
+                                .animation(.smooth, value: true)
+                        } else {
+                            KingsFisherImage(urlString: item.thumbImageName)
+                                .scaledToFill()
+                                .clipped()
+                            /*if UIImage(named: item.thumbImageName) != nil {
+                                Image(item.thumbImageName)
+                                    .resizable()
+                                    .scaledToFill()
+                                    .clipped()
+                            } else {
+                                LinearGradient(gradient: Gradient(colors: [Color.purple.opacity(0.6), Color.blue.opacity(0.4)]), startPoint: .top, endPoint: .bottom)
+                            }*/
+                        }
+                    }
+                ).cornerRadius(8).contentShape(Rectangle())
+            LinearGradient(
+                gradient: Gradient(colors: [Color.black.opacity(0.2), Color.black.opacity(0.7)]),
+                startPoint: .top,
+                endPoint: .bottom
+            ).cornerRadius(10)
+            
+            Text(item.title)
+                .font(.caption)
+                .foregroundColor(.white)
+                .padding(6)
+                .background(Color.black.opacity(0.5))
+                .cornerRadius(6)
+                .padding(8)
+        }.onAppear {
+            //startPlayingMuted()
+        }.onDisappear {
+            stopAndCleanup()
+        }
+    }
+    
+    @MainActor
+    private func startPlayingMuted() {
+        if let player = item.player {
+            guard player.timeControlStatus != .playing else { return }
+            player.play()
+            withAnimation {
+                showPlayer = true
+            }
+        } else {
+            guard sinkCancel == nil else { return }
+            let player = AVPlayer(url: item.videoURL!)
+            player.isMuted = true
+            sinkCancel = player.currentItem?.publisher(for: \.status)
+                .sink { status in
+                    guard status == .readyToPlay else { return }
+                    if let duration = player.currentItem?.duration {
+                        player.seek(to: CMTime(seconds: duration.seconds * 0.1, preferredTimescale: 600))
+                    }
+                    player.play()
+                    sinkCancel?.cancel()
+                    sinkCancel = nil
+                    showPlayer = true
+                    addPlayer(player)
+                }
+        }
+    }
+    
+    private func stopAndCleanup() {
+        showPlayer = false
+        item.player?.pause()
     }
 }

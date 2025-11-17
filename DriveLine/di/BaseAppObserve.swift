@@ -24,7 +24,7 @@ final class BaseAppObserve: BaseObserver {
             self?.sinkPrefs?.remove()
             self?.project.pref.prefs { list in
                 self?.mainSync {
-                    self?.refreshPreferences(list)
+                    self?.refreshPreferences(list.map({ PreferenceData($0) }))
                 }
             } fetchToken: { token in
                 self?.sinkPrefs = token
@@ -35,7 +35,7 @@ final class BaseAppObserve: BaseObserver {
     }
     
     @MainActor
-    func refreshPreferences(_ list: [Preference]) {
+    func refreshPreferences(_ list: [PreferenceData]) {
         let userBase = fetchUserBase(list)
         self.state = self.state.copy(preferences: .set(list), userBase: .set(userBase))
     }
@@ -59,18 +59,33 @@ final class BaseAppObserve: BaseObserver {
             self.inti { it in
                 let userBase = await self.fetchUserBase(it)
                 self.mainSync {
-                    self.state = self.state.copy(preferences: .set(it), userBase: .set(userBase))
+                    it.forEach { pref in
+                        LogKit.print(pref.keyString, pref.value)
+                    }
+                    let list = it.map({ PreferenceData($0) })
+                    self.state = self.state.copy(preferences: .set(list), userBase: .set(userBase))
                     invoke(userBase)
                 }
             }
         } else {
+            let list = self.state.preferences
             self.tasker.back {
-                let userBase = await self.fetchUserBase(self.state.preferences)
+                let userBase = await self.fetchUserBase(list)
                 self.mainSync {
                     invoke(userBase)
                 }
             }
         }
+    }
+    
+    private func fetchUserBase(_ list: [PreferenceData]) -> UserBase? {
+        let id = list.last { it in it.keyString == Const.PREF_USER_ID }?.value
+        let name = list.last { it in it.keyString == Const.PREF_USER_NAME }?.value
+        let email = list.last { it in it.keyString == Const.PREF_USER_EMAIL }?.value
+        let userType = list.last { it in it.keyString == Const.PREF_USER_TYPE }?.value
+        let token = list.last { it in it.keyString == Const.PREF_USER_TOKEN }?.value
+        guard let id, let name, let email, let userType, let token else { return nil }
+        return UserBase(id: id, name: name, email: email, accountType: userType, token: token)
     }
     
     private func fetchUserBase(_ list: [Preference]) -> UserBase? {
@@ -94,7 +109,8 @@ final class BaseAppObserve: BaseObserver {
             let _ = await self.project.pref.updatePref(list)
             await self.inti { it in
                 self.mainSync {
-                    self.state = self.state.copy(preferences: .set(it))
+                    let list = it.map({ PreferenceData($0) })
+                    self.state = self.state.copy(preferences: .set(list))
                     invoke()
                 }
             }
@@ -109,7 +125,8 @@ final class BaseAppObserve: BaseObserver {
             let _ = await self.project.pref.updatePref(list)
             await self.inti { it in
                 self.mainSync {
-                    self.state = self.state.copy(preferences: .set(it))
+                    let list = it.map({ PreferenceData($0) })
+                    self.state = self.state.copy(preferences: .set(list))
                     invoke()
                 }
             }
@@ -124,7 +141,8 @@ final class BaseAppObserve: BaseObserver {
             inti { it in
                 let preference = it.first { it1 in it1.keyString == key }?.value
                 self.mainSync {
-                    self.state = self.state.copy(preferences: .set(it))
+                    let list = it.map({ PreferenceData($0) })
+                    self.state = self.state.copy(preferences: .set(list))
                     value(preference)
                 }
             }
@@ -202,7 +220,7 @@ final class BaseAppObserve: BaseObserver {
     
     struct AppObserveState {
         
-        private(set) var preferences: [Preference] = []
+        private(set) var preferences: [PreferenceData] = []
         private(set) var userBase: UserBase? = nil
         private(set) var forUpdateSessions: (newSession: AiSessionData?, needUpdateOnly: Bool)?
         private(set) var args = [Screen : any ScreenConfig]()
@@ -211,7 +229,7 @@ final class BaseAppObserve: BaseObserver {
 
         @MainActor
         mutating func copy(
-            preferences: Update<[Preference]> = .keep,
+            preferences: Update<[PreferenceData]> = .keep,
             userBase: Update<UserBase?> = .keep,
             forUpdateSessions: Update<(newSession: AiSessionData?, needUpdateOnly: Bool)?> = .keep,
             args: Update<[Screen : any ScreenConfig]> = .keep,

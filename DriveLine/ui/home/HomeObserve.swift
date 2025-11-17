@@ -61,6 +61,26 @@ final class HomeObserve : BaseObserver {
     }
     
     @MainActor
+    func loadShorts(_ userBase: UserBase?) {
+        guard let userBase else { return }
+        self.tasker.back {
+            await self.project.short.fetchLast50Videos(userBase: userBase) { shorts in
+                self.mainSync {
+                    let list = shorts.map({ ShortVideoUserData($0) }).sorted(by: { $0.createdAt > $1.createdAt })
+                    LogKit.print("Local Short Videos Cound", shorts.count)
+
+                    withAnimation {
+                        self.state = self.state.copy(shortVideos: .set(list))
+                    }
+                }
+            } failed: { msg in
+                
+            }
+
+        }
+    }
+    
+    @MainActor
     func fetchAiSessions(_ userBase: UserBase?) {
         guard let userBase else { return }
         LogKit.print("fetchAiSessions")
@@ -109,9 +129,12 @@ final class HomeObserve : BaseObserver {
                         let newProvided = try profile.courses.map ({ item in
                             ProfileCourseData(providedCourse: ProvideCourseData(cloud: item), course: try courses.firstOrThrow(where: { $0.adminId == item.courseAdminId }))
                         })
-
                         
-                        self.state = self.state.copy(isLoading: .set(false), user: .set(profile.user), profileService: .set(newServices), profileCourses: .set(newProvided))
+                        let newShorts = profile.shorts.map ({ item in
+                            ShortVideoData(item)
+                        })
+                        
+                        self.state = self.state.copy(isLoading: .set(false), user: .set(profile.user), profileService: .set(newServices), profileCourses: .set(newProvided), profileShorts: .set(newShorts))
                     } catch {
                         withAnimation {
                             self.state = self.state.copy(isLoading: .set(false), toast: .set(Toast(style: .error, message: "Failed")))
@@ -248,9 +271,16 @@ final class HomeObserve : BaseObserver {
     }
     
     @MainActor
-    func updateVideos(_ shortVideos: [ShortVideo]) {
+    func updateVideos(_ shortVideos: [ShortVideoUserData]) {
         withAnimation {
             self.state = self.state.copy(shortVideos: .set(shortVideos))
+        }
+    }
+    
+    @MainActor
+    func updateProfileVideos(_ shortVideos: [ShortVideoData]) {
+        withAnimation {
+            self.state = self.state.copy(profileShorts: .set(shortVideos))
         }
     }
     
@@ -306,7 +336,7 @@ final class HomeObserve : BaseObserver {
         private(set) var toast: Toast? = nil
         
         private(set) var courses: [Course] = Course.temp
-        private(set) var shortVideos: [ShortVideo] = ShortVideo.temp
+        private(set) var shortVideos: [ShortVideoUserData] = []
         private(set) var currentIndex: (index: Int, isFeed: Bool) = (0, false)
 
         private(set) var services: [FixService] = FixService.sampleServices() // MARK: Change
@@ -318,6 +348,7 @@ final class HomeObserve : BaseObserver {
         private(set) var user: User? = nil
         private(set) var profileService: [ProfileServiceData] = []
         private(set) var profileCourses: [ProfileCourseData] = []
+        private(set) var profileShorts: [ShortVideoData] = []
         private(set) var isEditSheet: Bool = false
         
         @MainActor
@@ -325,7 +356,7 @@ final class HomeObserve : BaseObserver {
             isLoading: Update<Bool> = .keep,
             toast: Update<Toast?> = .keep,
             courses: Update<[Course]> = .keep,
-            shortVideos: Update<[ShortVideo]> = .keep,
+            shortVideos: Update<[ShortVideoUserData]> = .keep,
             currentIndex: Update<(index: Int, isFeed: Bool)> = .keep,
             services: Update<[FixService]> = .keep,
             currentServices: Update<[FixService]> = .keep,
@@ -334,6 +365,7 @@ final class HomeObserve : BaseObserver {
             user: Update<User?> = .keep,
             profileService: Update<[ProfileServiceData]> = .keep,
             profileCourses: Update<[ProfileCourseData]> = .keep,
+            profileShorts: Update<[ShortVideoData]> = .keep,
             isEditSheet: Update<Bool> = .keep
         ) -> Self {
             if case .set(let value) = isLoading { self.isLoading = value }
@@ -352,6 +384,7 @@ final class HomeObserve : BaseObserver {
             if case .set(let value) = user { self.user = value }
             if case .set(let value) = profileService { self.profileService = value }
             if case .set(let value) = profileCourses { self.profileCourses = value }
+            if case .set(let value) = profileShorts { self.profileShorts = value }
             if case .set(let value) = isEditSheet { self.isEditSheet = value }
             return self
         }

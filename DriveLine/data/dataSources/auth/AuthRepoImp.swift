@@ -55,7 +55,7 @@ final class AuthRepoImp : AuthRepo {
     
     @BackgroundActor
     func fetchProfileById(user: UserBase, invoke: @escaping @BackgroundActor (Profile) -> Void, failed: @BackgroundActor (String) -> Void) async {
-        guard let url = URL(string: SecureConst.BASE_URL + Endpoint.profile(user.id)) else {
+        guard let url = URL(string: SecureConst.BASE_URL + Endpoint.PROFILE + user.id) else {
             LogKit.print("fetchProfileById Invalid URL"); failed("Failed")
             return
         }
