@@ -24,20 +24,20 @@ This repository provides a clean, scalable, and production-ready backend built w
 
 <table>
     <tr>
-      <td> <img src="Screenshots/1.jpg"  width="300" height="652" alt="1"/> </td>
-      <td> <img src="Screenshots/2.jpg"  width="300" height="652" alt="2"/> </td>
+      <td> <img src="Screenshots/1.jpg"  width="300" height="649" alt="1"/> </td>
+      <td> <img src="Screenshots/2.jpg"  width="300" height="649" alt="2"/> </td>
     </tr>
     <tr>
-      <td> <img src="Screenshots/3.jpg"  width="300" height="652" alt="3"/> </td>
-      <td> <img src="Screenshots/4.jpg"  width="300" height="652" alt="4"/> </td>
+      <td> <img src="Screenshots/3.jpg"  width="300" height="649" alt="3"/> </td>
+      <td> <img src="Screenshots/4.jpg"  width="300" height="649" alt="4"/> </td>
     </tr>
     <tr>
-      <td> <img src="Screenshots/5.jpg"  width="300" height="533" alt="5"/> </td>
-      <td> <img src="Screenshots/6.jpg"  width="300" height="533" alt="6"/> </td>
+      <td> <img src="Screenshots/5.jpg"  width="300" height="649" alt="5"/> </td>
+      <td> <img src="Screenshots/6.jpg"  width="300" height="649" alt="6"/> </td>
     </tr>
     <tr>
-      <td> <img src="Screenshots/7.jpg"  width="300" height="533" alt="7"/> </td>
-      <td> <img src="Screenshots/8.jpg"  width="300" height="533" alt="8"/> </td>
+      <td> <img src="Screenshots/7.jpg"  width="300" height="649" alt="7"/> </td>
+      <td> <img src="Screenshots/8.jpg"  width="300" height="649" alt="8"/> </td>
     </tr>
 </table>
 
