@@ -69,62 +69,73 @@ struct ProfileView: View {
                 Spacer().height(10)
                 
                 ScrollView {
-                    LazyVStack(spacing: 0) {
-                        VStack(spacing: 0) {
-                            TabView(selection: $selectedPage) {
-                                ForEach(Array(obs.state.profileService.enumerated()), id: \.offset) { idx, data in
-                                    ServiceCardImage(data: data)
-                                        .onTapGesture {
-                                            navigator.navigateToScreen(CreateEditFixServiceConfig(editService: data.service, serviceAdminId: data.fix.adminId), .CREATE_EDIT_FIX_SCREEN_ROUTE)
-                                        }
+                    VStack(spacing: 0) {
+                        if !obs.state.profileService.isEmpty {
+                            VStack(spacing: 0) {
+                                TabView(selection: $selectedPage) {
+                                    ForEach(Array(obs.state.profileService.enumerated()), id: \.offset) { idx, data in
+                                        ServiceCardImage(data: data)
+                                            .onTapGesture {
+                                                navigator.navigateToScreen(CreateEditFixServiceConfig(editService: data.service, serviceAdminId: data.fix.adminId), .CREATE_EDIT_FIX_SCREEN_ROUTE)
+                                            }
+                                    }
                                 }
-                            }
-                            .frame(height: 140)
-                            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+                                .frame(height: 140)
+                                .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+                                Spacer().height(10)
+                                HStack(spacing: 8) {
+                                    ForEach(0..<(obs.state.profileService.count), id: \.self) { idx in
+                                        Circle()
+                                            .fill(idx == selectedPage ? .primaryOfApp : Color.gray.opacity(0.3))
+                                            .frame(width: idx == selectedPage ? 10 : 8, height: idx == selectedPage ? 10 : 8)
+                                            .animation(.easeInOut, value: selectedPage)
+                                    }
+                                }
+                                .frame(maxWidth: .infinity)
+                                .padding(.top, 6)
+                            }.padding(.horizontal, 20)
                             Spacer().height(10)
-                            HStack(spacing: 8) {
-                                ForEach(0..<(obs.state.profileService.count), id: \.self) { idx in
-                                    Circle()
-                                        .fill(idx == selectedPage ? Color.blue : Color.gray.opacity(0.3))
-                                        .frame(width: idx == selectedPage ? 10 : 8, height: idx == selectedPage ? 10 : 8)
-                                        .animation(.easeInOut, value: selectedPage)
+                        }
+                        if !obs.state.profileCourses.isEmpty {
+                            VStack(spacing: 0) {
+                                TabView(selection: $selectedCoursePage) {
+                                    ForEach(Array(obs.state.profileCourses.enumerated()), id: \.offset) { idx, data in
+                                        CourseCardImage(data: data)
+                                            .onTapGesture {
+                                                navigator.navigateToScreen(CreateEditCourseConfig(editCourse: data.providedCourse, courseAdminId: data.course.adminId), .CREATE_EDIT_COURSE_ROUTE)
+                                            }
+                                    }
                                 }
-                            }
-                            .frame(maxWidth: .infinity)
-                            .padding(.top, 6)
-                        }.padding(.horizontal, 20)
-                        Spacer().height(10)
-                        VStack(spacing: 0) {
-                            TabView(selection: $selectedCoursePage) {
-                                ForEach(Array(obs.state.profileCourses.enumerated()), id: \.offset) { idx, data in
-                                    CourseCardImage(data: data)
-                                        .onTapGesture {
-                                            navigator.navigateToScreen(CreateEditCourseConfig(editCourse: data.providedCourse, courseAdminId: data.course.adminId), .CREATE_EDIT_COURSE_ROUTE)
-                                        }
+                                .frame(height: 140)
+                                .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+                                Spacer().height(10)
+                                HStack(spacing: 8) {
+                                    ForEach(0..<(obs.state.profileCourses.count), id: \.self) { idx in
+                                        Circle()
+                                            .fill(idx == selectedCoursePage ? .primaryOfApp : Color.gray.opacity(0.3))
+                                            .frame(width: idx == selectedCoursePage ? 10 : 8, height: idx == selectedCoursePage ? 10 : 8)
+                                            .animation(.easeInOut, value: selectedCoursePage)
+                                    }
                                 }
-                            }
-                            .frame(height: 140)
-                            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+                                .frame(maxWidth: .infinity)
+                                .padding(.top, 6)
+                            }.padding(.horizontal, 20)
+                            
                             Spacer().height(10)
-                            HStack(spacing: 8) {
-                                ForEach(0..<(obs.state.profileCourses.count), id: \.self) { idx in
-                                    Circle()
-                                        .fill(idx == selectedCoursePage ? Color.blue : Color.gray.opacity(0.3))
-                                        .frame(width: idx == selectedCoursePage ? 10 : 8, height: idx == selectedCoursePage ? 10 : 8)
-                                        .animation(.easeInOut, value: selectedCoursePage)
-                                }
-                            }
-                            .frame(maxWidth: .infinity)
-                            .padding(.top, 6)
-                        }.padding(.horizontal, 20)
-                        
-                        Spacer().height(10)
-                        VStack {
+                        }
+                        LazyVStack {
                             videosGrid()
                         }.padding(.horizontal, 20)
-                        Spacer()
                     }
-                }
+                }.scrollIndicators(.hidden)
+                    .scrollContentBackground(.hidden)
+                    .scrollBounceBehavior(.basedOnSize)
+                    .scrollTargetBehavior(.viewAligned)
+                    .apply {
+                        if #available(iOS 26.0, *) {
+                            $0.scrollEdgeEffectStyle(.soft, for: .all)
+                        }
+                    }
             }
             if !obs.state.isEditSheet {
                 LoadingScreen(color: .primaryOfApp, backDarkAlpha: .backDarkAlpha, isLoading: obs.state.isLoading)
@@ -171,7 +182,7 @@ struct ProfileView: View {
                         obs.updateProfileVideos(edit)
                     }
                 }.frame(height: isPortrait ? 140 : 120).onTapGesture {
-                    self.obs.setFeedIndex((index, true))
+                    navigator.navigateToScreen(VideoFeedConfig(shorts: obs.state.profileShorts, currentIndex: index), .VIDEO_SHORT_SCREEN_ROUTE)
                 }
             }
         }.padding([.horizontal, .bottom])
@@ -480,7 +491,7 @@ fileprivate struct CourseCardImage: View {
 
 
 fileprivate struct ShortVideoTile: View {
-    let item: ShortVideoData
+    let item: ShortVideoUserData
     let addPlayer: @MainActor (AVPlayer) -> Void
     
     @State private var sinkCancel: AnyCancellable?

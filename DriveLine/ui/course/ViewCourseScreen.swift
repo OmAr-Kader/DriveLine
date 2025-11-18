@@ -19,11 +19,12 @@ struct ViewCourseScreen: View {
             if let data = data {
                 ViewCourse(navigator: navigator, data: data)
             }
-        }.visibleToolbar().navigationTitle(data?.course.title ?? "").onAppear {
-            // Example load (simulate edit). Only load once.
-            guard let config = navigator.screenConfig(.COURSE_SCREEN) as? CourseConfig else { return }
-            self.data = config.providedCourse
-        }
+        }.visibleToolbar().navigationTitle(data?.course.title ?? "")
+            .onAppeared {
+                // Example load (simulate edit). Only load once.
+                guard let config = navigator.screenConfig(.COURSE_SCREEN) as? CourseConfig else { return }
+                self.data = config.providedCourse
+            }
     }
 }
 
@@ -73,7 +74,7 @@ fileprivate struct ViewCourse : View {
                         HStack(spacing: 8) {
                             ForEach(0..<(data.data.images.count + 1), id: \.self) { idx in
                                 Circle()
-                                    .fill(idx == selectedPage ? Color.blue : Color.gray.opacity(0.3))
+                                    .fill(idx == selectedPage ? .primaryOfApp : Color.gray.opacity(0.3))
                                     .frame(width: idx == selectedPage ? 10 : 8, height: idx == selectedPage ? 10 : 8)
                                     .animation(.easeInOut, value: selectedPage)
                             }

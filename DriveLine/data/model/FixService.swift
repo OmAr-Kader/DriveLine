@@ -454,7 +454,7 @@ struct GetAServiceData: Identifiable, Sendable, Hashable {
         self.price = cloud.price
         self.currency = cloud.currency
         self.durationMinutes = cloud.durationMinutes
-        self.images = cloud.images ?? ["https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRPEgUGIRO5X5zExd2A0tAclSkQY8koUSVohw&s"]
+        self.images = cloud.images ?? []
         self.isActive = cloud.isActive
         self.monday = cloud.monday
         self.tuesday = cloud.tuesday
@@ -463,6 +463,25 @@ struct GetAServiceData: Identifiable, Sendable, Hashable {
         self.friday = cloud.friday
         self.saturday = cloud.saturday
         self.sunday = cloud.sunday
+    }
+    
+    init(_ user: User, provided: ProvideServiceData) {
+        self.id = provided.id
+        self.tech = GetAServiceData.Tech(id: user.id, name: user.name, phone: user.phone, email: user.email, age: user.age, image: user.image, location: user.location)
+        self.serviceAdminId = provided.serviceAdminId
+        self.description = provided.description
+        self.price = provided.price
+        self.currency = provided.currency
+        self.durationMinutes = provided.durationMinutes
+        self.images = provided.images ?? []
+        self.isActive = provided.isActive
+        self.monday = provided.monday
+        self.tuesday = provided.tuesday
+        self.wednesday = provided.wednesday
+        self.thursday = provided.thursday
+        self.friday = provided.friday
+        self.saturday = provided.saturday
+        self.sunday = provided.sunday
     }
 }
 

@@ -11,14 +11,14 @@ import SwiftUISturdy
 final class AiChatRepoImp : AiChatRepo {
 
     @BackgroundActor
-    func createSessionWithMessage(userBase: UserBase, body: CreateSessionRequest, invoke: @escaping @BackgroundActor (CreateSessionResponse) -> Void, failed: @escaping (String) -> Void) async {
+    func createSessionWithMessage(userBase: UserBase, body: CreateSessionRequest, invoke: @escaping @BackgroundActor (CreateSessionResponse) async -> Void, failed: @escaping (String) -> Void) async {
         guard let url = URL(string: SecureConst.BASE_URL + Endpoint.SESSION_WITH_FIRST_MESSAGE) else {
             LogKit.print("createSessionWithMessage Invalid URL"); failed("Failed")
             return
         }
         do {
             let response: CreateSessionResponse = try await url.createPOSTRequest(body: body).addAuthorizationHeader(userBase).performRequest()
-            invoke(response)
+            await invoke(response)
         } catch {
             LogKit.print("Failed ->", error.localizedDescription); failed("Failed")
         }
@@ -27,6 +27,20 @@ final class AiChatRepoImp : AiChatRepo {
     @BackgroundActor
     @inlinable func addMessage(userBase: UserBase, body: CreateMessageRequest, invoke: @escaping (AiMessage) -> Void, failed: @escaping (String) -> Void) async {
         guard let url = URL(string: SecureConst.BASE_URL + Endpoint.MESSAGE) else {
+            LogKit.print("addMessage Invalid URL"); failed("Failed")
+            return
+        }
+        do {
+            let response: AiMessage = try await url.createPOSTRequest(body: body).addAuthorizationHeader(userBase).performRequest()
+            invoke(response)
+        } catch {
+            LogKit.print("Failed ->", error.localizedDescription); failed("Failed")
+        }
+    }
+    
+    @BackgroundActor
+    @inlinable func pushMessageToGemini(userBase: UserBase, body: PushMessageRequest, invoke: @escaping (AiMessage) -> Void, failed: @escaping (String) -> Void) async {
+        guard let url = URL(string: SecureConst.BASE_URL + Endpoint.GEMINI) else {
             LogKit.print("addMessage Invalid URL"); failed("Failed")
             return
         }

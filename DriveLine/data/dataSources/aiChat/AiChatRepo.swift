@@ -12,10 +12,13 @@ import CouchbaseLiteSwift
 internal protocol AiChatRepo : Sendable {
             
     @BackgroundActor
-    func createSessionWithMessage(userBase: UserBase, body: CreateSessionRequest, invoke: @escaping @BackgroundActor (CreateSessionResponse) -> Void, failed: @escaping (String) -> Void) async
+    func createSessionWithMessage(userBase: UserBase, body: CreateSessionRequest, invoke: @escaping @BackgroundActor (CreateSessionResponse) async -> Void, failed: @escaping (String) -> Void) async
     
     @BackgroundActor
     @inlinable func addMessage(userBase: UserBase, body: CreateMessageRequest, invoke: @escaping (AiMessage) -> Void, failed: @escaping (String) -> Void) async
+    
+    @BackgroundActor
+    @inlinable func pushMessageToGemini(userBase: UserBase, body: PushMessageRequest, invoke: @escaping (AiMessage) -> Void, failed: @escaping (String) -> Void) async
     
     @BackgroundActor
     func getSessions(userBase: UserBase, invoke: @escaping ([AiSession]) -> Void, failed: @escaping (String) -> Void) async

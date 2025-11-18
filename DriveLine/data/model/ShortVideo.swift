@@ -171,6 +171,33 @@ struct ShortVideoUser: Codable {
 }
 
 @BackgroundActor
+struct UserShort: Codable {
+    let id: String
+    let name: String
+    let role: String
+    let image: String?
+    
+    init(id: String, name: String, role: String, image: String?) {
+        self.id = id
+        self.name = name
+        self.role = role
+        self.image = image
+    }
+    
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.id = try container.decode(String.self, forKey: .id)
+        self.name = try container.decode(String.self, forKey: .name)
+        self.role = try container.decode(String.self, forKey: .role)
+        self.image = try container.decodeIfPresent(String.self, forKey: .image)
+    }
+    
+    enum CodingKeys: String, CodingKey {
+        case id = "_id", name, role, image
+    }
+}
+
+@BackgroundActor
 struct UpdateShortVideoTags: Codable {
     let tags: [Int]
 }
@@ -236,7 +263,7 @@ struct ShortVideoData: Identifiable, Hashable {
 struct ShortVideoUserData: Identifiable, Hashable, Equatable {
     let _id: String
     let title: String
-    let user: UserShort
+    let user: UserShortData
     let link: String
     let thumbImageName: String
     let tags: [Int]
@@ -256,7 +283,7 @@ struct ShortVideoUserData: Identifiable, Hashable, Equatable {
         lhs.id == rhs.id
     }
     
-    init(id: String, title: String, user: UserShort, link: String, thumbImageName: String, tags: [Int], views: Int, createdAt: Date, player: AVPlayer? = nil) {
+    init(id: String, title: String, user: UserShortData, link: String, thumbImageName: String, tags: [Int], views: Int, createdAt: Date, player: AVPlayer? = nil) {
         self._id = id
         self.title = title
         self.user = user
@@ -271,7 +298,7 @@ struct ShortVideoUserData: Identifiable, Hashable, Equatable {
     init(_ short: ShortVideoUser) {
         self._id = short.id
         self.title = short.title
-        self.user = short.user
+        self.user = UserShortData(short.user)
         self.link = short.link
         self.thumbImageName = short.thumbImageName
         self.tags = short.tags
@@ -279,19 +306,42 @@ struct ShortVideoUserData: Identifiable, Hashable, Equatable {
         self.createdAt = short.createdAt
     }
     
+    init(_ user: User, short: ShortVideo) {
+        self._id = short.id
+        self.title = short.title
+        self.user = UserShortData(id: user.id, name: user.name, role: user.role, image: user.image)
+        self.link = short.link
+        self.thumbImageName = short.thumbImageName
+        self.tags = short.tags
+        self.views = short.views
+        self.createdAt = short.createdAt
+        
+    }
+    
     func copy(player: AVPlayer?) -> Self {
         ShortVideoUserData(id: _id, title: title, user: user, link: link, thumbImageName: thumbImageName, tags: tags, views: views, createdAt: createdAt, player: player)
     }
 }
 
-struct UserShort: Codable , Identifiable, Hashable {
+@MainActor
+struct UserShortData: Sendable, Identifiable, Hashable {
     let id: String
     let name: String
     let role: String
-    let image: String
+    let image: String?
     
-    enum CodingKeys: String, CodingKey {
-        case id = "_id"
-        case name, role, image
+    init(id: String, name: String, role: String, image: String?) {
+        self.id = id
+        self.name = name
+        self.role = role
+        self.image = image
     }
+    
+    init(_ short: UserShort) {
+        self.id = short.id
+        self.name = short.name
+        self.role = short.role
+        self.image = short.image
+    }
+    
 }

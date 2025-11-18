@@ -32,6 +32,13 @@ struct CreateMessageRequest: Codable {
 }
 
 @BackgroundActor
+struct PushMessageRequest: Codable {
+    let sessionId: String
+    let text: String
+    let saveQuestion: Bool
+}
+
+@BackgroundActor
 struct AiSession: Codable, Identifiable {
     let id: String
     let title: String
@@ -50,8 +57,7 @@ struct AiSession: Codable, Identifiable {
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        // Handle both `id` and `_id` gracefully
-        id = try container.decodeIfPresent(String.self, forKey: .id) ?? container.decode(String.self, forKey: ._id)
+        id = try container.decodeIfPresent(String.self, forKey: ._id) ?? container.decode(String.self, forKey: .id)
         title = try container.decode(String.self, forKey: .title)
         lastMessage = try container.decode(String.self, forKey: .lastMessage)
         createdAt = try container.decodeISO8601Date(forKey: .createdAt)
@@ -60,7 +66,7 @@ struct AiSession: Codable, Identifiable {
     
     func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(id, forKey: .id)
+        try container.encode(id, forKey: ._id)
         try container.encode(title, forKey: .title)
         try container.encode(lastMessage, forKey: .lastMessage)
         try container.encode(createdAt, forKey: .createdAt)
@@ -124,7 +130,7 @@ struct AiMessage: Codable {
     
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        id = try container.decodeIfPresent(String.self, forKey: .id) ?? container.decode(String.self, forKey: ._id)
+        id = try container.decodeIfPresent(String.self, forKey: ._id) ?? container.decode(String.self, forKey: .id)
         sessionId = try container.decode(String.self, forKey: .sessionId)
         text = try container.decode(String.self, forKey: .text)
         isUser = try container.decode(Bool.self, forKey: .isUser)
@@ -133,7 +139,7 @@ struct AiMessage: Codable {
     
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(id, forKey: .id)
+        try container.encode(id, forKey: ._id)
         try container.encode(sessionId, forKey: .sessionId)
         try container.encode(text, forKey: .text)
         try container.encode(isUser, forKey: .isUser)

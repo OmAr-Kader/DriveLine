@@ -69,7 +69,7 @@ struct ChatScreen: View {
                 Divider()
             }.safeAreaInset(edge: .bottom, content: inputBar)
             LoadingScreen(color: .primaryOfApp, backDarkAlpha: .backDarkAlpha, isLoading: obs.state.isLoading)
-        }
+        }.navigationTitle("AI Sssistant")
         .onChange(obs.state.messages) { new in
             guard let last = new.last else { return }
             // scroll to bottom when messages change
@@ -89,13 +89,20 @@ struct ChatScreen: View {
                     }
                 }
             }
+        }.onDisappear {
+            speech.stopSpeaking()
         }
     }
 
     @ViewBuilder func inputBar() -> some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack(alignment: .bottom, spacing: 4) {
-                TextField(String("How i can i help you?"), text: Binding(get: { speech.transcribedText }, set: { speech.transcribedText = $0 }), axis: .vertical)
+                TextField(String("How i can i help you?"), text: Binding(get: { speech.transcribedText }, set: {
+                    if speech.isSpeaking, !$0.isEmpty {
+                        speech.stopSpeaking()
+                    }
+                    speech.transcribedText = $0
+                }), axis: .vertical)
                     .lineLimit(6)
                     .focused($inputFocused)
                     .padding(EdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8))

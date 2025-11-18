@@ -11,16 +11,19 @@ import Combine
 import SwiftUISturdy
 
 @MainActor
-struct VideoFeed: View {
+struct VideoFeedScreen: View {
     
-    @Binding var currentIndex: Int
-    let shortVideos: [ShortVideoUserData]
+    let navigator: Navigator
+
+    @State private var currentIndex: Int = -1
+    @State private var shortVideos: [ShortVideoUserData] = []
+    @State private var isInitialed = false
 
     @State private var player: AVPlayer? = nil
     @State private var currentReadyLink: String = ""
     @State private var sinkCancel: AnyCancellable?
     @State private var boundaryObserverToken: Any?
-    
+
     var body: some View {
         ZStack {
             ScrollView {
@@ -29,11 +32,14 @@ struct VideoFeed: View {
                         ZStack {
                             if let player, currentReadyLink == item.link {
                                 VideoPlayer(player: player)
-                                    .safeAreaPadding(.bottom, 50)
+                                    .safeAreaPadding(.bottom, 60)
                                     .safeAreaPadding(.top, 80)
                             } else {
                                 LoadingScreen(color: .textOfApp, backDarkAlpha: .backDarkAlpha, isLoading: true)
+                                    .safeAreaPadding(.bottom, 60)
+                                    .safeAreaPadding(.top, 80)
                             }
+                            barDetail.onBottom()
                         }.background(.black)
                             .containerRelativeFrame(.vertical)
                             .id(index)
@@ -49,25 +55,7 @@ struct VideoFeed: View {
                 currentIndex = newValue
                 
             })).onAppeared {
-                guard  let url = shortVideos[currentIndex].videoURL else { return }
-                do {
-                    try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
-                    try AVAudioSession.sharedInstance().setActive(true)
-                } catch {}
                 
-                let player = AVPlayer(url: url)
-                player.actionAtItemEnd = .none
-                sinkCancel = player.currentItem?.publisher(for: \.status)
-                    .sink { status in
-                        let _ = LogKit.print("-- publisher --", status == .readyToPlay)
-                        guard status == .readyToPlay else { return }
-                        
-                        self.player = player
-                        player.play()
-                        sinkCancel?.cancel()
-                        sinkCancel = nil
-                        currentReadyLink = shortVideos[currentIndex].link
-                    }
                 
             }.onChange(currentIndex, onChangeIndex)
             .background(TransparentNavigationBar()) // Apply transparency
@@ -78,14 +66,17 @@ struct VideoFeed: View {
                     $0.scrollEdgeEffectStyle(.soft, for: .top)
                         .scrollEdgeEffectHidden(true, for: .top)
                 }
-            }
-            .toolbar {
+            }.toolbar {
                 ToolbarItem(placement: .principal) {
                     HStack(alignment: .center) {
                     }.width(1500)
                 }
-            }
-            .onDisappear {
+            }.onAppeared {
+                guard let config = navigator.screenConfig(.VIDEO_SHORT_SCREEN_ROUTE) as? VideoFeedConfig else { return }
+                self.shortVideos = config.shorts
+                self.currentIndex = config.currentIndex
+                initial(url: config.shorts[safe: config.currentIndex]?.videoURL)
+            }.onDisappear {
                 player?.pause()
                 sinkCancel?.cancel()
                 sinkCancel = nil
@@ -93,9 +84,63 @@ struct VideoFeed: View {
             }
     }
     
+    private func initial(url: URL?) {
+        guard  let url else { return }
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
+            try AVAudioSession.sharedInstance().setActive(true)
+        } catch {}
+        
+        let player = AVPlayer(url: url)
+        player.actionAtItemEnd = .none
+        sinkCancel = player.currentItem?.publisher(for: \.status)
+            .sink { status in
+                let _ = LogKit.print("-- publisher --", status == .readyToPlay)
+                guard status == .readyToPlay else { return }
+                
+                self.player = player
+                player.play()
+                sinkCancel?.cancel()
+                sinkCancel = nil
+                currentReadyLink = shortVideos[currentIndex].link
+            }
+    }
+
+    @ViewBuilder
+    var barDetail: some View {
+        let short = shortVideos[currentIndex]
+        HStack(alignment: .center) {
+            if let profileImage = short.user.image {
+                KingsImage(urlString: profileImage, size: CGSize(width: 40, height: 40), radius: 20, backColor: .backDarkSec)
+                    .clipShape(Circle())
+            } else {
+                Image(systemName: "person.circle.fill")
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 40, height: 40)
+                    .clipShape(Circle())
+            }
+            Spacer(minLength: 0).width(7)
+            VStack(alignment: .leading) {
+                Text("\(short.title)")
+                    .font(.subheadline)
+                    .bold()
+                Spacer().height(1)
+                Text("\(short.user.name)")
+                    .font(.subheadline)
+            }
+            Spacer()
+        }.height(50).onTapGesture {
+            navigator.navigateToScreen(ProfileVisitorConfig(userShort: short.user), .PROFILE_VISITOR_SCREEN_ROUTE)
+        }.safeAreaPadding(.all)
+    }
+    
     @MainActor
     private func onChangeIndex(_ new: Int) {
-        let _ = LogKit.print("-- onChangeIndex --", shortVideos[new].link)
+        guard isInitialed else {
+            isInitialed = true
+            return
+        }
         guard let url = shortVideos[new].videoURL else { return }
         let newItem = AVPlayerItem(url: url)
         sinkCancel?.cancel()
@@ -106,7 +151,6 @@ struct VideoFeed: View {
         player?.replaceCurrentItem(with: newItem)
         sinkCancel = player?.currentItem?.publisher(for: \.status)
             .sink { [weak player] status in
-                let _ = LogKit.print("-- publisher --", status == .readyToPlay)
                 guard status == .readyToPlay else { return }
                 
                 player?.play()

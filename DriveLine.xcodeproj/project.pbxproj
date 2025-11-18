@@ -17,6 +17,38 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		DC911BB52ECC0C4B008FB226 /* API Documentation #reference.postman_collection.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "API Documentation #reference.postman_collection.json"; sourceTree = "<group>"; };
+		DC911BDE2ECC0C4B008FB226 /* package.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = package.json; sourceTree = "<group>"; };
+		DC911BDF2ECC0C4B008FB226 /* package-lock.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "package-lock.json"; sourceTree = "<group>"; };
+		DC911BE02ECC0C4B008FB226 /* tsconfig.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = tsconfig.json; sourceTree = "<group>"; };
+		DC911BE12ECC0C4B008FB226 /* tsconfig.tsbuildinfo */ = {isa = PBXFileReference; lastKnownFileType = text; path = tsconfig.tsbuildinfo; sourceTree = "<group>"; };
+		DC911BE22ECC0C96008FB226 /* db.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = db.ts; sourceTree = "<group>"; };
+		DC911BE42ECC0C96008FB226 /* aiMessageController.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = aiMessageController.ts; sourceTree = "<group>"; };
+		DC911BE52ECC0C96008FB226 /* aiSessionController.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = aiSessionController.ts; sourceTree = "<group>"; };
+		DC911BE62ECC0C96008FB226 /* authController.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = authController.ts; sourceTree = "<group>"; };
+		DC911BE72ECC0C96008FB226 /* courseController.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = courseController.ts; sourceTree = "<group>"; };
+		DC911BE82ECC0C96008FB226 /* fixServiceController.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = fixServiceController.ts; sourceTree = "<group>"; };
+		DC911BE92ECC0C96008FB226 /* geminiController.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = geminiController.ts; sourceTree = "<group>"; };
+		DC911BEA2ECC0C96008FB226 /* helperController.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = helperController.ts; sourceTree = "<group>"; };
+		DC911BEB2ECC0C96008FB226 /* shortVideoController.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = shortVideoController.ts; sourceTree = "<group>"; };
+		DC911BEC2ECC0C96008FB226 /* userController.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = userController.ts; sourceTree = "<group>"; };
+		DC911BEE2ECC0C96008FB226 /* aiMessage.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = aiMessage.ts; sourceTree = "<group>"; };
+		DC911BEF2ECC0C96008FB226 /* aiSession.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = aiSession.ts; sourceTree = "<group>"; };
+		DC911BF02ECC0C96008FB226 /* course.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = course.ts; sourceTree = "<group>"; };
+		DC911BF12ECC0C96008FB226 /* fixService.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = fixService.ts; sourceTree = "<group>"; };
+		DC911BF22ECC0C96008FB226 /* gemini.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = gemini.ts; sourceTree = "<group>"; };
+		DC911BF32ECC0C96008FB226 /* helper.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = helper.ts; sourceTree = "<group>"; };
+		DC911BF42ECC0C96008FB226 /* shortVideo.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = shortVideo.ts; sourceTree = "<group>"; };
+		DC911BF52ECC0C96008FB226 /* User.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = User.ts; sourceTree = "<group>"; };
+		DC911BF72ECC0C96008FB226 /* aiMessageRoutes.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = aiMessageRoutes.ts; sourceTree = "<group>"; };
+		DC911BF82ECC0C96008FB226 /* aiSessionRoutes.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = aiSessionRoutes.ts; sourceTree = "<group>"; };
+		DC911BF92ECC0C96008FB226 /* authRoutes.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = authRoutes.ts; sourceTree = "<group>"; };
+		DC911BFA2ECC0C96008FB226 /* courseRoutes.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = courseRoutes.ts; sourceTree = "<group>"; };
+		DC911BFB2ECC0C96008FB226 /* fixServiceRoutes.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = fixServiceRoutes.ts; sourceTree = "<group>"; };
+		DC911BFC2ECC0C96008FB226 /* serviceRoutes.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = serviceRoutes.ts; sourceTree = "<group>"; };
+		DC911BFD2ECC0C96008FB226 /* shortVideoRoutes.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = shortVideoRoutes.ts; sourceTree = "<group>"; };
+		DC911BFE2ECC0C96008FB226 /* userRoutes.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = userRoutes.ts; sourceTree = "<group>"; };
+		DC911C002ECC0CD3008FB226 /* index.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = index.ts; sourceTree = "<group>"; };
 		DC9466B42EC22B2600E4C0BD /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 		DCA84E932EBD345F00945801 /* DriveLine.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DriveLine.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DCA84EA12EBD348900945801 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
@@ -59,9 +91,81 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		DC911BB42ECC0ABB008FB226 /* driveline-express-ts-api */ = {
+			isa = PBXGroup;
+			children = (
+				DC911C002ECC0CD3008FB226 /* index.ts */,
+				DC911BE32ECC0C96008FB226 /* config */,
+				DC911BED2ECC0C96008FB226 /* controllers */,
+				DC911BF62ECC0C96008FB226 /* models */,
+				DC911BFF2ECC0C96008FB226 /* routes */,
+				DC911BB52ECC0C4B008FB226 /* API Documentation #reference.postman_collection.json */,
+				DC911BDE2ECC0C4B008FB226 /* package.json */,
+				DC911BDF2ECC0C4B008FB226 /* package-lock.json */,
+				DC911BE02ECC0C4B008FB226 /* tsconfig.json */,
+				DC911BE12ECC0C4B008FB226 /* tsconfig.tsbuildinfo */,
+			);
+			path = "driveline-express-ts-api";
+			sourceTree = "<group>";
+		};
+		DC911BE32ECC0C96008FB226 /* config */ = {
+			isa = PBXGroup;
+			children = (
+				DC911BE22ECC0C96008FB226 /* db.ts */,
+			);
+			path = config;
+			sourceTree = "<group>";
+		};
+		DC911BED2ECC0C96008FB226 /* controllers */ = {
+			isa = PBXGroup;
+			children = (
+				DC911BE42ECC0C96008FB226 /* aiMessageController.ts */,
+				DC911BE52ECC0C96008FB226 /* aiSessionController.ts */,
+				DC911BE62ECC0C96008FB226 /* authController.ts */,
+				DC911BE72ECC0C96008FB226 /* courseController.ts */,
+				DC911BE82ECC0C96008FB226 /* fixServiceController.ts */,
+				DC911BE92ECC0C96008FB226 /* geminiController.ts */,
+				DC911BEA2ECC0C96008FB226 /* helperController.ts */,
+				DC911BEB2ECC0C96008FB226 /* shortVideoController.ts */,
+				DC911BEC2ECC0C96008FB226 /* userController.ts */,
+			);
+			path = controllers;
+			sourceTree = "<group>";
+		};
+		DC911BF62ECC0C96008FB226 /* models */ = {
+			isa = PBXGroup;
+			children = (
+				DC911BEE2ECC0C96008FB226 /* aiMessage.ts */,
+				DC911BEF2ECC0C96008FB226 /* aiSession.ts */,
+				DC911BF02ECC0C96008FB226 /* course.ts */,
+				DC911BF12ECC0C96008FB226 /* fixService.ts */,
+				DC911BF22ECC0C96008FB226 /* gemini.ts */,
+				DC911BF32ECC0C96008FB226 /* helper.ts */,
+				DC911BF42ECC0C96008FB226 /* shortVideo.ts */,
+				DC911BF52ECC0C96008FB226 /* User.ts */,
+			);
+			path = models;
+			sourceTree = "<group>";
+		};
+		DC911BFF2ECC0C96008FB226 /* routes */ = {
+			isa = PBXGroup;
+			children = (
+				DC911BF72ECC0C96008FB226 /* aiMessageRoutes.ts */,
+				DC911BF82ECC0C96008FB226 /* aiSessionRoutes.ts */,
+				DC911BF92ECC0C96008FB226 /* authRoutes.ts */,
+				DC911BFA2ECC0C96008FB226 /* courseRoutes.ts */,
+				DC911BFB2ECC0C96008FB226 /* fixServiceRoutes.ts */,
+				DC911BFC2ECC0C96008FB226 /* serviceRoutes.ts */,
+				DC911BFD2ECC0C96008FB226 /* shortVideoRoutes.ts */,
+				DC911BFE2ECC0C96008FB226 /* userRoutes.ts */,
+			);
+			path = routes;
+			sourceTree = "<group>";
+		};
 		DCA84E8A2EBD345E00945801 = {
 			isa = PBXGroup;
 			children = (
+				DC911BB42ECC0ABB008FB226 /* driveline-express-ts-api */,
 				DC9466B42EC22B2600E4C0BD /* Config.xcconfig */,
 				DCA84EA32EBD34C500945801 /* LICENSE */,
 				DCA84EA42EBD34C500945801 /* README.md */,

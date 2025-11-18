@@ -155,13 +155,6 @@ struct HomeScreen: View {
         }.onAppeared {
             obs.loadShorts(app.state.userBase)
         }.onChange(obs.selectedTab, onSelectedChange)
-            .navigationDestination(isPresented: Binding(get: {
-                self.obs.state.currentIndex.isFeed
-            }, set: {
-                self.obs.setFeedIndex((0, $0))
-            })) {
-                VideoFeed(currentIndex: self.obs.currentIndex, shortVideos: self.obs.state.shortVideos)
-            }
     }
     
     private func onSelectedChange(_ new: HomeTabs) {
@@ -246,7 +239,7 @@ struct HomeScreen: View {
     
     @ViewBuilder
     private var homeView: some View {
-        HomeView(navigator: navigator, obs: $obs)
+        HomeView(navigator: navigator, name: app.state.userBase?.name ?? "", obs: $obs)
             .initialHomeScreen()
     }
     

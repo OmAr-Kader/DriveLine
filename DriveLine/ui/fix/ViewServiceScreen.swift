@@ -19,11 +19,12 @@ struct ViewServiceScreen: View {
             if let data = data {
                 ViewService(navigator: navigator, data: data)
             }
-        }.visibleToolbar().navigationTitle(data?.fix.title ?? "").onAppear {
-            // Example load (simulate edit). Only load once.
-            guard let config = navigator.screenConfig(.SERVICE_SCREEN) as? ServiceConfig else { return }
-            self.data = config.service
-        }
+        }.visibleToolbar().navigationTitle(data?.fix.title ?? "")
+            .onAppeared {
+                // Example load (simulate edit). Only load once.
+                guard let config = navigator.screenConfig(.SERVICE_SCREEN) as? ServiceConfig else { return }
+                self.data = config.service
+            }
     }
 }
 
@@ -73,7 +74,7 @@ fileprivate struct ViewService : View {
                         HStack(spacing: 8) {
                             ForEach(0..<(data.data.images.count + 1), id: \.self) { idx in
                                 Circle()
-                                    .fill(idx == selectedPage ? Color.blue : Color.gray.opacity(0.3))
+                                    .fill(idx == selectedPage ? .primaryOfApp : Color.gray.opacity(0.3))
                                     .frame(width: idx == selectedPage ? 10 : 8, height: idx == selectedPage ? 10 : 8)
                                     .animation(.easeInOut, value: selectedPage)
                             }

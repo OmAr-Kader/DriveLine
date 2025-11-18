@@ -17,13 +17,18 @@ final class AiChatBase {
     }
     
     @BackgroundActor
-    func createSessionWithMessage(_ userBase: UserBase, body: CreateSessionRequest, invoke: @escaping @BackgroundActor (CreateSessionResponse) -> Void, failed: @escaping (String) -> Void) async {
+    func createSessionWithMessage(_ userBase: UserBase, body: CreateSessionRequest, invoke: @escaping @BackgroundActor (CreateSessionResponse) async -> Void, failed: @escaping (String) -> Void) async {
         await repo.createSessionWithMessage(userBase: userBase, body: body, invoke: invoke, failed: failed)
     }
     
     @BackgroundActor
     @inlinable func addMessage(_ userBase: UserBase, body: CreateMessageRequest, invoke: @escaping (AiMessage) -> Void, failed: @escaping (String) -> Void) async {
         await repo.addMessage(userBase: userBase, body: body, invoke: invoke, failed: failed)
+    }
+    
+    @BackgroundActor
+    @inlinable func pushMessageToGemini(userBase: UserBase, body: PushMessageRequest, invoke: @escaping (AiMessage) -> Void, failed: @escaping (String) -> Void) async {
+        await repo.pushMessageToGemini(userBase: userBase, body: body, invoke: invoke, failed: failed)
     }
     
     @BackgroundActor

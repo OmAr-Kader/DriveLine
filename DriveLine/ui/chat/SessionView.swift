@@ -22,6 +22,12 @@ struct SessionView: View {
             List(obs.state.aiSessions) { session in
                 AiSessionRow(session: session).onTapGesture {
                     navigator.navigateTo(screen: session)
+                }.swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                    Button {
+                        obs.deleteSession(userBase: app.state.userBase, sessionId: session.idCloud)
+                    } label: {
+                        Label("Delete", systemImage: "trash")
+                    }.tint(.red.opacity(0.8))
                 }
             }
             LoadingScreen(color: .primaryOfApp, backDarkAlpha: .backDarkAlpha, isLoading: obs.state.isLoading)

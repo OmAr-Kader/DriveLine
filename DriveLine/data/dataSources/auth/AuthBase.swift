@@ -33,8 +33,8 @@ final class AuthBase {
     }
     
     @BackgroundActor
-    func fetchProfileById(user: UserBase, invoke: @escaping @BackgroundActor (Profile) -> Void, failed: @BackgroundActor (String) -> Void) async {
-        await repo.fetchProfileById(user: user, invoke: invoke, failed: failed)
+    func fetchProfileById(user: UserBase, profileId: String, invoke: @escaping @BackgroundActor (Profile) -> Void, failed: @BackgroundActor (String) -> Void) async {
+        await repo.fetchProfileById(user: user, profileId: profileId, invoke: invoke, failed: failed)
     }
     
     @BackgroundActor

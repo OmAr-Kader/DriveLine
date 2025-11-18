@@ -430,7 +430,7 @@ struct GetACourseData: Identifiable, Sendable, Hashable {
         self.price = cloud.price
         self.currency = cloud.currency
         self.sessions = cloud.sessions
-        self.images = cloud.images ?? ["https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRPEgUGIRO5X5zExd2A0tAclSkQY8koUSVohw&s"]
+        self.images = cloud.images ?? []
         self.isActive = cloud.isActive
         self.monday = cloud.monday
         self.tuesday = cloud.tuesday
@@ -439,6 +439,25 @@ struct GetACourseData: Identifiable, Sendable, Hashable {
         self.friday = cloud.friday
         self.saturday = cloud.saturday
         self.sunday = cloud.sunday
+    }
+    
+    init(_ user: User, provided: ProvideCourseData) {
+        self.id = provided.id
+        self.tech = GetACourseData.Tech(id: user.id, name: user.name, phone: user.phone, email: user.email, age: user.age, image: user.image, location: user.location)
+        self.courseAdminId = provided.courseAdminId
+        self.description = provided.description
+        self.price = provided.price
+        self.currency = provided.currency
+        self.sessions = provided.sessions
+        self.images = provided.images ?? []
+        self.isActive = provided.isActive
+        self.monday = provided.monday
+        self.tuesday = provided.tuesday
+        self.wednesday = provided.wednesday
+        self.thursday = provided.thursday
+        self.friday = provided.friday
+        self.saturday = provided.saturday
+        self.sunday = provided.sunday
     }
 }
 
@@ -459,7 +478,7 @@ struct Course: Identifiable, Equatable, Hashable {
     let course: CourseCategory
 
     // computed index used by CourseCardView
-    var index: Int { courseId }
+    var index: Int { adminId + 1 }
 
     init(adminId: Int, courseId: Int, title: String, subtitle: String, price: String, gradient: [Color], isDark: Bool) {
         self.adminId = adminId

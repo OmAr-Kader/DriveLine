@@ -30,14 +30,6 @@ final class HomeObserve : BaseObserver {
         Binding(get: { self.state.currentCato }, set: { self.setCurrentCato($0) })
     }
     
-    var currentIndex: Binding<Int> {
-        Binding {
-            self.state.currentIndex.index
-        } set: {
-            self.state = self.state.copy(currentIndex: .set(($0, self.state.currentIndex.isFeed)))
-        }
-    }
-    
     init() {
         @Inject
         var pro: Project
@@ -117,7 +109,7 @@ final class HomeObserve : BaseObserver {
         guard let userBase else { return }
         self.state = self.state.copy(isLoading: .set(true))
         self.tasker.back {
-            await self.project.auth.fetchProfileById(user: userBase) { profile in
+            await self.project.auth.fetchProfileById(user: userBase, profileId: userBase.id) { profile in
                 self.mainSync {
                     do {
                         let fixs = FixService.sampleServices()
@@ -131,7 +123,7 @@ final class HomeObserve : BaseObserver {
                         })
                         
                         let newShorts = profile.shorts.map ({ item in
-                            ShortVideoData(item)
+                            ShortVideoUserData(profile.user, short: (item))
                         })
                         
                         self.state = self.state.copy(isLoading: .set(false), user: .set(profile.user), profileService: .set(newServices), profileCourses: .set(newProvided), profileShorts: .set(newShorts))
@@ -278,16 +270,9 @@ final class HomeObserve : BaseObserver {
     }
     
     @MainActor
-    func updateProfileVideos(_ shortVideos: [ShortVideoData]) {
+    func updateProfileVideos(_ shortVideos: [ShortVideoUserData]) {
         withAnimation {
             self.state = self.state.copy(profileShorts: .set(shortVideos))
-        }
-    }
-    
-    @MainActor
-    func setFeedIndex(_ currentIndex: (Int, Bool)) {
-        withAnimation {
-            self.state = self.state.copy(currentIndex: .set(currentIndex))
         }
     }
     
@@ -330,6 +315,30 @@ final class HomeObserve : BaseObserver {
         }
     }
     
+    @MainActor
+    func deleteSession(userBase: UserBase?, sessionId: String) {
+        guard let userBase else { return }
+        self.state = self.state.copy(isLoading: .set(true))
+        self.tasker.back {
+            await self.project.aiChat.deleteSession(userBase, id: sessionId) { _ in
+                self.mainSync {
+                    var sessions = self.state.aiSessions
+                    sessions.removeAll(where: { $0.idCloud == sessionId })
+                    withAnimation {
+                        self.state = self.state.copy(isLoading: .set(false), aiSessions: .set(sessions))
+                    }
+                }
+            } failed: { msg in
+                self.mainSync {
+                    withAnimation {
+                        self.state = self.state.copy(isLoading: .set(false), toast: .set(Toast(style: .error, message: "Failed")))
+                    }
+                }
+            }
+
+        }
+    }
+    
     struct HomeObserveState {
 
         private(set) var isLoading: Bool = false
@@ -337,7 +346,6 @@ final class HomeObserve : BaseObserver {
         
         private(set) var courses: [Course] = Course.temp
         private(set) var shortVideos: [ShortVideoUserData] = []
-        private(set) var currentIndex: (index: Int, isFeed: Bool) = (0, false)
 
         private(set) var services: [FixService] = FixService.sampleServices() // MARK: Change
         private(set) var currentServices: [FixService] = []
@@ -348,7 +356,7 @@ final class HomeObserve : BaseObserver {
         private(set) var user: User? = nil
         private(set) var profileService: [ProfileServiceData] = []
         private(set) var profileCourses: [ProfileCourseData] = []
-        private(set) var profileShorts: [ShortVideoData] = []
+        private(set) var profileShorts: [ShortVideoUserData] = []
         private(set) var isEditSheet: Bool = false
         
         @MainActor
@@ -357,7 +365,6 @@ final class HomeObserve : BaseObserver {
             toast: Update<Toast?> = .keep,
             courses: Update<[Course]> = .keep,
             shortVideos: Update<[ShortVideoUserData]> = .keep,
-            currentIndex: Update<(index: Int, isFeed: Bool)> = .keep,
             services: Update<[FixService]> = .keep,
             currentServices: Update<[FixService]> = .keep,
             currentCato: Update<FixCategory> = .keep,
@@ -365,7 +372,7 @@ final class HomeObserve : BaseObserver {
             user: Update<User?> = .keep,
             profileService: Update<[ProfileServiceData]> = .keep,
             profileCourses: Update<[ProfileCourseData]> = .keep,
-            profileShorts: Update<[ShortVideoData]> = .keep,
+            profileShorts: Update<[ShortVideoUserData]> = .keep,
             isEditSheet: Update<Bool> = .keep
         ) -> Self {
             if case .set(let value) = isLoading { self.isLoading = value }
@@ -373,7 +380,6 @@ final class HomeObserve : BaseObserver {
             
             if case .set(let value) = courses { self.courses = value }
             if case .set(let value) = shortVideos { self.shortVideos = value }
-            if case .set(let value) = currentIndex { self.currentIndex = value }
 
             if case .set(let value) = services { self.services = value }
             if case .set(let value) = currentServices { self.currentServices = value }

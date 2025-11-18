@@ -47,7 +47,16 @@ struct ServiceConfig: ScreenConfig {
     let service: ViewServiceData
 }
 
+@MainActor
+struct ProfileVisitorConfig: ScreenConfig {
+    let userShort: UserShortData
+}
 
+@MainActor
+struct VideoFeedConfig: ScreenConfig {
+    let shorts: [ShortVideoUserData]
+    let currentIndex: Int
+}
 
 @MainActor
 struct CreateEditCourseConfig: ScreenConfig {
@@ -76,7 +85,9 @@ enum Screen : String, Hashable {
     case SERVICES_LIST_SCREEN = "SERVICES_LIST_SCREEN"
     case SERVICE_SCREEN = "SERVICE_SCREEN"
     
-    
+    case VIDEO_SHORT_SCREEN_ROUTE = "VIDEO_SHORT_SCREEN_ROUTE"
+    case PROFILE_VISITOR_SCREEN_ROUTE = "PROFILE_VISITOR_SCREEN_ROUTE"
+
     case COURCES_LIST_SCREEN_ROUTE = "COURCES_LIST_SCREEN_ROUTE"
     
     case CREATE_EDIT_COURSE_ROUTE = "CREATE_EDIT_COURSE_ROUTE"
@@ -99,10 +110,12 @@ extension View {
        case .CREATE_EDIT_FIX_SCREEN_ROUTE: CreateEditServiceScreen(app: app, navigator: navigator)
        case .SERVICES_LIST_SCREEN: FixServicesListScreen(app: app, navigator: navigator)
        case .SERVICE_SCREEN: ViewServiceScreen(navigator: navigator)
+       case .PROFILE_VISITOR_SCREEN_ROUTE: ProfileVistorScreen(navigator: navigator, app: app)
        case .COURCES_LIST_SCREEN_ROUTE: CoursesListScreen(app: app, navigator: navigator)
        case .PROVICED_COURSE_LIST_SCREEN: CoursesProvidersScreen(app: app, navigator: navigator)
        case .CREATE_EDIT_COURSE_ROUTE: CreateEditCourseScreen(app: app, navigator: navigator)
        case .COURSE_SCREEN: ViewCourseScreen(navigator: navigator)
+       case .VIDEO_SHORT_SCREEN_ROUTE: VideoFeedScreen(navigator: navigator)
        }
    }
 }

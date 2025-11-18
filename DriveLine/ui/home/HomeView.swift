@@ -16,7 +16,8 @@ import Foundation
 struct HomeView: View {
 
     let navigator: Navigator
-
+    let name: String
+    
     @Binding var obs: HomeObserve
 
     @State private var selectedPage = 0
@@ -49,11 +50,11 @@ struct HomeView: View {
                 .font(.title2)
                 .foregroundColor(.secondary)
             Spacer().height(6)
-            Text("Domen")
+            Text(name)
                 .font(.largeTitle)
                 .bold()
             Spacer().height(6)
-            Text("10,12,2023")
+            Text(Date.now.toStringDMYFormat())
                 .font(.subheadline)
                 .foregroundColor(.secondary)
         }
@@ -97,7 +98,7 @@ struct HomeView: View {
         HStack(spacing: 8) {
             ForEach(0..<obs.state.courses.count, id: \.self) { idx in
                 Circle()
-                    .fill(idx == selectedPage ? Color.blue : Color.gray.opacity(0.3))
+                    .fill(idx == selectedPage ? .primaryOfApp : Color.gray.opacity(0.3))
                     .frame(width: idx == selectedPage ? 10 : 8, height: idx == selectedPage ? 10 : 8)
                     .animation(.easeInOut, value: selectedPage)
             }
@@ -112,16 +113,17 @@ struct HomeView: View {
         let isPortrait = orientation.isPortrait
         let columnsCount = isPortrait ? 3 : 6
         let gridItem = Array(repeating: GridItem(.flexible(), spacing: 12), count: columnsCount)
-        LazyVGrid(columns: gridItem, spacing: 12) {
+        LazyVGrid(columns: gridItem) {
             ForEach(Array(obs.state.shortVideos.enumerated()), id: \.offset) { index, item in
                 ShortVideoTile(item: item) { player in
                     let edit = obs.state.shortVideos.editItem(where: { $0.link == item.link }, edit: { $0.player = player })
                     withAnimation {
                         obs.updateVideos(edit)
                     }
-                }.frame(height: isPortrait ? 140 : 120).onTapGesture {
-                    self.obs.setFeedIndex((index, true))
-                }
+                }.frame(height: isPortrait ? 140 : 120)
+                    .onTapGesture {
+                        navigator.navigateToScreen(VideoFeedConfig(shorts: obs.state.shortVideos, currentIndex: index), .VIDEO_SHORT_SCREEN_ROUTE)
+                    }
             }
         }.padding([.horizontal, .bottom])
     }
@@ -160,23 +162,23 @@ fileprivate struct ShortVideoTile: View {
                         }
                     }
                 ).cornerRadius(8).contentShape(Rectangle())
-            LinearGradient(
-                gradient: Gradient(colors: [Color.black.opacity(0.2), Color.black.opacity(0.7)]),
-                startPoint: .top,
-                endPoint: .bottom
-            ).cornerRadius(10)
             
-            Text(item.title)
-                .font(.caption)
-                .foregroundColor(.white)
-                .padding(6)
-                .background(Color.black.opacity(0.5))
-                .cornerRadius(6)
-                .padding(8)
+            HStack {
+                Text(item.title)
+                    .font(.caption)
+                    .lineLimit(2)
+                    .foregroundColor(.white)
+                    .padding(.top, 4)
+                Spacer()
+            }.background(LinearGradient(
+                gradient: Gradient(colors: [Color.black.opacity(0.4), Color.black.opacity(0.05)]),
+                startPoint: .bottom,
+                endPoint: .top
+            ))
         }.onAppear {
             //startPlayingMuted()
         }.onDisappear {
-            stopAndCleanup()
+            //stopAndCleanup()
         }
     }
     

@@ -236,7 +236,7 @@ struct CreateEditCourseScreen: View {
         HStack(spacing: 8) {
             ForEach(0..<obs.images.count, id: \.self) { idx in
                 Circle()
-                    .fill(idx == obs.selectedPage ? Color.blue : Color.gray.opacity(0.3))
+                    .fill(idx == obs.selectedPage ? .primaryOfApp : Color.gray.opacity(0.3))
                     .frame(width: idx == obs.selectedPage ? 10 : 8, height: idx == obs.selectedPage ? 10 : 8)
                     .animation(.easeInOut, value: obs.selectedPage)
             }
