@@ -1,8 +1,8 @@
 # DriveLine — iOS (SwiftUI) + Express/TypeScript Backend
 
 <p align="center">
-<img src="https://img.shields.io/badge/iOS-16.0+-blue" alt="iOS 17.0+">
-<img src="https://img.shields.io/badge/SwiftUI-4.0-orange" alt="SwiftUI">
+<img src="https://img.shields.io/badge/iOS-17.0+-blue" alt="iOS 17.0+">
+<img src="https://img.shields.io/badge/SwiftUI-6.0-orange" alt="SwiftUI">
 <img src="https://img.shields.io/badge/Backend-Node.js-green" alt="Backend Node.js">
 <img src="https://img.shields.io/badge/Database-MongoDB-lightgreen" alt="Database MongoDB">
 <img src="https://img.shields.io/badge/AI-Gemini-purple" alt="AI Gemini">
