@@ -1,4 +1,4 @@
-# DriveLine — iOS (SwiftUI) + Express/TypeScript Backend
+# DriveLine — iOS (SwiftUI) + NestJS/TypeScript Backend
 
 <p align="center">
 <img src="https://img.shields.io/badge/iOS-17.0+-blue" alt="iOS 17.0+">
