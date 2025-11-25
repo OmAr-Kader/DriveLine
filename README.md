@@ -4,6 +4,7 @@
 <img src="https://img.shields.io/badge/iOS-17.0+-blue" alt="iOS 17.0+">
 <img src="https://img.shields.io/badge/SwiftUI-6.0-orange" alt="SwiftUI">
 <img src="https://img.shields.io/badge/Backend-Node.js-green" alt="Backend Node.js">
+<img src="https://img.shields.io/badge/Framework-NestJS-blue" alt="Framework NestJS">
 <img src="https://img.shields.io/badge/Database-MongoDB-lightgreen" alt="Database MongoDB">
 <img src="https://img.shields.io/badge/AI-Gemini-purple" alt="AI Gemini">
 </p>
@@ -16,7 +17,7 @@ A mobile-focused backend and service layer that powers a unified platform for:
 * AI-powered voice assistant (Gemini)
 * Car maintenance & fixing schedule integration using **EventKit**
 
-This repository provides a clean, scalable, and production-ready backend built with **Node.js**, **Express**, **TypeScript**, **Mongoose**, and **Axios**.
+This repository provides a clean, scalable, and production-ready backend built with **Node.js**, **NestJS**, **Express**, **TypeScript**, **Mongoose**, and **Axios**.
 
 -------------
 
@@ -96,15 +97,15 @@ https://github.com/user-attachments/assets/a2665e82-d7c9-40c4-b861-597c77832cfc
 
 ### Backend (Server)
 
-| Layer        | Technology   |
-| ------------ | ------------ |
-| Runtime      | Node.js      |
-| Framework    | Express      |
-| Language     | TypeScript   |
-| Database     | MongoDB      |
-| Database ORM | Mongoose     |
-| HTTP Client  | Axios        |
-| Authentication| JWT / OAuth |
+| Layer        | Technology         |
+| ------------ | ------------       |
+| Runtime      | Node.js            |
+| Framework    | Express & Nest.js  |
+| Language     | TypeScript         |
+| Database     | MongoDB            |
+| Database ORM | Mongoose           |
+| HTTP Client  | Axios              |
+| Authentication| JWT / OAuth       |
 
 
 # Quick start — Backend (Express + TypeScript)
@@ -133,6 +134,96 @@ GEMINI_API_KEY=
 ```
 
 Optional values may be added depending on the integration roadmap.
+
+# Quick start — Backend (NestJS + TypeScript)
+
+Project folder: driveline-express-nest-ts-api (adjust path if you fork/clone).
+
+
+### Install & run
+
+```bash
+# install deps
+npm install
+
+# dev mode (auto reload)
+npm run start:dev
+
+# build TypeScript
+npm run build
+
+# run built JS (production)
+npm run start:prod
+```
+
+> Nest dev server uses `ts-node` / Nest CLI under the hood for `start:dev`. `start:prod` runs the compiled `dist/main.js`.
+
+---
+
+# Migration checklist (Express → NestJS)
+
+Use this checklist after migration to confirm parity:
+
+1. **Routing → Controllers**
+
+   * Convert Express routes to `@Controller()` + `@Get()`, `@Post()` methods.
+   * Keep route DTOs but switch to Nest-style DTO classes using `class-validator` decorators.
+
+2. **Handlers → Services**
+
+   * Business logic should live in `@Injectable()` services.
+   * Controllers remain thin: validate input, call service, return response.
+
+3. **Middlewares → Guards / Interceptors / Pipes**
+
+   * Auth middleware → `AuthGuard` / `ApiKeyGuard` (`@UseGuards(...)`).
+   * Validation middleware → `ValidationPipe` (set globally in `main.ts`).
+   * Logging or response shaping → interceptors.
+
+4. **Dependency Injection**
+
+   * Replace `require()` / manual injection with Nest DI (`providers` in module metadata).
+   * Make sure singleton/shared services are provided at the correct module scope.
+
+5. **Mongoose**
+
+   * Use `@nestjs/mongoose` with `MongooseModule.forRoot(process.env.MONGO_URI)` and `MongooseModule.forFeature([{ name: User.name, schema: UserSchema }])`.
+   * Keep schema names consistent; prefer `schemaName` exact casing to avoid import/case issues on macOS/Linux.
+
+6. **Error handling**
+
+   * Replace centralized Express error-handler with Nest `HttpException` and (optionally) a custom `AllExceptionsFilter`.
+
+7. **Global config**
+
+   * Add `ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env' })` and typed config with `registerAs()` if desired.
+
+8. **Validation**
+
+   * Use `class-validator` + `class-transformer` with `app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }))`.
+
+9. **Authentication**
+
+   * Implement `PassportModule` + `JwtModule` for JWT flows and create custom `ApiKeyGuard` for API key checks.
+
+10. **CORS, rate limit, security**
+
+    * Configure `app.enableCors()` and add helmet or rate-limiter (e.g., `express-rate-limit`) via Nest middlewares or using `@nestjs/throttler`.
+
+11. **Static assets**
+
+    * If you served static files in Express, use `app.useStaticAssets()` or configure `ServeStaticModule`.
+
+12. **Tests**
+
+    * Convert route-level tests to Nest’s testing utilities (`TestingModule`) using `@nestjs/testing`.
+
+13. **Build outputs**
+
+    * Source builds to `dist/` — do **not** commit `dist/` to git (usually). Add `dist/` to `.gitignore`. For some hosting providers you may need to build during deploy (see Deploy notes).
+
+
+---
 
 
 ## 🧠 AI Voice Assistant (Gemini)
