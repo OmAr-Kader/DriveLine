@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftUISturdy
+import SwiftUIMacroSturdy
 import Observation
 
 @MainActor
@@ -51,7 +52,7 @@ final class FixServicesObserve : BaseObserver {
         }
     }
     
-    
+    @SturdyCopy
     struct FixServicesState {
 
         private(set) var isLoading: Bool = false
@@ -60,22 +61,6 @@ final class FixServicesObserve : BaseObserver {
         private(set) var listOfService: [GetAServiceData] = []
         
         private(set) var service: FixService? = nil
-
-        @MainActor
-        mutating func copy(
-            isLoading: Update<Bool> = .keep,
-            toast: Update<Toast?> = .keep,
-            listOfService: Update<[GetAServiceData]> = .keep,
-            service: Update<FixService> = .keep,
-        ) -> Self {
-            if case .set(let value) = isLoading { self.isLoading = value }
-            if case .set(let value) = toast { self.toast = value }
-            
-            if case .set(let value) = listOfService { self.listOfService = value }
-            if case .set(let value) = service { self.service = value }
-
-            return self
-        }
     }
     
 }

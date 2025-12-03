@@ -2,6 +2,7 @@ import Foundation
 import SwiftUI
 import Observation
 import SwiftUISturdy
+import SwiftUIMacroSturdy
 import CouchbaseLiteSwift
 
 @Observable
@@ -218,6 +219,7 @@ final class BaseAppObserve: BaseObserver {
     }
     
     
+    @SturdyCopy
     struct AppObserveState {
         
         private(set) var preferences: [PreferenceData] = []
@@ -226,23 +228,6 @@ final class BaseAppObserve: BaseObserver {
         private(set) var args = [Screen : any ScreenConfig]()
 
         private(set) var needUpdate: Bool = false
-
-        @MainActor
-        mutating func copy(
-            preferences: Update<[PreferenceData]> = .keep,
-            userBase: Update<UserBase?> = .keep,
-            forUpdateSessions: Update<(newSession: AiSessionData?, needUpdateOnly: Bool)?> = .keep,
-            args: Update<[Screen : any ScreenConfig]> = .keep,
-            needUpdate: Update<Bool> = .keep,
-        ) -> Self {
-            if case .set(let value) = preferences { self.preferences = value }
-            if case .set(let value) = userBase { self.userBase = value }
-            if case .set(let value) = forUpdateSessions { self.forUpdateSessions = value }
-            if case .set(let value) = args { self.args = value }
-            
-            if case .set(let value) = needUpdate { self.needUpdate = value }
-            return self
-        }
         
         mutating func argOf(_ screen: Screen) -> (any ScreenConfig)? {
             return args.first { (key: Screen, value: any ScreenConfig) in

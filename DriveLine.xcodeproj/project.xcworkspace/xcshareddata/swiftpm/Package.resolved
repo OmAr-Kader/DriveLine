@@ -11,12 +11,21 @@
       }
     },
     {
+      "identity" : "swift-syntax",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/swiftlang/swift-syntax.git",
+      "state" : {
+        "revision" : "4799286537280063c85a32f09884cfbca301b1a1",
+        "version" : "602.0.0"
+      }
+    },
+    {
       "identity" : "swiftui-sturdy",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/OmAr-Kader/SwiftUI-Sturdy",
       "state" : {
-        "revision" : "8b5d07d5b609da315f83ddaac5c7750ab5348ecd",
-        "version" : "1.1.7"
+        "revision" : "7ac843fb005e7c8867a563dc9968d7a436ce40fd",
+        "version" : "1.1.8"
       }
     },
     {

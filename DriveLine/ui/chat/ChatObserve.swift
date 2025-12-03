@@ -8,6 +8,7 @@
 
 import Foundation
 import SwiftUISturdy
+import SwiftUIMacroSturdy
 import SwiftUI
 
 @MainActor
@@ -183,7 +184,7 @@ final class ChatObserve : BaseObserver {
         self.state = self.state.copy(currentSessionId: .set(currentSessionId))
     }
      
-    
+    @SturdyCopy
     struct ChatObserveState {
 
         private(set) var isLoading: Bool = false
@@ -193,25 +194,5 @@ final class ChatObserve : BaseObserver {
         private(set) var messages: [AiMessageData] = []
         private(set) var lastError: String?
         private(set) var isSending: Bool = false
-        
-        @MainActor
-        mutating func copy(
-            isLoading: Update<Bool> = .keep,
-            toast: Update<Toast?> = .keep,
-            currentSessionId: Update<String?> = .keep,
-            messages: Update<[AiMessageData]> = .keep,
-            lastError: Update<String?> = .keep,
-            isSending: Update<Bool> = .keep,
-        ) -> Self {
-            if case .set(let value) = isLoading { self.isLoading = value }
-            if case .set(let value) = toast { self.toast = value }
-            
-            if case .set(let value) = currentSessionId { self.currentSessionId = value }
-            if case .set(let value) = messages { self.messages = value }
-            if case .set(let value) = lastError { self.lastError = value }
-            if case .set(let value) = isSending { self.isSending = value }
-
-            return self
-        }
     }
 }

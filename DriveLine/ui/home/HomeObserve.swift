@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUISturdy
+import SwiftUIMacroSturdy
 import SwiftUI
 
 @MainActor
@@ -335,64 +336,29 @@ final class HomeObserve : BaseObserver {
                     }
                 }
             }
-
         }
     }
     
+    
+    @SturdyCopy
     struct HomeObserveState {
-
+        
         private(set) var isLoading: Bool = false
         private(set) var toast: Toast? = nil
         
         private(set) var courses: [Course] = Course.temp
         private(set) var shortVideos: [ShortVideoUserData] = []
-
-        private(set) var services: [FixService] = FixService.sampleServices() // MARK: Change
+        
+        private(set) var services: [FixService] = FixService.sampleServices()
         private(set) var currentServices: [FixService] = []
         private(set) var currentCato: FixCategory = .maintenance
         
         private(set) var aiSessions: [AiSessionData] = []
-
+        
         private(set) var user: User? = nil
         private(set) var profileService: [ProfileServiceData] = []
         private(set) var profileCourses: [ProfileCourseData] = []
         private(set) var profileShorts: [ShortVideoUserData] = []
         private(set) var isEditSheet: Bool = false
-        
-        @MainActor
-        mutating func copy(
-            isLoading: Update<Bool> = .keep,
-            toast: Update<Toast?> = .keep,
-            courses: Update<[Course]> = .keep,
-            shortVideos: Update<[ShortVideoUserData]> = .keep,
-            services: Update<[FixService]> = .keep,
-            currentServices: Update<[FixService]> = .keep,
-            currentCato: Update<FixCategory> = .keep,
-            aiSessions: Update<[AiSessionData]> = .keep,
-            user: Update<User?> = .keep,
-            profileService: Update<[ProfileServiceData]> = .keep,
-            profileCourses: Update<[ProfileCourseData]> = .keep,
-            profileShorts: Update<[ShortVideoUserData]> = .keep,
-            isEditSheet: Update<Bool> = .keep
-        ) -> Self {
-            if case .set(let value) = isLoading { self.isLoading = value }
-            if case .set(let value) = toast { self.toast = value }
-            
-            if case .set(let value) = courses { self.courses = value }
-            if case .set(let value) = shortVideos { self.shortVideos = value }
-
-            if case .set(let value) = services { self.services = value }
-            if case .set(let value) = currentServices { self.currentServices = value }
-            if case .set(let value) = currentCato { self.currentCato = value }
-
-            if case .set(let value) = aiSessions { self.aiSessions = value }
-
-            if case .set(let value) = user { self.user = value }
-            if case .set(let value) = profileService { self.profileService = value }
-            if case .set(let value) = profileCourses { self.profileCourses = value }
-            if case .set(let value) = profileShorts { self.profileShorts = value }
-            if case .set(let value) = isEditSheet { self.isEditSheet = value }
-            return self
-        }
     }
 }

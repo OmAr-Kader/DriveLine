@@ -10,6 +10,7 @@ import Foundation
 import SwiftUI
 import Observation
 import SwiftUISturdy
+import SwiftUIMacroSturdy
 import CouchbaseLiteSwift
 
 @Observable
@@ -168,20 +169,10 @@ final class AuthAppObserve: BaseObserver {
         return "Password must contain \(joined)."
     }
 
-    
+    @SturdyCopy
     struct BaseAppObserveState {
         
         private(set) var isLoading: Bool = false
         private(set) var toast: Toast? = nil
-        
-        @MainActor
-        mutating func copy(
-            isLoading: Update<Bool> = .keep,
-            toast: Update<Toast?> = .keep,
-        ) -> Self {
-            if case .set(let value) = isLoading { self.isLoading = value }
-            if case .set(let value) = toast { self.toast = value }
-            return self
-        }
     }
 }

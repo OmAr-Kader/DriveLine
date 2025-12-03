@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUISturdy
+import SwiftUIMacroSturdy
 
 @BackgroundActor
 struct RegisterRequest: Codable, Sendable {
@@ -164,8 +165,10 @@ struct UserLocation: Codable, Sendable, Hashable {
 }
 
 @MainActor
+@SturdyCopy
 struct UserEdit: Sendable, Identifiable {
     
+    @NoCopy
     var id: String {
         name + "\(age ?? 0)" + (city ?? "") + (street ?? "") + (building ?? "") + (unit ?? "")
     }
@@ -201,25 +204,4 @@ struct UserEdit: Sendable, Identifiable {
         self.image = user.image
     }
     
-    @MainActor
-    mutating func copy(
-        name: Update<String> = .keep,
-        age: Update<Int> = .keep,
-        phone: Update<String> = .keep,
-        city: Update<String> = .keep,
-        street: Update<String> = .keep,
-        building: Update<String> = .keep,
-        unit: Update<String> = .keep,
-        image: Update<String> = .keep,
-    ) -> Self {
-        if case .set(let value) = name { self.name = value }
-        if case .set(let value) = phone { self.phone = value }
-        if case .set(let value) = age { self.age = value }
-        if case .set(let value) = city { self.city = value }
-        if case .set(let value) = street { self.street = value }
-        if case .set(let value) = building { self.building = value }
-        if case .set(let value) = unit { self.unit = value }
-        if case .set(let value) = image { self.image = value }
-        return self
-    }
 }

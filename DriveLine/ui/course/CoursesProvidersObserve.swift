@@ -8,6 +8,7 @@
 
 import SwiftUI
 import SwiftUISturdy
+import SwiftUIMacroSturdy
 import Observation
 
 @MainActor
@@ -52,7 +53,7 @@ final class CoursesProvidersObserve : BaseObserver {
         }
     }
     
-    
+    @SturdyCopy
     struct CoursesProvidersState {
 
         private(set) var isLoading: Bool = false
@@ -61,22 +62,6 @@ final class CoursesProvidersObserve : BaseObserver {
         private(set) var listOfCourses: [GetACourseData] = []
         
         private(set) var course: Course? = nil
-
-        @MainActor
-        mutating func copy(
-            isLoading: Update<Bool> = .keep,
-            toast: Update<Toast?> = .keep,
-            listOfCourses: Update<[GetACourseData]> = .keep,
-            course: Update<Course> = .keep,
-        ) -> Self {
-            if case .set(let value) = isLoading { self.isLoading = value }
-            if case .set(let value) = toast { self.toast = value }
-            
-            if case .set(let value) = listOfCourses { self.listOfCourses = value }
-            if case .set(let value) = course { self.course = value }
-
-            return self
-        }
     }
     
 }

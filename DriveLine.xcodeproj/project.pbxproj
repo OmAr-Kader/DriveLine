@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DC1D73992EE08E6400E982A9 /* SwiftUIMacroSturdy in Frameworks */ = {isa = PBXBuildFile; productRef = DC1D73982EE08E6400E982A9 /* SwiftUIMacroSturdy */; };
 		DC9466B52EC22B2600E4C0BD /* Config.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = DC9466B42EC22B2600E4C0BD /* Config.xcconfig */; };
 		DCA84EA22EBD348900945801 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = DCA84EA12EBD348900945801 /* .gitignore */; };
 		DCA84EA52EBD34C500945801 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = DCA84EA32EBD34C500945801 /* LICENSE */; };
@@ -144,6 +145,7 @@
 			files = (
 				DCA84EB12EBD35A000945801 /* SwiftUISturdy in Frameworks */,
 				DCA84EAE2EBD359400945801 /* CouchbaseLiteSwift in Frameworks */,
+				DC1D73992EE08E6400E982A9 /* SwiftUIMacroSturdy in Frameworks */,
 				DCA84EAB2EBD358200945801 /* Swinject in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -151,6 +153,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		DC1D73972EE08E6400E982A9 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		DC911BB42ECC0ABB008FB226 /* driveline-express-ts-api */ = {
 			isa = PBXGroup;
 			children = (
@@ -248,6 +257,7 @@
 				DCA84EA42EBD34C500945801 /* README.md */,
 				DCA84EA12EBD348900945801 /* .gitignore */,
 				DCA84E952EBD345F00945801 /* DriveLine */,
+				DC1D73972EE08E6400E982A9 /* Frameworks */,
 				DCA84E942EBD345F00945801 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -398,6 +408,7 @@
 				DCA84EAA2EBD358200945801 /* Swinject */,
 				DCA84EAD2EBD359400945801 /* CouchbaseLiteSwift */,
 				DCA84EB02EBD35A000945801 /* SwiftUISturdy */,
+				DC1D73982EE08E6400E982A9 /* SwiftUIMacroSturdy */,
 			);
 			productName = DriveLine;
 			productReference = DCA84E932EBD345F00945801 /* DriveLine.app */;
@@ -749,6 +760,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		DC1D73982EE08E6400E982A9 /* SwiftUIMacroSturdy */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DCA84EAF2EBD35A000945801 /* XCRemoteSwiftPackageReference "SwiftUI-Sturdy" */;
+			productName = SwiftUIMacroSturdy;
+		};
 		DCA84EAA2EBD358200945801 /* Swinject */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = DCA84EA92EBD358200945801 /* XCRemoteSwiftPackageReference "Swinject" */;
