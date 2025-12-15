@@ -209,10 +209,6 @@ struct ChatScreen: View {
 
     
     private func handleMainButtonTap() async {
-        if !speech.isAuthorized {
-            speech.requestSpeechRecognitionPermission()
-            return
-        }
         TaskMainSwitcher { [self] in
             withAnimation {
                 inputFocused = false
@@ -225,7 +221,14 @@ struct ChatScreen: View {
             speech.stopListening()
         } else {
             let tirmmed = speech.transcribedText.trimmingCharacters(in: .whitespacesAndNewlines)
-            guard !tirmmed.isEmpty else { speech.startListening(); return }
+            guard !tirmmed.isEmpty else {
+                if !speech.isAuthorized {
+                    speech.requestSpeechRecognitionPermission()
+                    return
+                }
+                speech.startListening()
+                return
+            }
             sendToGemini()
         }
     }

@@ -34,7 +34,7 @@ final class AuthAppObserve: BaseObserver {
     }
 
     @MainActor
-    func register(name: String, email: String, phone: String, password: String, invoke: @escaping @Sendable @MainActor (LoginResponse) -> Void) {
+    func register(name: String, email: String, phone: String, password: String, invoke: @escaping @Sendable @MainActor () -> Void) {
         if let msg = validateUserInput(name: name, email: email, phone: phone, password: password) {
             withAnimation {
                 self.state = self.state.copy(toast: .set(Toast(style: .error, message: msg)))
@@ -45,7 +45,11 @@ final class AuthAppObserve: BaseObserver {
             }
             tasker.back {
                 await self.project.auth.register(body: RegisterRequest(name: name, email: email, phone: phone, role: Const.USER_TYPE_MECHANIC, password: password)) { res in
-                    await self.project.auth.login(body: LoginRequest(email: email, password: password)) { res in
+                    self.mainSync {
+                        self.state = self.state.copy(isLoading: .set(false))
+                        invoke()
+                    }
+                    /*await self.project.auth.login(body: LoginRequest(email: email, password: password)) { res in
                         self.mainSync {
                             invoke(res)
                         }
@@ -55,7 +59,7 @@ final class AuthAppObserve: BaseObserver {
                                 self.state = self.state.copy(isLoading: .set(false), toast: .set(Toast(style: .error, message: msg)))
                             }
                         }
-                    }
+                    }*/
                 } failed: { msg in
                     self.mainSync {
                         withAnimation {

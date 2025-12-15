@@ -19,6 +19,17 @@ A mobile-focused backend and service layer that powers a unified platform for:
 
 This repository provides a clean, scalable, and production-ready backend built with **Node.js**, **NestJS**, **Express**, **TypeScript**, **Mongoose**, and **Axios**.
 
+### Final App Version (Not Included)
+- Docker containerization
+- Flow Controller based on IP
+- Prioritise the requests to give more importance to critical requests
+- Advanced Caching Mechanism using Redis for Flow Controller and API Responses
+- RabbitMQ with Separated port for Heavy Works (Gemini Request & Stripe Payment Gateway)
+- More Security Layers
+- Real-time Chat using Socket.IO
+- Scheduled Car Maintenance with EventKit Integration
+- Stripe Payment Gateway Integration for Subscriptions and Maintenance Services With PostgreSQL for stripe Database
+
 -------------
 
 ### Screenshot

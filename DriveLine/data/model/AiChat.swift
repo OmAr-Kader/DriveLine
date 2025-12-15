@@ -36,6 +36,7 @@ struct PushMessageRequest: Codable {
     let sessionId: String
     let text: String
     let saveQuestion: Bool
+    let isTemp: Bool
 }
 
 @BackgroundActor

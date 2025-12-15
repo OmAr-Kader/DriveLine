@@ -111,7 +111,8 @@ final class BaseAppObserve: BaseObserver {
             await self.inti { it in
                 self.mainSync {
                     let list = it.map({ PreferenceData($0) })
-                    self.state = self.state.copy(preferences: .set(list))
+                    let userBase = self.fetchUserBase(list)
+                    self.state = self.state.copy(preferences: .set(list), userBase: .set(userBase))
                     invoke()
                 }
             }

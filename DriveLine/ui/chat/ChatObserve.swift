@@ -109,7 +109,7 @@ final class ChatObserve : BaseObserver {
     
     @BackgroundActor
     private func sendToGeminiAndUploadRespond(_ userBase: UserBase, sessionId: String, text: String, saveQuestion: Bool) async {
-        await self.project.aiChat.pushMessageToGemini(userBase: userBase, body: PushMessageRequest(sessionId: sessionId, text: text, saveQuestion: saveQuestion)) { message in
+        await self.project.aiChat.pushMessageToGemini(userBase: userBase, body: PushMessageRequest(sessionId: sessionId, text: text, saveQuestion: saveQuestion, isTemp: false)) { message in
             self.mainSync { [self] in
                 let botMessage = AiMessageData(message)
                 let newList = self.state.messages.add(botMessage)

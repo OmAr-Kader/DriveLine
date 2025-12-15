@@ -282,12 +282,28 @@ struct HomeScreen: View {
     @ToolbarContentBuilder
     func toolBarProfileView() -> some ToolbarContent {
         ToolbarItem(placement: .topBarTrailing) {
-            Button {
-                guard obs.state.user != nil else { return }
-                self.obs.sheet(isEditSheet: true)
+            Menu {
+                Button {
+                    guard obs.state.user != nil else { return }
+                    self.obs.sheet(isEditSheet: true)
+                } label: {
+                    Label("Edit Profile", systemImage: "pencil")
+                }
+                
+                Button(role: .destructive) {
+                    self.app.signOut {
+                        navigator.navigateMain(.AUTH_SCREEN_ROUTE)
+                    } _: {
+                        
+                    }
+                } label: {
+                    Label("Sign Out", systemImage: "arrow.right.square")
+                }
             } label: {
-                Image.initial("pencil".forImage(tint: .textOfApp, isSystem: true))
-                .frame(size: 24)}
+                Image(systemName: "ellipsis")
+                    .rotationEffect(.degrees(90))
+                    .frame(width: 24, height: 24)
+            }
         }
     }
 }

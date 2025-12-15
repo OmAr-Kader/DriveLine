@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		DC1D73992EE08E6400E982A9 /* SwiftUIMacroSturdy in Frameworks */ = {isa = PBXBuildFile; productRef = DC1D73982EE08E6400E982A9 /* SwiftUIMacroSturdy */; };
-		DC9466B52EC22B2600E4C0BD /* Config.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = DC9466B42EC22B2600E4C0BD /* Config.xcconfig */; };
 		DCA84EA22EBD348900945801 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = DCA84EA12EBD348900945801 /* .gitignore */; };
 		DCA84EA52EBD34C500945801 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = DCA84EA32EBD34C500945801 /* LICENSE */; };
 		DCA84EA62EBD34C500945801 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = DCA84EA42EBD34C500945801 /* README.md */; };
@@ -422,7 +421,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 2610;
-				LastUpgradeCheck = 2610;
+				LastUpgradeCheck = 2620;
 				TargetAttributes = {
 					DCA84E922EBD345F00945801 = {
 						CreatedOnToolsVersion = 26.1;
@@ -460,7 +459,6 @@
 			files = (
 				DCA84EA22EBD348900945801 /* .gitignore in Resources */,
 				DCA84EA52EBD34C500945801 /* LICENSE in Resources */,
-				DC9466B52EC22B2600E4C0BD /* Config.xcconfig in Resources */,
 				DCA84EA62EBD34C500945801 /* README.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -639,7 +637,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.omar.DriveLine;
+				PRODUCT_BUNDLE_IDENTIFIER = com.omar.driveLine;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				REGISTER_APP_GROUPS = YES;
@@ -693,7 +691,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.omar.DriveLine;
+				PRODUCT_BUNDLE_IDENTIFIER = com.omar.driveLine;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				REGISTER_APP_GROUPS = YES;

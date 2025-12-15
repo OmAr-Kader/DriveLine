@@ -182,9 +182,10 @@ struct AuthScreen: View {
         focusedField = nil
         if isRegistering {
             obs.register(name: name, email: email, phone: phone, password: password) {
-                app.updateUserBase(userBase: UserBase(id: $0.user.id, name: $0.user.name, email: $0.user.email, accountType: $0.user.role, token: $0.token)) {
+                isRegistering = false
+                /*app.updateUserBase(userBase: UserBase(id: $0.user.id, name: $0.user.name, email: $0.user.email, accountType: $0.user.role, token: $0.token)) {
                     navigator.navigateMain(.HOME_SCREEN_ROUTE)
-                }
+                }*/
             }
         } else {
             obs.login(email: email, password: password) {
