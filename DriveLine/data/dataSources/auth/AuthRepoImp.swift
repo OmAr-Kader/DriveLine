@@ -10,6 +10,12 @@ import SwiftUISturdy
 
 final class AuthRepoImp : AuthRepo {
     
+    let appSessions: AppURLSessions
+
+    init(appSessions: AppURLSessions) {
+        self.appSessions = appSessions
+    }
+    
     @BackgroundActor
     func register(body: RegisterRequest, invoke: @escaping @BackgroundActor (BaseMessageResponse) async -> Void, failed: @BackgroundActor (String) -> Void) async {
         guard let url = URL(string: SecureConst.BASE_URL + Endpoint.REGISTER) else {
@@ -60,7 +66,12 @@ final class AuthRepoImp : AuthRepo {
             return
         }
         do {
-            let response: Profile = try await url.createGETRequest().addAuthorizationHeader(user).performRequest()
+            let request = try url.createGETRequest().addAuthorizationHeader(user)
+            if let haveCache: Profile = appSessions.baseURLSession.tryFetchCache(request: request) {
+                invoke(haveCache)
+            }
+            
+            let response: Profile = try await request.performRequest(session: appSessions.baseURLSession)
             invoke(response)
         } catch {
             LogKit.print("Failed ->", error.localizedDescription); failed("Failed")

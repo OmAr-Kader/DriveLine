@@ -10,11 +10,11 @@ import SwiftUISturdy
 import CouchbaseLiteSwift
 
 final class ShortVideoRepoImp : ShortVideoRepo {
-
-    private let db: CouchbaseLocal?
     
-    init(db: CouchbaseLocal?) {
-        self.db = db
+    let appSessions: AppURLSessions
+
+    init(appSessions: AppURLSessions) {
+        self.appSessions = appSessions
     }
     
     @BackgroundActor
@@ -51,11 +51,15 @@ final class ShortVideoRepoImp : ShortVideoRepo {
             LogKit.print("fetchLast50Videos Invalid URL"); failed("Failed")
             return
         }
-        await invoke(fetchLocalLast50Videos())
+        
         do {
-            let response: GetShortsWithUserRespond = try await url.createGETRequest().addAuthorizationHeader(userBase).performRequest()
+            let request = try url.createGETRequest().addAuthorizationHeader(userBase)
+            if let haveCache: GetShortsWithUserRespond = appSessions.baseURLSession.tryFetchCache(request: request) {
+                invoke(haveCache.data)
+            }
+            
+            let response: GetShortsWithUserRespond = try await request.performRequest()
             invoke(response.data)
-            await insert(response.data)
         } catch {
             LogKit.print("Failed ->", error.localizedDescription); failed("Failed")
         }
@@ -71,63 +75,6 @@ final class ShortVideoRepoImp : ShortVideoRepo {
             try await url.createPOSTRequest(body: BaseMessageResponse(message: "dummy")).addAuthorizationHeader(userBase).performRequestSafe()
         } catch {
             LogKit.print("Failed ->", error.localizedDescription)
-        }
-    }
-    
-    
-    @BackgroundActor
-    func fetchLocalLast50Videos() async -> [ShortVideoUser] {
-        do {
-            guard let collection = try? db?.collectionShorts else {
-                return []
-            }
-            
-            let query = QueryBuilder
-                .select(
-                    SelectResult.expression(Meta.id).as(ShortVideoUser.CodingKeys.id.rawValue),
-                    SelectResult.all()
-                )
-                .from(DataSource.collection(collection))
-            
-            let results = try query.execute()
-            var shorts: [ShortVideoUser] = []
-            
-            for result in results {
-                guard let id = result.string(forKey: ShortVideoUser.CodingKeys.id.rawValue),
-                      let document = try collection.document(id: id),
-                      let short = ShortVideoUser.fromDocument(document) else {
-                    continue
-                }
-                shorts.append(short)
-            }
-            return shorts//.unique(by: { $0.link })
-        } catch {
-            LogKit.print("Error fetching prefs: \(error)")
-            return []
-        }
-    }
-    
-    
-    @BackgroundActor
-    func insert(_ shorts: [ShortVideoUser]) async {
-        do {
-            try? db?.dropCollectionShorts()
-            await Task.sleep(seconds: 0.1)
-            
-            guard let collection = try? db?.collectionShorts else {
-                return
-            }
-            
-            try db?.database?.inBatch {
-                for short in shorts {
-                    guard let doc = short.toDocument() else {
-                        continue
-                    }
-                    try collection.save(document: doc)
-                }
-            }
-        } catch {
-            LogKit.print("Error inserting insert: \(error)")
         }
     }
 }

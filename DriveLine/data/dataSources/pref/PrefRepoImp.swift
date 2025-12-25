@@ -255,32 +255,7 @@ final class PrefRepoImp : PrefRepo, Sendable {
     @BackgroundActor
     func deletePrefAll() async -> Int {
         do {
-            guard let collection = try? db?.collectionPreferences else {
-                return Const.CLOUD_FAILED
-            }
-            
-            try db?.database?.inBatch {
-                Task { @BackgroundActor [weak self] in
-                    guard let coll = try? self?.db?.collectionPreferences else {
-                        return
-                    }
-                    
-                    let query = QueryBuilder
-                        .select(SelectResult.expression(Meta.id))
-                        .from(DataSource.collection(collection))
-                    
-                    
-                    let results = try query.execute()
-                    for result in results {
-                        guard let id = result.string(forKey: Preference.CodingKeys.id.rawValue),
-                              let document = try coll.document(id: id) else {
-                            continue
-                        }
-                        try coll.delete(document: document)
-                    }
-                }
-            }
-            
+            try self.db?.database?.deleteCollection(name: db?.collectionPreferences.name ?? "")
             return Const.CLOUD_SUCCESS
         } catch {
             LogKit.print("Error deleting all prefs: \(error)")

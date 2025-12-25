@@ -8,7 +8,15 @@ import SwiftUISturdy
 
 /** ON APP */
 
+
+struct AppURLSessions : Sendable {
+    let baseURLSession: URLSession
+    let noCache: URLSession
+    let secure: URLSession
+}
+
 struct Project : Sendable {
+    let urlSessions: AppURLSessions
     let pref: PreferenceBase
     let auth: AuthBase
     let aiChat: AiChatBase
@@ -21,17 +29,24 @@ func buildContainer() -> Container {
     let container = Container()
     let localDB = try? CouchbaseLocal()
     
+    let urlSessions = AppURLSessions(
+        baseURLSession: URLSession.customSession(), noCache: URLSession.api, secure: URLSession.secure()
+    )
     let pro = Project(
+        urlSessions: urlSessions,
         pref: PreferenceBase(repository: PrefRepoImp(db: localDB)),
-        auth: AuthBase(repo: AuthRepoImp()),
-        aiChat: AiChatBase(repo: AiChatRepoImp()),
-        fix: FixServiceBase(repo: FixServiceRepoImp()),
-        course: CourseBase(repo: CourseRepoImp()),
-        short: ShortVideoBase(repo: ShortVideoRepoImp(db: localDB))
+        auth: AuthBase(repo: AuthRepoImp(appSessions: urlSessions)),
+        aiChat: AiChatBase(repo: AiChatRepoImp(appSessions: urlSessions)),
+        fix: FixServiceBase(repo: FixServiceRepoImp(appSessions: urlSessions)),
+        course: CourseBase(repo: CourseRepoImp(appSessions: urlSessions)),
+        short: ShortVideoBase(repo: ShortVideoRepoImp(appSessions: urlSessions))
     )
     let theme = Theme(isDarkMode: UITraitCollection.current.userInterfaceStyle.isDarkMode)
     container.register(Project.self) { _  in
         return pro
+    }.inObjectScope(.container)
+    container.register(AppURLSessions.self) { _  in
+        return urlSessions
     }.inObjectScope(.container)
     container.register(Theme.self) { _  in
         return theme

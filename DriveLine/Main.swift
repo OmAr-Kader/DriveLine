@@ -171,7 +171,7 @@ struct HomeScreen: View {
     }
     
     private func forProfile() {
-        guard obs.state.user == nil else { return }
+        //guard obs.state.user == nil else { return }
         obs.fetchProfile(app.state.userBase)
     }
     

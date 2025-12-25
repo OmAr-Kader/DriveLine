@@ -9,6 +9,12 @@ import Foundation
 import SwiftUISturdy
 
 final class CourseRepoImp : CourseRepo {
+    
+    let appSessions: AppURLSessions
+
+    init(appSessions: AppURLSessions) {
+        self.appSessions = appSessions
+    }
             
     @BackgroundActor
     func createCourse(userBase: UserBase, body: ProvideCourseRequest, invoke: @escaping @BackgroundActor (ProvideCourseRequest) -> Void, failed: @escaping (String) -> Void) async {

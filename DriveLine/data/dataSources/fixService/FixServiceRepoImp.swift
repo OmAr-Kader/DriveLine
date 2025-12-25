@@ -10,6 +10,11 @@ import SwiftUISturdy
 
 final class FixServiceRepoImp : FixServiceRepo {
     
+    let appSessions: AppURLSessions
+
+    init(appSessions: AppURLSessions) {
+        self.appSessions = appSessions
+    }
     
     @BackgroundActor
     func createService(userBase: UserBase, body: ProvideServiceRequest, invoke: @escaping @BackgroundActor (ProvideServiceRequest) -> Void, failed: @escaping (String) -> Void) async {

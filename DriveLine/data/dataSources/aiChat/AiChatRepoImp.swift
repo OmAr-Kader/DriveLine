@@ -9,6 +9,12 @@ import Foundation
 import SwiftUISturdy
 
 final class AiChatRepoImp : AiChatRepo {
+    
+    let appSessions: AppURLSessions
+
+    init(appSessions: AppURLSessions) {
+        self.appSessions = appSessions
+    }
 
     @BackgroundActor
     func createSessionWithMessage(userBase: UserBase, body: CreateSessionRequest, invoke: @escaping @BackgroundActor (CreateSessionResponse) async -> Void, failed: @escaping (String) -> Void) async {
@@ -59,7 +65,12 @@ final class AiChatRepoImp : AiChatRepo {
             return
         }
         do {
-            let response: [AiSession] = try await url.createGETRequest().addAuthorizationHeader(userBase).performRequest()
+            let request = try url.createGETRequest().addAuthorizationHeader(userBase)
+            if let haveCache: [AiSession] = appSessions.baseURLSession.tryFetchCache(request: request) {
+                invoke(haveCache)
+            }
+            
+            let response: [AiSession] = try await request.performRequest(session: appSessions.baseURLSession)
             invoke(response)
         } catch {
             LogKit.print("Failed ->", error.localizedDescription); failed("Failed")
