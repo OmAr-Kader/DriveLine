@@ -1,15 +1,6 @@
 {
-  "originHash" : "3ee0c1e5ccafcaaeaeea807554f70426c7e5c5271c86f0aa7530f06ebf0eeb29",
+  "originHash" : "f648a42bd49de1f25f7d18dfba86a0e30b96f23f15666f9386073b14961a75bb",
   "pins" : [
-    {
-      "identity" : "couchbase-lite-swift",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/couchbase/couchbase-lite-swift",
-      "state" : {
-        "revision" : "26d5946a72fab2722f83c01c40116d0bd84a0819",
-        "version" : "4.0.0"
-      }
-    },
     {
       "identity" : "swift-syntax",
       "kind" : "remoteSourceControl",

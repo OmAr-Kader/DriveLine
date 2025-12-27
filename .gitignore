@@ -1,5 +1,6 @@
 SecureConst.swift
 EventKitManager.swift
+SwiftDataKit.swift
 Config.xcconfig
 
 getClientIP.ts

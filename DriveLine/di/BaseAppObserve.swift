@@ -1,54 +1,48 @@
 import Foundation
+import Combine
 import SwiftUI
 import Observation
 import SwiftUISturdy
 import SwiftUIMacroSturdy
-import CouchbaseLiteSwift
 
 @Observable
 final class BaseAppObserve: BaseObserver {
     
     @MainActor
     private(set) var state: AppObserveState = AppObserveState()
-    
-    private var prefsTask: Task<Void, Error>? = nil
-    
-    @BackgroundActor
-    private var sinkPrefs: ListenerToken? = nil
+        
+    @MainActor
+    @ObservationIgnored
+    private var cancellables = Set<AnyCancellable>()
 
     init() {
         @Inject
         var pro: Project
         super.init(project: pro)
-        prefsTask?.cancel()
-        prefsTask = tasker.backSync { [weak self] in
-            self?.sinkPrefs?.remove()
-            self?.project.pref.prefs { list in
-                self?.mainSync {
-                    self?.refreshPreferences(list.map({ PreferenceData($0) }))
-                }
-            } fetchToken: { token in
-                self?.sinkPrefs = token
-            } onFailed: { _ in
-                
+        self.project.pref.observePrefs { prefs in
+            let list = prefs.map({ PreferenceData(from: $0) })
+            self.mainSync {
+                self.refreshPreferences(list)
             }
-        }
+            
+        }?.store(in: &cancellables)
     }
+    
     
     @MainActor
     func refreshPreferences(_ list: [PreferenceData]) {
         let userBase = fetchUserBase(list)
-        self.state = self.state.copy(preferences: .set(list), userBase: .set(userBase))
+        self.state = self.state.copy(preferences: .set(list), preferences_: .set(list), userBase: .set(userBase))
     }
     
-    private func inti(invoke: @BackgroundActor @escaping ([Preference]) async -> Void) {
+    private func inti(invoke: @BackgroundActor @escaping ([PreferenceData]) async -> Void) {
         tasker.backSync {
             await invoke(await self.project.pref.prefs())
         }
     }
     
     @BackgroundActor
-    private func intiBack(invoke: @BackgroundActor @escaping ([Preference]) async -> Void) async {
+    private func intiBack(invoke: @BackgroundActor @escaping ([PreferenceData]) async -> Void) async {
         await invoke(await self.project.pref.prefs())
     }
 
@@ -63,8 +57,7 @@ final class BaseAppObserve: BaseObserver {
                     it.forEach { pref in
                         LogKit.print(pref.keyString, pref.value)
                     }
-                    let list = it.map({ PreferenceData($0) })
-                    self.state = self.state.copy(preferences: .set(list), userBase: .set(userBase))
+                    self.state = self.state.copy(preferences: .set(it), userBase: .set(userBase))
                     invoke(userBase)
                 }
             }
@@ -89,7 +82,7 @@ final class BaseAppObserve: BaseObserver {
         return UserBase(id: id, name: name, email: email, accountType: userType, token: token)
     }
     
-    private func fetchUserBase(_ list: [Preference]) -> UserBase? {
+    private func fetchUserBase_(_ list: [PreferenceData]) -> UserBase? {
         let id = list.last { it in it.keyString == Const.PREF_USER_ID }?.value
         let name = list.last { it in it.keyString == Const.PREF_USER_NAME }?.value
         let email = list.last { it in it.keyString == Const.PREF_USER_EMAIL }?.value
@@ -107,12 +100,11 @@ final class BaseAppObserve: BaseObserver {
             list.append(Preference(keyString: Const.PREF_USER_EMAIL, value: userBase.email))
             list.append(Preference(keyString: Const.PREF_USER_TYPE, value: userBase.accountType))
             list.append(Preference(keyString: Const.PREF_USER_TOKEN, value: userBase.token))
-            let _ = await self.project.pref.updatePref(list)
+            let _ = await self.project.pref.upsertPref(list)
             await self.inti { it in
                 self.mainSync {
-                    let list = it.map({ PreferenceData($0) })
-                    let userBase = self.fetchUserBase(list)
-                    self.state = self.state.copy(preferences: .set(list), userBase: .set(userBase))
+                    let userBase = self.fetchUserBase(it)
+                    self.state = self.state.copy(preferences: .set(it), userBase: .set(userBase))
                     invoke()
                 }
             }
@@ -124,11 +116,10 @@ final class BaseAppObserve: BaseObserver {
             var list : [Preference] = []
             list.append(Preference(keyString: Const.PREF_USER_NAME, value: name))
             list.append(Preference(keyString: Const.PREF_USER_EMAIL, value: email))
-            let _ = await self.project.pref.updatePref(list)
+            let _ = await self.project.pref.upsertPref(list)
             await self.inti { it in
                 self.mainSync {
-                    let list = it.map({ PreferenceData($0) })
-                    self.state = self.state.copy(preferences: .set(list))
+                    self.state = self.state.copy(preferences: .set(it))
                     invoke()
                 }
             }
@@ -143,8 +134,7 @@ final class BaseAppObserve: BaseObserver {
             inti { it in
                 let preference = it.first { it1 in it1.keyString == key }?.value
                 self.mainSync {
-                    let list = it.map({ PreferenceData($0) })
-                    self.state = self.state.copy(preferences: .set(list))
+                    self.state = self.state.copy(preferences: .set(it))
                     value(preference)
                 }
             }
@@ -170,7 +160,7 @@ final class BaseAppObserve: BaseObserver {
     
     func updatePref(key: String, newValue: String, _ invoke: @MainActor @escaping () -> ()) {
         self.tasker.back {
-            _ = await self.project.pref.updatePref(Preference(keyString: key, value: newValue), newValue: newValue)
+            _ = await self.project.pref.upsertPref(Preference(keyString: key, value: newValue))
             self.mainSync {
                 invoke()
             }
@@ -214,16 +204,13 @@ final class BaseAppObserve: BaseObserver {
         }
     }
     
-    private func cancelSession() {
-        prefsTask?.cancel()
-        prefsTask = nil
-    }
-    
     
     @SturdyCopy
     struct AppObserveState {
         
         private(set) var preferences: [PreferenceData] = []
+        private(set) var preferences_: [PreferenceData] = []
+        
         private(set) var userBase: UserBase? = nil
         private(set) var forUpdateSessions: (newSession: AiSessionData?, needUpdateOnly: Bool)?
         private(set) var args = [Screen : any ScreenConfig]()

@@ -1,261 +1,72 @@
 import Foundation
-import CouchbaseLiteSwift
+import SwiftData
+import Combine
 import SwiftUISturdy
 
 final class PrefRepoImp : PrefRepo, Sendable {
     
-    private let db: CouchbaseLocal?
+    private let swiftData: SwiftDataManager?
     
-    init(db: CouchbaseLocal?) {
-        self.db = db
+    init(swiftData: SwiftDataManager?) {
+        self.swiftData = swiftData
     }
     
     @BackgroundActor
     func prefs() async -> [Preference] {
-        do {
-            guard let collection = try? db?.collectionPreferences else {
-                return []
-            }
-            
-            let query = QueryBuilder
-                .select(
-                    SelectResult.expression(Meta.id).as(Preference.CodingKeys.id.rawValue),
-                    SelectResult.all()
-                )
-                .from(DataSource.collection(collection))
-            
-            let results = try query.execute()
-            var preferences: [Preference] = []
-            
-            for result in results {
-                guard let id = result.string(forKey: Preference.CodingKeys.id.rawValue),
-                      let document = try collection.document(id: id) else {
-                    continue
-                }
-                preferences.append(Preference.fromDocument(document))
-            }
-            
-            return preferences
-        } catch {
-            LogKit.print("Error fetching prefs: \(error)")
-            return []
+        return (try? await swiftData?.fetch(Preference.self, predicate: nil, sortBy: [SortDescriptor<Preference>(\.updatedAt, order: .reverse)])) ?? []
+    }
+    
+    @MainActor
+    func observePrefs(invoke: @escaping @Sendable @BackgroundActor ([Preference]) -> Void) ->  AnyCancellable? {
+        TaskBackSwitcher {
+            let list = await self.prefs()
+            invoke(list)
         }
+        return swiftData?.publisher(for: Preference.self)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] event in
+                guard let self = self else { return }
+                TaskBackSwitcher {
+                    let list = await self.prefs()
+                    invoke(list)
+                }
+            }
     }
     
     @BackgroundActor
-    func prefs(invoke: @escaping @Sendable @BackgroundActor ([Preference]) -> Void, fetchToken: @escaping @Sendable @BackgroundActor (ListenerToken?) -> Void, onFailed: @escaping @Sendable @BackgroundActor (String) -> Void) {
-        guard let collection = try? db?.collectionPreferences else {
-            onFailed("Can't find the database collection")
-            return
-        }
-        
-        Task.detached {
-            let query = QueryBuilder
-                .select(
-                    SelectResult.expression(Meta.id).as(Preference.CodingKeys.id.rawValue),
-                    SelectResult.all()
-                )
-                .from(DataSource.collection(collection))
-            
-            let token = query.addChangeListener(withQueue: BackgroundActor.shared.queue) { change in
-                guard let results = change.results else {
-                    TaskBackSwitcher { invoke([]) }
-                    return
-                }
-                
-                var ids: [String] = []
-                for result in results {
-                    if let id = result.string(forKey: Preference.CodingKeys.id.rawValue) {
-                        ids.append(id)
-                    }
-                }
-                
-                TaskBackSwitcher { [weak self] in
-                    guard let coll = try? self?.db?.collectionPreferences else {
-                        onFailed("Can't find the database collection")
-                        return
-                    }
-                    do {
-                        var preferences: [Preference] = []
-                        for id in ids {
-                            guard let document = try coll.document(id: id) else { continue }
-                            preferences.append(Preference.fromDocument(document))
-                        }
-                        invoke(preferences)
-                    } catch {
-                        LogKit.print("Error in prefs listener: \(error)")
-                        invoke([])
-                    }
-                }
-            }
-            TaskBackSwitcher {
-                fetchToken(token)
-            }
-        }
+    func upsertPref(_ pref: Preference) async -> Preference? {
+        LogKit.print("Upserting pref with key: \(pref.keyString) and value: \(pref.value)")
+        return (try? await swiftData?.upsert([pref], matchingKeyPath: \.keyString) { existing, new in
+            existing.value = new.value
+            existing.updatedAt = Date()
+        })?.first
     }
     
     @BackgroundActor
-    func insertPref(_ pref: Preference) async -> Preference? {
-        do {
-            guard let collection = try? db?.collectionPreferences else {
-                return nil
-            }
-            
-            try collection.save(document: pref.toDocument())
-            return pref
-        } catch {
-            LogKit.print("Error inserting pref: \(error)")
-            return nil
-        }
+    func upsertPref(_ prefs: [Preference]) async -> [Preference]? {
+        return (try? await swiftData?.upsert(prefs, matchingKeyPath: \.keyString) { existing, new in
+            existing.value = new.value
+            existing.updatedAt = Date()
+        })
     }
     
-    @BackgroundActor
-    func insertPref(_ prefs: [Preference]) async -> [Preference]? {
-        do {
-            guard let collection = try? db?.collectionPreferences else {
-                return nil
-            }
-            
-            try db?.database?.inBatch {
-                for pref in prefs {
-                    try collection.save(document: pref.toDocument())
-                }
-            }
-            
-            return prefs
-        } catch {
-            LogKit.print("Error inserting prefs: \(error)")
-            return nil
-        }
-    }
-    
-    @BackgroundActor
-    @inlinable
-    func updatePref(_ pref: Preference, newValue: String) async -> Preference? {
-        do {
-            guard let collection = try? db?.collectionPreferences else {
-                return nil
-            }
-            
-            // 1️⃣ Query document by keyString
-            let query = QueryBuilder
-                .select(SelectResult.expression(Meta.id))
-                .from(DataSource.collection(collection))
-                .where(Expression.property(Preference.CodingKeys.keyString.rawValue).equalTo(Expression.string(pref.keyString)))
-
-            // ✅ Correct: iterate through query results instead of subscripting
-            let resultSet = try query.execute()
-            let firstResult = resultSet.allResults().first
-            let existingId = firstResult?.string(forKey: Preference.CodingKeys.id.rawValue)
-            
-            if let id = existingId, let doc = try collection.document(id: id)?.toMutable() {
-                // 2️⃣ Update existing document
-                doc.setString(pref.value, forKey: Preference.CodingKeys.value.rawValue)
-                try collection.save(document: doc)
-                return Preference.fromDocument(doc)
-            } else {
-                // 3️⃣ If not found, insert a new document
-                let newPref = Preference(keyString: pref.keyString, value: newValue)
-                try collection.save(document: newPref.toDocument())
-                return newPref
-            }
-        } catch {
-            LogKit.print("Error updating pref: \(error)")
-            return nil
-        }
-    }
-    
-    @BackgroundActor
-    func updatePref_(_ pref: Preference, newValue: String) async -> Preference {
-        do {
-            guard let collection = try? db?.collectionPreferences else {
-                return pref
-            }
-            if let doc = try collection.document(id: pref.id)?.toMutable() {
-                // 2️⃣ Update existing document
-                doc.setString(newValue, forKey: Preference.CodingKeys.value.rawValue)
-                try collection.save(document: doc)
-                return Preference.fromDocument(doc)
-            } else {
-                LogKit.print("Error updating pref: :No ID")
-                return pref
-            }
-        } catch {
-            LogKit.print("Error updating pref: \(error)")
-            return pref
-        }
-    }
-    
-    
-    @BackgroundActor
-    func updatePref(_ prefs: [Preference]) async -> [Preference] {
-        do {
-            guard let collection = try? db?.collectionPreferences else {
-                return prefs
-            }
-            
-            try db?.database?.inBatch {
-                for pref in prefs {
-                    let query = QueryBuilder
-                        .select(SelectResult.expression(Meta.id))
-                        .from(DataSource.collection(collection))
-                        .where(Expression.property(Preference.CodingKeys.keyString.rawValue).equalTo(Expression.string(pref.keyString)))
-                    
-                    // ✅ Correctly extract first result
-                    let resultSet = try query.execute()
-                    let firstResult = resultSet.allResults().first
-                    let existingId = firstResult?.string(forKey: Preference.CodingKeys.id.rawValue)
-                    
-                    if let id = existingId, let doc = try collection.document(id: id)?.toMutable() {
-                        // 2️⃣ Update value if found
-                        doc.setString(pref.value, forKey: Preference.CodingKeys.value.rawValue)
-                        try collection.save(document: doc)
-                    } else {
-                        // 3️⃣ Otherwise insert new
-                        try collection.save(document: pref.toDocument())
-                    }
-                }
-            }
-            
-            return prefs
-        } catch {
-            LogKit.print("Error updating prefs: \(error)")
-            return prefs
-        }
-    }
     
     @BackgroundActor
     func deletePref(key: String) async -> Int {
         do {
-            guard let collection = try? db?.collectionPreferences else {
-                return Const.CLOUD_FAILED
-            }
-            
-            let query = QueryBuilder
-                .select(SelectResult.expression(Meta.id))
-                .from(DataSource.collection(collection))
-                .where(Expression.property(Preference.CodingKeys.keyString.rawValue).equalTo(Expression.string(key)))
-            
-            let results = try query.execute()
-            
-            if let result = results.next(),
-               let id = result.string(forKey: Preference.CodingKeys.id.rawValue),
-               let document = try collection.document(id: id) {
-                try collection.delete(document: document)
-                return Const.CLOUD_SUCCESS
-            }
-            
-            return Const.CLOUD_FAILED
+            try await swiftData?.delete(Preference.self, where: \.keyString, equals: key)
+            return Const.CLOUD_SUCCESS
         } catch {
-            LogKit.print("Error deleting pref: \(error)")
+            LogKit.print("Error deleting all prefs: \(error)")
             return Const.CLOUD_FAILED
         }
     }
     
+
     @BackgroundActor
     func deletePrefAll() async -> Int {
         do {
-            try self.db?.database?.deleteCollection(name: db?.collectionPreferences.name ?? "")
+            try await self.swiftData?.deleteAll(Preference.self)
             return Const.CLOUD_SUCCESS
         } catch {
             LogKit.print("Error deleting all prefs: \(error)")

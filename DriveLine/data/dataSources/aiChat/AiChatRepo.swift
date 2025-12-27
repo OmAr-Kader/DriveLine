@@ -7,7 +7,6 @@
 
 import SwiftUISturdy
 import Combine
-import CouchbaseLiteSwift
 
 internal protocol AiChatRepo : Sendable {
             

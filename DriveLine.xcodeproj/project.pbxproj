@@ -12,7 +12,6 @@
 		DCA84EA52EBD34C500945801 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = DCA84EA32EBD34C500945801 /* LICENSE */; };
 		DCA84EA62EBD34C500945801 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = DCA84EA42EBD34C500945801 /* README.md */; };
 		DCA84EAB2EBD358200945801 /* Swinject in Frameworks */ = {isa = PBXBuildFile; productRef = DCA84EAA2EBD358200945801 /* Swinject */; };
-		DCA84EAE2EBD359400945801 /* CouchbaseLiteSwift in Frameworks */ = {isa = PBXBuildFile; productRef = DCA84EAD2EBD359400945801 /* CouchbaseLiteSwift */; };
 		DCA84EB12EBD35A000945801 /* SwiftUISturdy in Frameworks */ = {isa = PBXBuildFile; productRef = DCA84EB02EBD35A000945801 /* SwiftUISturdy */; };
 /* End PBXBuildFile section */
 
@@ -143,7 +142,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				DCA84EB12EBD35A000945801 /* SwiftUISturdy in Frameworks */,
-				DCA84EAE2EBD359400945801 /* CouchbaseLiteSwift in Frameworks */,
 				DC1D73992EE08E6400E982A9 /* SwiftUIMacroSturdy in Frameworks */,
 				DCA84EAB2EBD358200945801 /* Swinject in Frameworks */,
 			);
@@ -405,7 +403,6 @@
 			name = DriveLine;
 			packageProductDependencies = (
 				DCA84EAA2EBD358200945801 /* Swinject */,
-				DCA84EAD2EBD359400945801 /* CouchbaseLiteSwift */,
 				DCA84EB02EBD35A000945801 /* SwiftUISturdy */,
 				DC1D73982EE08E6400E982A9 /* SwiftUIMacroSturdy */,
 			);
@@ -439,7 +436,6 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				DCA84EA92EBD358200945801 /* XCRemoteSwiftPackageReference "Swinject" */,
-				DCA84EAC2EBD359400945801 /* XCRemoteSwiftPackageReference "couchbase-lite-swift" */,
 				DCA84EAF2EBD35A000945801 /* XCRemoteSwiftPackageReference "SwiftUI-Sturdy" */,
 			);
 			preferredProjectObjectVersion = 77;
@@ -739,14 +735,6 @@
 				minimumVersion = 2.10.0;
 			};
 		};
-		DCA84EAC2EBD359400945801 /* XCRemoteSwiftPackageReference "couchbase-lite-swift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/couchbase/couchbase-lite-swift";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 4.0.0;
-			};
-		};
 		DCA84EAF2EBD35A000945801 /* XCRemoteSwiftPackageReference "SwiftUI-Sturdy" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/OmAr-Kader/SwiftUI-Sturdy";
@@ -767,11 +755,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = DCA84EA92EBD358200945801 /* XCRemoteSwiftPackageReference "Swinject" */;
 			productName = Swinject;
-		};
-		DCA84EAD2EBD359400945801 /* CouchbaseLiteSwift */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = DCA84EAC2EBD359400945801 /* XCRemoteSwiftPackageReference "couchbase-lite-swift" */;
-			productName = CouchbaseLiteSwift;
 		};
 		DCA84EB02EBD35A000945801 /* SwiftUISturdy */ = {
 			isa = XCSwiftPackageProductDependency;

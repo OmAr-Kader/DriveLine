@@ -27,14 +27,15 @@ struct Project : Sendable {
 
 func buildContainer() -> Container {
     let container = Container()
-    let localDB = try? CouchbaseLocal()
+    let modelContainer = createModelContainer()
+    let swiftData = SwiftDataManager(modelContainer: modelContainer)
     
     let urlSessions = AppURLSessions(
         baseURLSession: URLSession.customSession(), noCache: URLSession.api, secure: URLSession.secure()
     )
     let pro = Project(
         urlSessions: urlSessions,
-        pref: PreferenceBase(repository: PrefRepoImp(db: localDB)),
+        pref: PreferenceBase(repository: PrefRepoImp(swiftData: swiftData)),
         auth: AuthBase(repo: AuthRepoImp(appSessions: urlSessions)),
         aiChat: AiChatBase(repo: AiChatRepoImp(appSessions: urlSessions)),
         fix: FixServiceBase(repo: FixServiceRepoImp(appSessions: urlSessions)),

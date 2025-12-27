@@ -1,6 +1,6 @@
 import SwiftUISturdy
+import SwiftData
 import Combine
-import CouchbaseLiteSwift
 
 final class PreferenceBase : Sendable {
     
@@ -11,33 +11,25 @@ final class PreferenceBase : Sendable {
     }
     
     @BackgroundActor
-    func prefs() async -> [Preference] {
-        await repository.prefs()
+    func prefs() async -> [PreferenceData] {
+        await repository.prefs().map { it in
+            PreferenceData(from: it)
+        }
     }
     
-    @BackgroundActor
-    func prefs(invoke: @escaping @Sendable @BackgroundActor ([Preference]) -> Void, fetchToken: @escaping @Sendable @BackgroundActor (ListenerToken?) -> Void, onFailed: @escaping @Sendable @BackgroundActor (String) -> Void) {
-        return repository.prefs(invoke: invoke, fetchToken: fetchToken, onFailed: onFailed)
+    @MainActor
+    func observePrefs(invoke: @escaping @Sendable @BackgroundActor ([Preference]) -> Void) ->  AnyCancellable? {
+        return repository.observePrefs(invoke: invoke)
     }
   
     @BackgroundActor
-    func insertPref(_ pref: Preference) async -> Preference? {
-        return await repository.insertPref(pref)
+    func upsertPref(_ prefs: Preference) async -> Preference?  {
+        return await repository.upsertPref(prefs)
     }
     
     @BackgroundActor
-    func insertPref(_ prefs: [Preference]) async -> [Preference]? {
-        return await repository.insertPref(prefs)
-    }
-    
-    @BackgroundActor
-    @inlinable func updatePref(_ pref: Preference, newValue: String) async -> Preference? {
-        return await repository.updatePref(pref, newValue: newValue)
-    }
-    
-    @BackgroundActor
-    func updatePref(_ prefs: [Preference]) async -> [Preference] {
-        return await repository.updatePref(prefs)
+    func upsertPref(_ prefs: [Preference]) async -> [Preference]?  {
+        return await repository.upsertPref(prefs)
     }
     
     @BackgroundActor

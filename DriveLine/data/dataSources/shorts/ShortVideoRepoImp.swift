@@ -7,7 +7,6 @@
 
 import Foundation
 import SwiftUISturdy
-import CouchbaseLiteSwift
 
 final class ShortVideoRepoImp : ShortVideoRepo {
     

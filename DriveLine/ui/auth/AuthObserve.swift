@@ -11,7 +11,6 @@ import SwiftUI
 import Observation
 import SwiftUISturdy
 import SwiftUIMacroSturdy
-import CouchbaseLiteSwift
 
 @Observable
 final class AuthAppObserve: BaseObserver {

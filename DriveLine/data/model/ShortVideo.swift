@@ -8,7 +8,6 @@
 import AVKit
 import Combine
 import SwiftUISturdy
-import CouchbaseLiteSwift
 
 @BackgroundActor
 struct ShortVideo: Codable {
@@ -66,62 +65,6 @@ struct ShortVideoUser: Codable {
     let tags: [Int]
     let views: Int
     let createdAt: Date
-    
-    
-    func toDocument() -> MutableDocument? {
-        let doc = MutableDocument(id: id)
-        doc.setString(id, forKey: "id")
-        doc.setString(title, forKey: CodingKeys.title.rawValue)
-        doc.setString(link, forKey: CodingKeys.link.rawValue)
-        doc.setString(thumbImageName, forKey: CodingKeys.thumbImageName.rawValue)
-        doc.setInt(views, forKey: CodingKeys.views.rawValue)
-        doc.setDate(createdAt, forKey: CodingKeys.createdAt.rawValue)
-        
-        // Nested user
-        let userDict = MutableDictionaryObject()
-        userDict.setString(user.id, forKey: UserShort.CodingKeys.id.rawValue)
-        userDict.setString(user.name, forKey: UserShort.CodingKeys.name.rawValue)
-        userDict.setString(user.role, forKey: UserShort.CodingKeys.role.rawValue)
-        userDict.setString(user.image, forKey: UserShort.CodingKeys.image.rawValue)
-        doc.setDictionary(userDict, forKey: CodingKeys.user.rawValue)
-        
-        // Tags array
-        let tagsArray = MutableArrayObject()
-        tags.forEach { tagsArray.addInt($0) }
-        doc.setArray(tagsArray, forKey: CodingKeys.tags.rawValue)
-        
-        return doc
-    }
-    
-    static func fromDocument(_ doc: Document) -> ShortVideoUser? {
-        guard
-            let id = doc.string(forKey: "id"),
-            let title = doc.string(forKey: CodingKeys.title.rawValue),
-            let link = doc.string(forKey: CodingKeys.link.rawValue),
-            let thumb = doc.string(forKey: CodingKeys.thumbImageName.rawValue),
-            let userDict = doc.dictionary(forKey: CodingKeys.user.rawValue),
-            let userId = userDict.string(forKey: UserShort.CodingKeys.id.rawValue),
-            let userName = userDict.string(forKey: UserShort.CodingKeys.name.rawValue),
-            let userRole = userDict.string(forKey: UserShort.CodingKeys.role.rawValue),
-            let userImage = userDict.string(forKey: UserShort.CodingKeys.image.rawValue),
-            let createdAt = doc.date(forKey: CodingKeys.createdAt.rawValue)
-        else { return nil }
-        
-        let tagsArray = doc.array(forKey: CodingKeys.tags.rawValue)?.toIntArray() ?? []
-        
-        let user = UserShort(id: userId, name: userName, role: userRole, image: userImage)
-        
-        return ShortVideoUser(
-            id: id,
-            title: title,
-            user: user,
-            link: link,
-            thumbImageName: thumb,
-            tags: tagsArray,
-            views: doc.int(forKey: CodingKeys.views.rawValue),
-            createdAt: createdAt
-        )
-    }
     
     init(id: String, title: String, user: UserShort, link: String, thumbImageName: String, tags: [Int], views: Int, createdAt: Date) {
         self.id = id

@@ -6,74 +6,78 @@
 //
 
 import Foundation
-import CouchbaseLiteSwift
+import SwiftData
 import SwiftUISturdy
 
-actor CouchbaseLocal : Sendable {
+public struct PersistentStoreConfiguration {
+    public enum StorageType {
+        case sqlite(url: URL)
+        case inMemory
+    }
+    let type: StorageType
     
-    @BackgroundActor
-    var database: Database?
+    public static func defaultStore() -> PersistentStoreConfiguration {
+        // Default to Application Support / SQLite
+        let fm = FileManager.default
+        let appSupport = try? fm.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+        let directory = appSupport ?? fm.temporaryDirectory
+        let dbURL = directory.appendingPathComponent("SwiftData.sqlite")
+        return PersistentStoreConfiguration(type: .sqlite(url: dbURL))
+    }
     
-    
-    @BackgroundActor
-    var collectionPreferences: Collection {
-        get throws {
-            if let collection = try database!.collection(name: "preferences") {
-                return collection
-            } else {
-                let collection = try database!.createCollection(name: "preferences")
-                let index = ValueIndexConfiguration([Preference.CodingKeys.keyString.rawValue])
-                try collection.createIndex(withName: "idx_preferences_key", config: index)
-                return collection
-            }
+    // Internal convenience mapping to SwiftData's ModelPersistentStoreConfiguration depending on API shape.
+    // NOTE: The exact initializer names may vary across SDK versions; adapt to your SDK.
+    var underlying: ModelPersistentStoreConfiguration {
+        switch type {
+        case .sqlite(let url):
+            return .sql(url: url)
+        case .inMemory:
+            return .inMemory
         }
     }
-    
-    @BackgroundActor
-    var collectionShorts: Collection {
-        get throws {
-            if let collection = try database!.collection(name: "shorts") {
-                return collection
-            } else {
-                let collection = try database!.createCollection(name: "shorts")
-                // Create index
-                let index = ValueIndexConfiguration([ShortVideoUser.CodingKeys.id.rawValue])
-                try collection.createIndex(withName: "idx_short_video_key", config: index)
-                return collection
-            }
-        }
-    }
-    
-    @BackgroundActor
-    func dropCollectionShorts() throws {
-        try database?.deleteCollection(name: "shorts")
-    }
-    
-    init() throws {
-        Task { @BackgroundActor in
-            let directory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("CBLLogs").path()
-            let fileConfig = CouchbaseLiteSwift.FileLogSink(level: .warning, directory: directory, usePlainText: false, maxKeptFiles: 5, maxFileSize: 1024 * 1024)
-            CouchbaseLiteSwift.LogSinks.file = fileConfig
-            
-            let config = DatabaseConfiguration()
-            self.database = try Database(name: "app_db", config: config)
-        }
-    }
-    
 }
 
-// Just For remove the warring, it safe
-extension ListenerToken : @retroactive @unchecked Sendable { }
-
-
-extension ArrayObject {
+// MARK: - Extensions: ModelPersistentStoreConfiguration shim
+//
+// SwiftData public API surface may vary across SDK versions. If your SDK uses a different initializer
+// or name for store description, update these shims to match the SDK.
+//
+// The code below assumes a convenience enum/initializers exist (these are placeholders to illustrate).
+// Replace with actual initializers from your SDK (e.g., .sqlite(path:), .inMemory, PersistentStoreConfiguration).
+//
+public struct ModelPersistentStoreConfiguration {
+    fileprivate enum Kind {
+        case sqlite(URL)
+        case inMemory
+    }
+    fileprivate let kind: Kind
     
-    @BackgroundActor
-    func toIntArray() -> [Int] {
-        var arr = [Int]()
-        for i in 0..<self.count {
-            arr.append(self.int(at: i))
-        }
-        return arr
+    fileprivate static func sql(url: URL) -> ModelPersistentStoreConfiguration {
+        ModelPersistentStoreConfiguration(kind: .sqlite(url))
+    }
+    
+    fileprivate static var inMemory: ModelPersistentStoreConfiguration {
+        ModelPersistentStoreConfiguration(kind: .inMemory)
+    }
+}
+
+
+func createModelContainer() -> ModelContainer? {
+    do {
+        let schema = Schema([Preference.self])
+        let configuration = ModelConfiguration(
+            schema: schema,
+            isStoredInMemoryOnly: false,
+            allowsSave: true
+        )
+        let modelContainer = try ModelContainer(
+            for: schema,
+            configurations: [configuration]
+        )
+        
+        return modelContainer
+    } catch {
+        LogKit.print("Failed to initialize ModelContainer: \(error)")
+        return nil
     }
 }
