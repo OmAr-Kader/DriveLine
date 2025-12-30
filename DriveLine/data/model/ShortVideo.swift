@@ -153,6 +153,14 @@ struct GetShortsRespond: Codable {
 @BackgroundActor
 struct GetShortsWithUserRespond: Codable {
     let data: [ShortVideoUser]
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        // Attempt to decode as array, filter out invalid items
+        self.data = (try? container.decode([FailableDecodable<ShortVideoUser>].self, forKey: .data))?
+            .compactMap { $0.value } ?? []
+    }
 }
 
 @MainActor

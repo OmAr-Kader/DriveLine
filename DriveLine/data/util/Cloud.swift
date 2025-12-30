@@ -30,3 +30,24 @@ public struct BaseMessageResponse: Codable {
 public struct BaseSuccessResponse: Codable {
     public let success: Bool
 }
+
+
+@BackgroundActor
+struct FailableSingleDecodable<T: Decodable>: Decodable {
+    let value: T?
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        self.value = try? container.decode(T.self)
+    }
+}
+
+@BackgroundActor
+struct FailableDecodable<T: Decodable>: Decodable {
+    let value: T?
+    
+    init(from decoder: Decoder) throws {
+        // This doesn't consume/advance the decoder position
+        self.value = try? T(from: decoder)
+    }
+}

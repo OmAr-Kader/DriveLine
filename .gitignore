@@ -2,6 +2,8 @@ SecureConst.swift
 EventKitManager.swift
 SwiftDataKit.swift
 Config.xcconfig
+CryptoManager.swift
+KeychainManager.swift
 
 getClientIP.ts
 projection.ts
