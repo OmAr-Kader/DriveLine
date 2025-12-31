@@ -11,9 +11,11 @@ import SwiftUISturdy
 final class ShortVideoRepoImp : ShortVideoRepo {
     
     let appSessions: AppURLSessions
+    let secureSession: SecureSessionManager
 
-    init(appSessions: AppURLSessions) {
+    init(appSessions: AppURLSessions, secureSession: SecureSessionManager) {
         self.appSessions = appSessions
+        self.secureSession = secureSession
     }
     
     @BackgroundActor
@@ -45,20 +47,25 @@ final class ShortVideoRepoImp : ShortVideoRepo {
     }
     
     @BackgroundActor
-    func fetchLast50Videos(userBase: UserBase, invoke: @escaping @BackgroundActor ([ShortVideoUser]) -> Void, failed: @escaping (String) -> Void) async {
+    func fetchLast50Videos(userBase: UserBase, crypted: CryptoMode?, invoke: @escaping @BackgroundActor ([ShortVideoUser]) -> Void, failed: @escaping (String) -> Void) async {
         guard let url = URL(string: SecureConst.BASE_URL + Endpoint.SHORTS_LATEST) else {
             LogKit.print("fetchLast50Videos Invalid URL"); failed("Failed")
             return
         }
         
         do {
-            let request = try url.createGETRequest().addAuthorizationHeader(userBase)
-            if let haveCache: GetShortsWithUserRespond = appSessions.baseURLSession.tryFetchCache(request: request) {
-                invoke(haveCache.data)
+            let request = try url.createGETRequest().addAuthorizationHeader(userBase, crypted)
+            if crypted == .receiveOnly || crypted == .doubleCrypto {
+                let data: EncryptedCloud = try await request.performRequest(session: appSessions.disableCache)
+                let response: GetShortsWithUserRespond = try await self.secureSession.decryptFromBackend(encrypted: data.encrypted)
+                invoke(response.data)
+            } else {
+                if let haveCache: GetShortsWithUserRespond = appSessions.baseURLSession.tryFetchCache(request: request) {
+                    invoke(haveCache.data)
+                }
+                let response: GetShortsWithUserRespond = try await request.performRequest(session: appSessions.baseURLSession)
+                invoke(response.data)
             }
-            
-            let response: GetShortsWithUserRespond = try await request.performRequest()
-            invoke(response.data)
         } catch {
             LogKit.print("Failed ->", error.localizedDescription); failed("Failed")
         }

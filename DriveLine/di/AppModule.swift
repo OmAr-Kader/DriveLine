@@ -11,9 +11,10 @@ import SwiftUISturdy
 
 struct AppURLSessions : Sendable {
     let baseURLSession: URLSession
-    let noCache: URLSession
+    let disableCache: URLSession
     let secure: URLSession
 }
+
 
 struct Project : Sendable {
     let urlSessions: AppURLSessions
@@ -28,19 +29,22 @@ struct Project : Sendable {
 func buildContainer() -> Container {
     let container = Container()
     let modelContainer = createModelContainer()
+    
     let swiftData = SwiftDataManager(modelContainer: modelContainer)
+    let keychainManager = KeychainManager()
+    let secureSession = SecureSessionManager(keychainManager: keychainManager)
     
     let urlSessions = AppURLSessions(
-        baseURLSession: URLSession.customSession(), noCache: URLSession.api, secure: URLSession.secure()
+        baseURLSession: URLSession.skipCacheResult, disableCache: URLSession.disableCache, secure: URLSession.secure
     )
     let pro = Project(
         urlSessions: urlSessions,
         pref: PreferenceBase(repository: PrefRepoImp(swiftData: swiftData)),
-        auth: AuthBase(repo: AuthRepoImp(appSessions: urlSessions)),
+        auth: AuthBase(repo: AuthRepoImp(appSessions: urlSessions, secureSession: secureSession)),
         aiChat: AiChatBase(repo: AiChatRepoImp(appSessions: urlSessions)),
         fix: FixServiceBase(repo: FixServiceRepoImp(appSessions: urlSessions)),
         course: CourseBase(repo: CourseRepoImp(appSessions: urlSessions)),
-        short: ShortVideoBase(repo: ShortVideoRepoImp(appSessions: urlSessions))
+        short: ShortVideoBase(repo: ShortVideoRepoImp(appSessions: urlSessions, secureSession: secureSession))
     )
     let theme = Theme(isDarkMode: UITraitCollection.current.userInterfaceStyle.isDarkMode)
     container.register(Project.self) { _  in
@@ -48,6 +52,9 @@ func buildContainer() -> Container {
     }.inObjectScope(.container)
     container.register(AppURLSessions.self) { _  in
         return urlSessions
+    }.inObjectScope(.container)
+    container.register(SecureSessionManager.self) { _  in
+        return secureSession
     }.inObjectScope(.container)
     container.register(Theme.self) { _  in
         return theme

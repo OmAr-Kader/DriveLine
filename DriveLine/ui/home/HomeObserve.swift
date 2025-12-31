@@ -57,7 +57,7 @@ final class HomeObserve : BaseObserver {
     func loadShorts(_ userBase: UserBase?) {
         guard let userBase else { return }
         self.tasker.back {
-            await self.project.short.fetchLast50Videos(userBase: userBase) { shorts in
+            await self.project.short.fetchLast50Videos(userBase: userBase, crypted: .receiveOnly) { shorts in
                 self.mainSync {
                     let list = shorts.map({ ShortVideoUserData($0) }).sorted(by: { $0.createdAt > $1.createdAt })
                     LogKit.print("Local Short Videos Cound", shorts.count)
@@ -110,7 +110,7 @@ final class HomeObserve : BaseObserver {
         guard let userBase else { return }
         self.state = self.state.copy(isLoading: .set(true))
         self.tasker.back {
-            await self.project.auth.fetchProfileById(user: userBase, profileId: userBase.id) { profile in
+            await self.project.auth.fetchProfileById(user: userBase, profileId: userBase.id, crypted: .receiveOnly) { profile in
                 self.mainSync {
                     do {
                         let fixs = FixService.sampleServices()

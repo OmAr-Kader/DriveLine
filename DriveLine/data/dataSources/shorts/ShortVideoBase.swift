@@ -28,8 +28,8 @@ final class ShortVideoBase {
     }
     
     @BackgroundActor
-    func fetchLast50Videos(userBase: UserBase, invoke: @escaping @BackgroundActor ([ShortVideoUser]) -> Void, failed: @escaping (String) -> Void) async {
-        await repo.fetchLast50Videos(userBase: userBase, invoke: invoke, failed: failed)
+    func fetchLast50Videos(userBase: UserBase, crypted: CryptoMode? = nil, invoke: @escaping @BackgroundActor ([ShortVideoUser]) -> Void, failed: @escaping (String) -> Void) async {
+        await repo.fetchLast50Videos(userBase: userBase, crypted: crypted, invoke: invoke, failed: failed)
     }
     
     @BackgroundActor

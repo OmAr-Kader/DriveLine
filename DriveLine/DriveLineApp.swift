@@ -23,7 +23,15 @@ struct DriveLineApp: App {
                         let startTime = DispatchTime.now().uptimeNanoseconds
                         let screenToGo: Screen = await withCheckedContinuation { continuation in
                             delegate.app.findUserBase { userBase in
-                                continuation.resume(returning: userBase != nil ? .HOME_SCREEN_ROUTE : .AUTH_SCREEN_ROUTE)
+                                guard userBase != nil else {
+                                    continuation.resume(returning: .AUTH_SCREEN_ROUTE)
+                                    return
+                                }
+                                delegate.app.shakeHands(userBase: userBase) {
+                                    continuation.resume(returning: .HOME_SCREEN_ROUTE)
+                                } failed: { _ in
+                                    continuation.resume(returning: .AUTH_SCREEN_ROUTE)
+                                }
                             }
                         }
                         let elapsed = DispatchTime.now().uptimeNanoseconds - startTime

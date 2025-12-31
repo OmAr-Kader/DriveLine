@@ -11,6 +11,9 @@ import SwiftUISturdy
 protocol AuthRepo :Sendable {
  
     @BackgroundActor
+    func shakeHand(userId: String, invoke: @escaping @BackgroundActor (ShakeHandsResponse) async -> Void, failed: @BackgroundActor (String) -> Void) async
+    
+    @BackgroundActor
     func register(body: RegisterRequest, invoke: @escaping @BackgroundActor (BaseMessageResponse) async -> Void, failed: @BackgroundActor (String) -> Void) async
     
     @BackgroundActor
@@ -20,7 +23,7 @@ protocol AuthRepo :Sendable {
     func fetchUserById(user: UserBase, invoke: @escaping @BackgroundActor (User) -> Void, failed: @BackgroundActor (String) -> Void) async
 
     @BackgroundActor
-    func fetchProfileById(user: UserBase, profileId: String, invoke: @escaping @BackgroundActor (Profile) -> Void, failed: @BackgroundActor (String) -> Void) async
+    func fetchProfileById(user: UserBase, profileId: String, crypted: CryptoMode?, invoke: @escaping @BackgroundActor (Profile) -> Void, failed: @BackgroundActor (String) -> Void) async
     
     @BackgroundActor
     func updateUserById(token: String, user: User, invoke: @escaping @BackgroundActor (BaseMessageResponse) -> Void, failed: @BackgroundActor (String) -> Void) async

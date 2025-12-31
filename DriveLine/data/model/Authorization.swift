@@ -19,6 +19,17 @@ struct RegisterRequest: Codable, Sendable {
 }
 
 @BackgroundActor
+struct ShakeHandsRequest: Codable, Sendable {
+    let publicKey: String
+}
+
+@BackgroundActor
+struct ShakeHandsResponse: Codable, Sendable {
+    let serverPublicKey: String
+    let status: String
+}
+
+@BackgroundActor
 struct LoginRequest: Codable, Sendable {
     let email: String
     let password: String

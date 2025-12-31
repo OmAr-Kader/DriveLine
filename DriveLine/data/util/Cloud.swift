@@ -8,6 +8,8 @@
 import Foundation
 import SwiftUISturdy
 import SwiftUI
+
+
 /// A result type that represents an asynchronous operation's state with three possible cases.
 /// - Note: Marked as `@unchecked Sendable` to allow usage across concurrency domains.
 public enum Cloud<T> : @unchecked Sendable {
@@ -31,6 +33,10 @@ public struct BaseSuccessResponse: Codable {
     public let success: Bool
 }
 
+@BackgroundActor
+public struct EncryptedCloud: Codable {
+    let encrypted: String
+}
 
 @BackgroundActor
 struct FailableSingleDecodable<T: Decodable>: Decodable {
@@ -50,4 +56,11 @@ struct FailableDecodable<T: Decodable>: Decodable {
         // This doesn't consume/advance the decoder position
         self.value = try? T(from: decoder)
     }
+}
+
+
+enum CryptoMode: String {
+    case doubleCrypto = "x-double-crypto"
+    case sendOnly = "x-send-crypto"
+    case receiveOnly = "x-receive-crypto"
 }

@@ -39,7 +39,7 @@ final class ProfileVistorObserve : BaseObserver {
         guard let userBase else { return }
         self.state = self.state.copy(isLoading: .set(true), visitor: .set(nil), visitorService: .set([]), visitorCourses: .set([]), visitorShorts: .set([]))
         self.tasker.back {
-            await self.project.auth.fetchProfileById(user: userBase, profileId: profileId) { profile in
+            await self.project.auth.fetchProfileById(user: userBase, profileId: profileId, crypted: .receiveOnly) { profile in
                 self.mainSync {
                     do {
                         let fixs = FixService.sampleServices()

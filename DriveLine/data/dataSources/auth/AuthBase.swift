@@ -17,6 +17,11 @@ final class AuthBase {
     }
     
     @BackgroundActor
+    func shakeHand(userId: String, invoke: @escaping @BackgroundActor (ShakeHandsResponse) async -> Void, failed: @BackgroundActor (String) -> Void) async {
+        await repo.shakeHand(userId: userId, invoke: invoke, failed: failed)
+    }
+    
+    @BackgroundActor
     func register(body: RegisterRequest, invoke: @escaping @BackgroundActor (BaseMessageResponse) async -> Void, failed: @BackgroundActor (String) -> Void) async {
         await repo.register(body: body, invoke: invoke, failed: failed)
     }
@@ -33,8 +38,8 @@ final class AuthBase {
     }
     
     @BackgroundActor
-    func fetchProfileById(user: UserBase, profileId: String, invoke: @escaping @BackgroundActor (Profile) -> Void, failed: @BackgroundActor (String) -> Void) async {
-        await repo.fetchProfileById(user: user, profileId: profileId, invoke: invoke, failed: failed)
+    func fetchProfileById(user: UserBase, profileId: String, crypted: CryptoMode? = nil, invoke: @escaping @BackgroundActor (Profile) -> Void, failed: @BackgroundActor (String) -> Void) async {
+        await repo.fetchProfileById(user: user, profileId: profileId, crypted: crypted, invoke: invoke, failed: failed)
     }
     
     @BackgroundActor

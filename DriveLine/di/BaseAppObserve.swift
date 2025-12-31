@@ -10,6 +10,9 @@ final class BaseAppObserve: BaseObserver {
     
     @MainActor
     private(set) var state: AppObserveState = AppObserveState()
+    
+    let secureSession: SecureSessionManager
+
         
     @MainActor
     @ObservationIgnored
@@ -17,8 +20,12 @@ final class BaseAppObserve: BaseObserver {
 
     init() {
         @Inject
-        var pro: Project
+        var pro: Project        
+        @Inject
+        var secureSession: SecureSessionManager
+        self.secureSession = secureSession
         super.init(project: pro)
+        
         self.project.pref.observePrefs { prefs in
             let list = prefs.map({ PreferenceData(from: $0) })
             self.mainSync {
@@ -44,6 +51,40 @@ final class BaseAppObserve: BaseObserver {
     @BackgroundActor
     private func intiBack(invoke: @BackgroundActor @escaping ([PreferenceData]) async -> Void) async {
         await invoke(await self.project.pref.prefs())
+    }
+    
+    @MainActor
+    func shakeHands(userBase: UserBase?, invoke: @escaping @Sendable @MainActor () -> Void, failed: @escaping @Sendable @MainActor (String) -> Void) {
+        guard let userBase else {
+            failed("Failed")
+            return
+        }
+        self.tasker.back {
+            do {
+                let isComplete = await self.secureSession.checkInitializationComplete()
+                if !isComplete {
+                    await self.secureSession.clearCryptoSession()
+                    // 1. Initialize encryption (restore or generate keys)
+                    try await self.secureSession.initializeEncryption()
+                }
+            } catch {
+                self.mainSync { failed("Failed") }
+                return
+            }
+            
+            await self.project.auth.shakeHand(userId: userBase.id) { res in
+                do {
+                    try await self.secureSession.storeBackendPublicKey(res.serverPublicKey)
+                    self.mainSync { invoke() }
+                } catch {
+                    LogKit.print(error)
+                    self.mainSync { failed(error.localizedDescription) }
+                }
+            } failed: { e in
+                LogKit.print(e)
+                self.mainSync { failed(e) }
+            }
+        }
     }
 
     @MainActor

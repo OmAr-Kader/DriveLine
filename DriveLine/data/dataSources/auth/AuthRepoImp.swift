@@ -11,9 +11,26 @@ import SwiftUISturdy
 final class AuthRepoImp : AuthRepo {
     
     let appSessions: AppURLSessions
+    let secureSession: SecureSessionManager
 
-    init(appSessions: AppURLSessions) {
+    init(appSessions: AppURLSessions, secureSession: SecureSessionManager) {
         self.appSessions = appSessions
+        self.secureSession = secureSession
+    }
+    
+    @BackgroundActor
+    func shakeHand(userId: String, invoke: @escaping @BackgroundActor (ShakeHandsResponse) async -> Void, failed: @BackgroundActor (String) -> Void) async {
+        guard let url = URL(string: SecureConst.BASE_URL + Endpoint.SHAKE_HAND) else {
+            LogKit.print("login Invalid URL"); failed("Failed")
+            return
+        }
+        do {
+            let publicKey = try await self.secureSession.getOurPublicKey()
+            let response: ShakeHandsResponse = try await url.createPOSTRequest(body: ShakeHandsRequest(publicKey: publicKey)).addAuthorizationHeader(userId: userId).performRequest()
+            await invoke(response)
+        } catch {
+            LogKit.print("Failed ->", error.localizedDescription); failed("Failed")
+        }
     }
     
     @BackgroundActor
@@ -29,7 +46,7 @@ final class AuthRepoImp : AuthRepo {
             LogKit.print("Failed ->", error.localizedDescription); failed("Failed")
         }
     }
-    
+
     
     @BackgroundActor
     func login(body: LoginRequest, invoke: @escaping @BackgroundActor (LoginResponse) -> Void, failed: @BackgroundActor (String) -> Void) async {
@@ -60,19 +77,24 @@ final class AuthRepoImp : AuthRepo {
     }
     
     @BackgroundActor
-    func fetchProfileById(user: UserBase, profileId: String, invoke: @escaping @BackgroundActor (Profile) -> Void, failed: @BackgroundActor (String) -> Void) async {
+    func fetchProfileById(user: UserBase, profileId: String, crypted: CryptoMode?, invoke: @escaping @BackgroundActor (Profile) -> Void, failed: @BackgroundActor (String) -> Void) async {
         guard let url = URL(string: SecureConst.BASE_URL + Endpoint.PROFILE + profileId) else {
             LogKit.print("fetchProfileById Invalid URL"); failed("Failed")
             return
         }
         do {
-            let request = try url.createGETRequest().addAuthorizationHeader(user)
-            if let haveCache: Profile = appSessions.baseURLSession.tryFetchCache(request: request) {
-                invoke(haveCache)
+            let request = try url.createGETRequest().addAuthorizationHeader(user, crypted)
+            if crypted == .receiveOnly || crypted == .doubleCrypto {
+                let response: EncryptedCloud = try await request.performRequest(session: appSessions.disableCache)
+                let profile: Profile = try await self.secureSession.decryptFromBackend(encrypted: response.encrypted)
+                invoke(profile)
+            } else {
+                if let haveCache: Profile = appSessions.baseURLSession.tryFetchCache(request: request) {
+                    invoke(haveCache)
+                }
+                let profile: Profile = try await request.performRequest(session: appSessions.baseURLSession)
+                invoke(profile)
             }
-            
-            let response: Profile = try await request.performRequest(session: appSessions.baseURLSession)
-            invoke(response)
         } catch {
             LogKit.print("Failed ->", error.localizedDescription); failed("Failed")
         }
