@@ -148,6 +148,13 @@ struct UpdateShortVideoTags: Codable {
 @BackgroundActor
 struct GetShortsRespond: Codable {
     let data: [ShortVideo]
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        // Attempt to decode as array, filter out invalid items
+        self.data = (try? container.decode([FailableDecodable<ShortVideo>].self, forKey: .data))?
+            .compactMap { $0.value } ?? []
+    }
 }
 
 @BackgroundActor

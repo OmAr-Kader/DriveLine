@@ -23,7 +23,7 @@ final class CourseRepoImp : CourseRepo {
             return
         }
         do {
-            let response: ProvideCourseRequest = try await url.createPOSTRequest(body: body).addAuthorizationHeader(userBase).performRequest()
+            let response: ProvideCourseRequest = try await url.createPOSTRequest(body: body).addAuthorizationHeader(userBase).performRequest(session: appSessions.baseURLSession)
             invoke(response)
         } catch {
             LogKit.print("Failed ->", error.localizedDescription); failed("Failed")
@@ -37,7 +37,7 @@ final class CourseRepoImp : CourseRepo {
             return
         }
         do {
-            let response: ProvideCourseRequest = try await url.createPATCHRequest(body: body).addAuthorizationHeader(userBase).performRequest()
+            let response: ProvideCourseRequest = try await url.createPATCHRequest(body: body).addAuthorizationHeader(userBase).performRequest(session: appSessions.baseURLSession)
             invoke(response)
         } catch {
             LogKit.print("Failed ->", error.localizedDescription); failed("Failed")
@@ -51,7 +51,7 @@ final class CourseRepoImp : CourseRepo {
             return
         }
         do {
-            let response: GetACourseRespond = try await url.createGETRequest().addAuthorizationHeader(userBase).performRequest()
+            let response: GetACourseRespond = try await url.createGETRequest().addAuthorizationHeader(userBase).performRequest(session: appSessions.baseURLSession)
             invoke(response)
         } catch {
             LogKit.print("Failed ->", error.localizedDescription); failed("Failed")
@@ -65,7 +65,7 @@ final class CourseRepoImp : CourseRepo {
             return
         }
         do {
-            let response: GetACourseRootRespond = try await url.createGETRequest().addAuthorizationHeader(userBase).performRequest()
+            let response: GetACourseRootRespond = try await url.createGETRequest().addAuthorizationHeader(userBase).performRequest(session: appSessions.baseURLSession)
             invoke(response.data)
         } catch {
             LogKit.print("Failed ->", error.localizedDescription); failed("Failed")
@@ -79,7 +79,7 @@ final class CourseRepoImp : CourseRepo {
             return
         }
         do {
-            let response: ProvideCourseRequestRootRespond = try await url.createGETRequest().addAuthorizationHeader(userBase).performRequest()
+            let response: ProvideCourseRequestRootRespond = try await url.createGETRequest().addAuthorizationHeader(userBase).performRequest(session: appSessions.baseURLSession)
             invoke(response.data)
         } catch {
             LogKit.print("Failed ->", error.localizedDescription); failed("Failed")

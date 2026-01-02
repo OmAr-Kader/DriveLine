@@ -64,3 +64,64 @@ enum CryptoMode: String {
     case sendOnly = "x-send-crypto"
     case receiveOnly = "x-receive-crypto"
 }
+
+
+extension URLSession {
+    
+    public static var skipCacheResult: URLSession {
+        let config = URLSessionConfiguration.default
+        config.waitsForConnectivity = true
+        config.timeoutIntervalForRequest = 30
+        config.timeoutIntervalForResource = 300
+        config.httpMaximumConnectionsPerHost = 5
+        
+        // Smart caching
+        config.requestCachePolicy = .reloadIgnoringLocalCacheData
+        config.urlCache = URLCache(
+            memoryCapacity: 50_000_000,  // 50 MB
+            diskCapacity: 100_000_000     // 100 MB
+        )
+        config.tlsMinimumSupportedProtocolVersion = .TLSv12
+        config.tlsMaximumSupportedProtocolVersion = .TLSv13
+        
+        config.httpShouldSetCookies = true
+        config.httpCookieAcceptPolicy = .onlyFromMainDocumentDomain
+        
+        return URLSession(configuration: config, delegate: ServerTrustDelegate.shared, delegateQueue: nil)
+    }
+    
+    /// A shared `URLSession` optimized for general use:
+    /// - Enables HTTP pipelining and waits for connectivity.
+    /// - Longer resource timeout and limited connections per host.
+    /// - Uses an NO CACHE.
+    public static var disableCache: URLSession {
+        let config = URLSessionConfiguration.default
+        config.waitsForConnectivity = true
+        config.timeoutIntervalForRequest = 30
+        config.timeoutIntervalForResource = 300
+        config.httpMaximumConnectionsPerHost = 5
+        
+        config.tlsMinimumSupportedProtocolVersion = .TLSv12
+        config.tlsMaximumSupportedProtocolVersion = .TLSv13
+        
+        config.httpShouldSetCookies = true
+        config.httpCookieAcceptPolicy = .onlyFromMainDocumentDomain
+        
+        return URLSession(configuration: config, delegate: ServerTrustDelegate.shared, delegateQueue: nil)
+    }
+    
+    /// A short-lived, ephemeral `URLSession` for sensitive requests:
+    /// - No persistent disk cache; uses ephemeral configuration.
+    /// - Shorter request timeout suitable for quick secure operations.
+    public static var secure: URLSession {
+        let config = URLSessionConfiguration.ephemeral
+        config.timeoutIntervalForRequest = 15
+        
+        config.tlsMinimumSupportedProtocolVersion = .TLSv12
+        config.tlsMaximumSupportedProtocolVersion = .TLSv13
+        
+        config.httpShouldSetCookies = true
+        config.httpCookieAcceptPolicy = .onlyFromMainDocumentDomain
+        return URLSession(configuration: config, delegate: ServerTrustDelegate.shared, delegateQueue: nil)
+    }
+}

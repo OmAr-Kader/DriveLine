@@ -10,8 +10,19 @@
 	<string>$(GEMINI_API_KEY)</string>
     <key>NSAppTransportSecurity</key>
     <dict>
-      <key>NSAllowsArbitraryLoads</key>
-      <true/>
+        <key>NSAllowsArbitraryLoads</key>
+        <true/>
+        <!-- OR more restrictive for specific domain -->
+        <key>NSExceptionDomains</key>
+        <dict>
+            <key>10.0.0.6</key>
+            <dict>
+                <key>NSExceptionAllowsInsecureHTTPLoads</key>
+                <true/>
+                <key>NSIncludesSubdomains</key>
+                <true/>
+            </dict>
+        </dict>
     </dict>
 </dict>
 </plist>

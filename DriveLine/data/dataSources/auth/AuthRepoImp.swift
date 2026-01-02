@@ -26,7 +26,7 @@ final class AuthRepoImp : AuthRepo {
         }
         do {
             let publicKey = try await self.secureSession.getOurPublicKey()
-            let response: ShakeHandsResponse = try await url.createPOSTRequest(body: ShakeHandsRequest(publicKey: publicKey)).addAuthorizationHeader(userId: userId).performRequest()
+            let response: ShakeHandsResponse = try await url.createPOSTRequest(body: ShakeHandsRequest(publicKey: publicKey)).addAuthorizationHeader(userId: userId).performRequest(session: appSessions.baseURLSession)
             await invoke(response)
         } catch {
             LogKit.print("Failed ->", error.localizedDescription); failed("Failed")
@@ -40,7 +40,7 @@ final class AuthRepoImp : AuthRepo {
             return
         }
         do {
-            let response: BaseMessageResponse = try await url.createPOSTRequest(body: body).addAuthorizationHeader().performRequest()
+            let response: BaseMessageResponse = try await url.createPOSTRequest(body: body).addAuthorizationHeader().performRequest(session: appSessions.baseURLSession)
             await invoke(response)
         } catch {
             LogKit.print("Failed ->", error.localizedDescription); failed("Failed")
@@ -55,7 +55,7 @@ final class AuthRepoImp : AuthRepo {
             return
         }
         do {
-            let response: LoginResponse = try await url.createPOSTRequest(body: body).addAuthorizationHeader().performRequest()
+            let response: LoginResponse = try await url.createPOSTRequest(body: body).addAuthorizationHeader().performRequest(session: appSessions.baseURLSession)
             invoke(response)
         } catch {
             LogKit.print("Failed ->", error.localizedDescription); failed("Failed")
@@ -69,7 +69,7 @@ final class AuthRepoImp : AuthRepo {
             return
         }
         do {
-            let response: User = try await url.createGETRequest().addAuthorizationHeader(user).performRequest()
+            let response: User = try await url.createGETRequest().addAuthorizationHeader(user).performRequest(session: appSessions.baseURLSession)
             invoke(response)
         } catch {
             LogKit.print("Failed ->", error.localizedDescription); failed("Failed")
@@ -107,7 +107,7 @@ final class AuthRepoImp : AuthRepo {
             return
         }
         do {
-            let response: BaseMessageResponse = try await url.createPUTRequest(body: user).addAuthorizationHeader(id: user.id, token: token).performRequest()
+            let response: BaseMessageResponse = try await url.createPUTRequest(body: user).addAuthorizationHeader(id: user.id, token: token).performRequest(session: appSessions.baseURLSession)
             invoke(response)
         } catch {
             LogKit.print("Failed ->", error.localizedDescription); failed("Failed")
@@ -121,7 +121,7 @@ final class AuthRepoImp : AuthRepo {
             return
         }
         do {
-            let response: BaseMessageResponse = try await url.createPATCHRequest(body: user).addAuthorizationHeader(userBase).performRequest()
+            let response: BaseMessageResponse = try await url.createPATCHRequest(body: user).addAuthorizationHeader(userBase).performRequest(session: appSessions.baseURLSession)
             invoke(response)
         } catch {
             LogKit.print("Failed ->", error.localizedDescription); failed("Failed")

@@ -14,6 +14,13 @@ import SwiftUISturdy
 @BackgroundActor
 struct ProvideCourseRequestRootRespond: Codable {
     let data: [ProvideCourseRequest]
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        // Attempt to decode as array, filter out invalid items
+        self.data = (try? container.decode([FailableDecodable<ProvideCourseRequest>].self, forKey: .data))?
+            .compactMap { $0.value } ?? []
+    }
 }
 
 @BackgroundActor
@@ -206,6 +213,14 @@ struct UpdateProvidedCourseRequest: Codable {
 @BackgroundActor
 struct GetACourseRootRespond: Codable {
     let data: [GetACourseRespond]
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        // Attempt to decode as array, filter out invalid items
+        self.data = (try? container.decode([FailableDecodable<GetACourseRespond>].self, forKey: .data))?
+            .compactMap { $0.value } ?? []
+    }
 }
 
 @BackgroundActor

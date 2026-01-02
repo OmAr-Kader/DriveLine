@@ -25,7 +25,7 @@ final class ShortVideoRepoImp : ShortVideoRepo {
             return
         }
         do {
-            let response: ShortVideo = try await url.createPOSTRequest(body: body).addAuthorizationHeader(userBase).performRequest()
+            let response: ShortVideo = try await url.createPOSTRequest(body: body).addAuthorizationHeader(userBase).performRequest(session: appSessions.baseURLSession)
             invoke(response)
         } catch {
             LogKit.print("Failed ->", error.localizedDescription); failed("Failed")
@@ -39,7 +39,7 @@ final class ShortVideoRepoImp : ShortVideoRepo {
             return
         }
         do {
-            let response: GetShortsWithUserRespond = try await url.createGETRequest().addAuthorizationHeader(userBase).performRequest()
+            let response: GetShortsWithUserRespond = try await url.createGETRequest().addAuthorizationHeader(userBase).performRequest(session: appSessions.baseURLSession)
             invoke(response.data)
         } catch {
             LogKit.print("Failed ->", error.localizedDescription); failed("Failed")
