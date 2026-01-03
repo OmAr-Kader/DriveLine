@@ -23,7 +23,7 @@ final class FixServiceRepoImp : FixServiceRepo {
             return
         }
         do {
-            let response: ProvideServiceRequest = try await url.createPOSTRequest(body: body).addAuthorizationHeader(userBase).performRequest(session: appSessions.baseURLSession)
+            let response: ProvideServiceRequest = try await url.createPOSTRequest(body: body).addAuthorizationHeader(userBase).performRequest(session: appSessions.disableCache)
             invoke(response)
         } catch {
             LogKit.print("Failed ->", error.localizedDescription); failed("Failed")
@@ -37,7 +37,7 @@ final class FixServiceRepoImp : FixServiceRepo {
             return
         }
         do {
-            let response: ProvideServiceRequest = try await url.createPATCHRequest(body: body).addAuthorizationHeader(userBase).performRequest(session: appSessions.baseURLSession)
+            let response: ProvideServiceRequest = try await url.createPATCHRequest(body: body).addAuthorizationHeader(userBase).performRequest(session: appSessions.disableCache)
             invoke(response)
         } catch {
             LogKit.print("Failed ->", error.localizedDescription); failed("Failed")
@@ -50,7 +50,7 @@ final class FixServiceRepoImp : FixServiceRepo {
             return
         }
         do {
-            let response: GetAServiceRespond = try await url.createGETRequest().addAuthorizationHeader(userBase).performRequest(session: appSessions.baseURLSession)
+            let response: GetAServiceRespond = try await url.createGETRequest().addAuthorizationHeader(userBase).performRequest(session: appSessions.disableCache)
             invoke(response)
         } catch {
             LogKit.print("Failed ->", error.localizedDescription); failed("Failed")
@@ -64,7 +64,7 @@ final class FixServiceRepoImp : FixServiceRepo {
             return
         }
         do {
-            let response: GetAServiceRootRespond = try await url.createGETRequest().addAuthorizationHeader(userBase).performRequest(session: appSessions.baseURLSession)
+            let response: GetAServiceRootRespond = try await url.createGETRequest().addAuthorizationHeader(userBase).performRequest(session: appSessions.disableCache)
             invoke(response.data)
         } catch {
             LogKit.print("Failed ->", error.localizedDescription); failed("Failed")
@@ -78,7 +78,7 @@ final class FixServiceRepoImp : FixServiceRepo {
             return
         }
         do {
-            let response: ProvideServiceRequestRootRespond = try await url.createGETRequest().addAuthorizationHeader(userBase).performRequest(session: appSessions.baseURLSession)
+            let response: ProvideServiceRequestRootRespond = try await url.createGETRequest().addAuthorizationHeader(userBase).performRequest(session: appSessions.disableCache)
             invoke(response.data)
         } catch {
             LogKit.print("Failed ->", error.localizedDescription); failed("Failed")

@@ -70,10 +70,7 @@ extension URLSession {
     
     public static var skipCacheResult: URLSession {
         let config = URLSessionConfiguration.default
-        config.waitsForConnectivity = true
-        config.timeoutIntervalForRequest = 30
-        config.timeoutIntervalForResource = 300
-        config.httpMaximumConnectionsPerHost = 5
+        config.baseConfiguration()
         
         // Smart caching
         config.requestCachePolicy = .reloadIgnoringLocalCacheData
@@ -81,13 +78,7 @@ extension URLSession {
             memoryCapacity: 50_000_000,  // 50 MB
             diskCapacity: 100_000_000     // 100 MB
         )
-        config.tlsMinimumSupportedProtocolVersion = .TLSv12
-        config.tlsMaximumSupportedProtocolVersion = .TLSv13
-        
-        config.httpShouldSetCookies = true
-        config.httpCookieAcceptPolicy = .onlyFromMainDocumentDomain
-        
-        return URLSession(configuration: config, delegate: ServerTrustDelegate.shared, delegateQueue: nil)
+        return URLSession(configuration: config, delegate: ServerTrustDelegate.shared, delegateQueue: URLSession.shared.delegateQueue)
     }
     
     /// A shared `URLSession` optimized for general use:
@@ -96,18 +87,8 @@ extension URLSession {
     /// - Uses an NO CACHE.
     public static var disableCache: URLSession {
         let config = URLSessionConfiguration.default
-        config.waitsForConnectivity = true
-        config.timeoutIntervalForRequest = 30
-        config.timeoutIntervalForResource = 300
-        config.httpMaximumConnectionsPerHost = 5
-        
-        config.tlsMinimumSupportedProtocolVersion = .TLSv12
-        config.tlsMaximumSupportedProtocolVersion = .TLSv13
-        
-        config.httpShouldSetCookies = true
-        config.httpCookieAcceptPolicy = .onlyFromMainDocumentDomain
-        
-        return URLSession(configuration: config, delegate: ServerTrustDelegate.shared, delegateQueue: nil)
+        config.baseConfiguration()
+        return URLSession(configuration: config, delegate: ServerTrustDelegate.shared, delegateQueue: URLSession.shared.delegateQueue)
     }
     
     /// A short-lived, ephemeral `URLSession` for sensitive requests:
@@ -115,13 +96,67 @@ extension URLSession {
     /// - Shorter request timeout suitable for quick secure operations.
     public static var secure: URLSession {
         let config = URLSessionConfiguration.ephemeral
-        config.timeoutIntervalForRequest = 15
+        config.baseConfiguration(timeoutForRequest: 15.0)
+        return URLSession(configuration: config, delegate: ServerTrustDelegate.shared, delegateQueue: URLSession.shared.delegateQueue)
+    }
+}
+
+extension URLSessionConfiguration {
+    
+    @inlinable
+    func baseConfiguration(timeoutForRequest: TimeInterval = 30.0) {
         
-        config.tlsMinimumSupportedProtocolVersion = .TLSv12
-        config.tlsMaximumSupportedProtocolVersion = .TLSv13
+        // ============================================
+        // HTTP/2 CONFIGURATION
+        // ============================================
+        self.httpShouldUsePipelining = true
+        self.httpMaximumConnectionsPerHost = 6
+        self.httpCookieAcceptPolicy = .onlyFromMainDocumentDomain
+        self.httpShouldSetCookies = true
+        self.httpCookieStorage = HTTPCookieStorage.shared
         
-        config.httpShouldSetCookies = true
-        config.httpCookieAcceptPolicy = .onlyFromMainDocumentDomain
-        return URLSession(configuration: config, delegate: ServerTrustDelegate.shared, delegateQueue: nil)
+        // ============================================
+        // TIMEOUT SETTINGS (Optimized for HTTP/2)
+        // ============================================
+        self.timeoutIntervalForRequest = timeoutForRequest  // Request timeout
+        self.timeoutIntervalForResource = 300.0  // Resource timeout
+        self.waitsForConnectivity = true  // Wait for connection
+        
+        // ============================================
+        // CONNECTION POOLING & KEEPALIVE
+        // ============================================
+        // HTTP/2 multiplexes over single connection
+        self.connectionProxyDictionary = [:]
+        
+        // ============================================
+        // HEADER OPTIMIZATION
+        // ============================================
+        var headers = self.httpAdditionalHeaders ?? [:]
+        
+        // HTTP/2 requires lowercase header names
+        headers["accept"] = "application/json"
+        headers["accept-encoding"] = "gzip, deflate, br"
+        headers["connection"] = "keep-alive"
+        
+        // Certificate pinning headers (optional)
+        headers["x-client-version"] = "1.0.0"
+        headers["x-platform"] = "iOS"
+        
+        self.httpAdditionalHeaders = headers
+        
+        // ============================================
+        // TLS/SSL CONFIGURATION
+        // ============================================
+        // Enable TLS 1.2+ with HTTP/2 ALPN
+        self.tlsMinimumSupportedProtocolVersion = .TLSv12
+        self.tlsMaximumSupportedProtocolVersion = .TLSv13
+
+        // ============================================
+        // PRIVACY & SECURITY
+        // ============================================
+        self.sessionSendsLaunchEvents = true
+        self.shouldUseExtendedBackgroundIdleMode = false
+        
+        return
     }
 }

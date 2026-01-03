@@ -39,7 +39,8 @@ final class ChatObserve : BaseObserver {
             await self.project.aiChat.getSessionMessages(userBase, sessionId: sessionId) { new in
                 invoke(new.last?.id)
                 self.mainSync {
-                    let newList = new.map({ AiMessageData($0) })
+                    var newList = new.map({ AiMessageData($0) })
+                    newList.sort(by: { $0.createdAt < $1.createdAt })
                     withAnimation {
                         self.state = self.state.copy(isLoading: .set(false), currentSessionId: .set(sessionId), messages: .set(newList))
                     }
@@ -87,7 +88,8 @@ final class ChatObserve : BaseObserver {
         self.mainSync {
             let currentSession = AiSessionData(res.session)
             let userMessage = AiMessageData(res.message)
-            let newList = [userMessage]
+            var newList = [userMessage]
+            newList.sort(by: { $0.createdAt < $1.createdAt })
             withAnimation {
                 self.state = self.state.copy(currentSessionId: .set(res.session.id), messages: .set(newList), lastError: .set(nil))
                 resetText(currentSession)
@@ -99,7 +101,8 @@ final class ChatObserve : BaseObserver {
     private func addToLocalList(text: String, resetText: @escaping @Sendable @MainActor () -> Void) {
         let userMessage = AiMessageData(text: text, isUser: true)
         self.tasker.mainSync {
-            let newList = self.state.messages.add(userMessage)
+            var newList = self.state.messages.add(userMessage)
+            newList.sort(by: { $0.createdAt < $1.createdAt })
             withAnimation {
                 self.state = self.state.copy(messages: .set(newList), lastError: .set(nil), isSending: .set(true))
                 resetText()
@@ -141,6 +144,7 @@ final class ChatObserve : BaseObserver {
                 var messages = self.state.messages
                 invoke(text)
                 messages.removeAll(where: { $0.idCloud == answer.idCloud || $0.idCloud == msg.idCloud })
+                messages.sort(by: { $0.createdAt < $1.createdAt })
                 withAnimation {
                     self.state = self.state.copy(messages: .set(messages))
                 }
@@ -153,6 +157,7 @@ final class ChatObserve : BaseObserver {
 
                 var messages = self.state.messages
                 messages.removeAll(where: { $0.idCloud == msg.idCloud })
+                messages.sort(by: { $0.createdAt < $1.createdAt })
                 invoke(question.text)
                 withAnimation {
                     self.state = self.state.copy(messages: .set(messages))

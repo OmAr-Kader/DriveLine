@@ -23,7 +23,7 @@ final class AiChatRepoImp : AiChatRepo {
             return
         }
         do {
-            let response: CreateSessionResponse = try await url.createPOSTRequest(body: body).addAuthorizationHeader(userBase).performRequest(session: appSessions.baseURLSession)
+            let response: CreateSessionResponse = try await url.createPOSTRequest(body: body).addAuthorizationHeader(userBase).performRequest(session: appSessions.disableCache)
             await invoke(response)
         } catch {
             LogKit.print("Failed ->", error.localizedDescription); failed("Failed")
@@ -37,7 +37,7 @@ final class AiChatRepoImp : AiChatRepo {
             return
         }
         do {
-            let response: AiMessage = try await url.createPOSTRequest(body: body).addAuthorizationHeader(userBase).performRequest(session: appSessions.baseURLSession)
+            let response: AiMessage = try await url.createPOSTRequest(body: body).addAuthorizationHeader(userBase).performRequest(session: appSessions.disableCache)
             invoke(response)
         } catch {
             LogKit.print("Failed ->", error.localizedDescription); failed("Failed")
@@ -51,7 +51,7 @@ final class AiChatRepoImp : AiChatRepo {
             return
         }
         do {
-            let response: AiMessage = try await url.createPOSTRequest(body: body).addAuthorizationHeader(userBase).performRequest(session: appSessions.baseURLSession)
+            let response: AiMessage = try await url.createPOSTRequest(body: body).addAuthorizationHeader(userBase).performRequest(session: appSessions.disableCache)
             invoke(response)
         } catch {
             LogKit.print("Failed ->", error.localizedDescription); failed("Failed")
@@ -84,7 +84,7 @@ final class AiChatRepoImp : AiChatRepo {
             return
         }
         do {
-            let response: [AiMessage] = try await url.createGETRequest().addAuthorizationHeader(userBase).performRequest(session: appSessions.baseURLSession)
+            let response: [AiMessage] = try await url.createGETRequest().addAuthorizationHeader(userBase).performRequest(session: appSessions.disableCache)
             invoke(response)
         } catch {
             LogKit.print("Failed ->", error.localizedDescription); failed("Failed")
@@ -98,7 +98,7 @@ final class AiChatRepoImp : AiChatRepo {
             return
         }
         do {
-            let response: BaseSuccessResponse = try await url.createDELETERequest().addAuthorizationHeader(userBase).performRequest(session: appSessions.baseURLSession)
+            let response: BaseSuccessResponse = try await url.createDELETERequest().addAuthorizationHeader(userBase).performRequest(session: appSessions.disableCache)
             invoke(response)
         } catch {
             LogKit.print("Failed ->", error.localizedDescription); failed("Failed")
@@ -112,7 +112,7 @@ final class AiChatRepoImp : AiChatRepo {
             return
         }
         do {
-            let response: BaseSuccessResponse = try await url.createDELETERequest().addAuthorizationHeader(userBase).performRequest(session: appSessions.baseURLSession)
+            let response: BaseSuccessResponse = try await url.createDELETERequest().addAuthorizationHeader(userBase).performRequest(session: appSessions.disableCache)
             invoke(response)
         } catch {
             LogKit.print("Failed ->", error.localizedDescription); failed("Failed")
@@ -126,7 +126,7 @@ final class AiChatRepoImp : AiChatRepo {
             return
         }
         do {
-            let response: BaseSuccessResponse = try await url.createDELETERequest().addAuthorizationHeader(userBase).performRequest(session: appSessions.baseURLSession)
+            let response: BaseSuccessResponse = try await url.createDELETERequest().addAuthorizationHeader(userBase).performRequest(session: appSessions.disableCache)
             invoke(response)
         } catch {
             LogKit.print("Failed ->", error.localizedDescription); failed("Failed")

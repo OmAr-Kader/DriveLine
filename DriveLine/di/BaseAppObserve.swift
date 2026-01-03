@@ -133,7 +133,7 @@ final class BaseAppObserve: BaseObserver {
         return UserBase(id: id, name: name, email: email, accountType: userType, token: token)
     }
 
-    func updateUserBase(userBase: UserBase, invoke: @escaping @MainActor () -> Void) {
+    func updateUserBase(userBase: UserBase, invoke: @escaping @MainActor (UserBase) -> Void) {
         tasker.backSync {
             var list : [Preference] = []
             list.append(Preference(keyString: Const.PREF_USER_ID, value: userBase.id))
@@ -146,7 +146,9 @@ final class BaseAppObserve: BaseObserver {
                 self.mainSync {
                     let userBase = self.fetchUserBase(it)
                     self.state = self.state.copy(preferences: .set(it), userBase: .set(userBase))
-                    invoke()
+                    if let userBase {
+                        invoke(userBase)
+                    }
                 }
             }
         }

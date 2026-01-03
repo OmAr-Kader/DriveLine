@@ -71,7 +71,7 @@ struct HomeView: View {
                 Button {
                     navigator.navigateTo(.COURCES_LIST_SCREEN_ROUTE)
                 } label: {
-                    Text("view all")
+                    Text("View All")
                         .font(.subheadline)
                         .foregroundColor(Color.blue)
                 }
