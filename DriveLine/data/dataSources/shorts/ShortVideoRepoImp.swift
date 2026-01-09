@@ -56,17 +56,28 @@ final class ShortVideoRepoImp : ShortVideoRepo {
         do {
             let request = try url.createGETRequest().addAuthorizationHeader(userBase, crypted)
             if crypted == .receiveOnly || crypted == .doubleCrypto {
-                let data: EncryptedCloud = try await request.performRequest(session: appSessions.disableCache)
-                let response: GetShortsWithUserRespond = try await self.secureSession.decryptFromBackend(encrypted: data.encrypted)
+                let response: GetShortsWithUserRespond = try await withRetry { [weak self] in
+                    guard let self = self else {
+                        throw NSError(domain: "ShortVideoRepoImp", code: -1, userInfo: [NSLocalizedDescriptionKey: "Service deallocated"])
+                    }
+                    let data: EncryptedCloud = try await request.performRequest(session: appSessions.disableCache)
+                    return try await self.secureSession.decryptFromBackend(encrypted: data.encrypted)
+                }
                 invoke(response.data)
             } else {
                 if let haveCache: GetShortsWithUserRespond = appSessions.baseURLSession.tryFetchCache(request: request) {
                     invoke(haveCache.data)
                 }
-                let response: GetShortsWithUserRespond = try await request.performRequest(session: appSessions.baseURLSession)
+                let response: GetShortsWithUserRespond = try await withRetry { [weak self] in
+                    guard let self = self else {
+                        throw NSError(domain: "ShortVideoRepoImp", code: -1, userInfo: [NSLocalizedDescriptionKey: "Service deallocated"])
+                    }
+                    return try await request.performRequest(session: appSessions.baseURLSession)
+                }
                 invoke(response.data)
             }
         } catch {
+            // try before failed("Failed")
             LogKit.print("Failed ->", error.localizedDescription); failed("Failed")
         }
     }
