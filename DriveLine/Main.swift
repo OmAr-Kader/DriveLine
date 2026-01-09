@@ -146,11 +146,11 @@ struct HomeScreen: View {
                     home
                 }
             }
-        }.tint(.primaryOfApp).id("TabView").apply {
+        }.tint(.primaryOfApp).id("TabView").visibleToolbar().apply {
             switch obs.selectedTab {
-            case .session: $0.visibleToolbar().toolbar(content: toolBarAiChatView)
-            case .profile: $0.visibleToolbar().toolbar(content: toolBarProfileView)
-            default: $0.hideToolbar()
+            case .session: $0.toolbar(content: toolBarAiChatView)
+            case .profile: $0.toolbar(content: toolBarProfileView)
+            default: $0.toolbar(content: toolBarBaseView)
             }
         }.onAppeared {
             obs.loadShorts(app.state.userBase)
@@ -239,7 +239,7 @@ struct HomeScreen: View {
     
     @ViewBuilder
     private var homeView: some View {
-        HomeView(navigator: navigator, name: app.state.userBase?.name ?? "", obs: $obs)
+        HomeView(navigator: navigator, userBase: app.state.userBase, obs: $obs)
             .initialHomeScreen()
     }
     
@@ -290,6 +290,27 @@ struct HomeScreen: View {
                     Label("Edit Profile", systemImage: "pencil")
                 }
                 
+                Button(role: .destructive) {
+                    self.app.signOut {
+                        navigator.navigateMain(.AUTH_SCREEN_ROUTE)
+                    } _: {
+                        
+                    }
+                } label: {
+                    Label("Sign Out", systemImage: "arrow.right.square")
+                }
+            } label: {
+                Image(systemName: "ellipsis")
+                    .rotationEffect(.degrees(90))
+                    .frame(width: 24, height: 24)
+            }
+        }
+    }
+    
+    @ToolbarContentBuilder
+    func toolBarBaseView() -> some ToolbarContent {
+        ToolbarItem(placement: .topBarTrailing) {
+            Menu {
                 Button(role: .destructive) {
                     self.app.signOut {
                         navigator.navigateMain(.AUTH_SCREEN_ROUTE)

@@ -17,6 +17,15 @@ final class HomeObserve : BaseObserver {
     @MainActor
     private(set) var state: HomeObserveState = HomeObserveState()
     
+    @ObservationIgnored
+    private let pageSize: Int = 20
+    @ObservationIgnored
+    private var currentPage = 0
+    @ObservationIgnored
+    private var canLoadMore: Bool = true
+
+    private var prefetchThreshold: Int { max(5, pageSize / 4) }
+
     var selectedTab: HomeTabs = .home
     
     var selectedTabBinding: Binding<HomeTabs> {
@@ -55,22 +64,42 @@ final class HomeObserve : BaseObserver {
     
     @MainActor
     func loadShorts(_ userBase: UserBase?) {
-        guard let userBase else { return }
+        guard let userBase, case .idle = state.shortsLoadState, canLoadMore else { return }
+        self.state = self.state.copy(shortsLoadState: .set(.loading))
         self.tasker.back {
-            await self.project.short.fetchLast50Videos(userBase: userBase, crypted: .receiveOnly) { shorts in
+            await self.project.short.fetchLast50Videos(userBase: userBase, limit: self.pageSize, skip: self.currentPage, crypted: .receiveOnly) { shorts in
                 self.mainSync {
                     let list = shorts.map({ ShortVideoUserData($0) }).sorted(by: { $0.createdAt > $1.createdAt })
                     LogKit.print("Local Short Videos Cound", shorts.count)
-
+                    self.currentPage += 20
+                    if list.isEmpty || list.count < 10 {
+                        self.canLoadMore = false
+                    }
                     withAnimation {
-                        self.state = self.state.copy(shortVideos: .set(list))
+                        var newList = self.state.shortVideos
+                        newList.append(contentsOf: list)
+                        self.state = self.state.copy(shortVideos: .set(newList), shortsLoadState: .set(.idle))
                     }
                 }
             } failed: { msg in
-                
+                self.mainSync {
+                    self.canLoadMore = false
+                    withAnimation {
+                        self.state = self.state.copy(shortsLoadState: .set(.idle))
+                    }
+                }
             }
 
         }
+    }
+    
+    @MainActor
+    func shouldPrefetch(itemIndex: Int) -> Bool {
+        guard case .idle = state.shortsLoadState,
+              state.shortVideos.count - itemIndex <= prefetchThreshold
+        else { return false }
+        
+        return true
     }
     
     @MainActor
@@ -348,6 +377,7 @@ final class HomeObserve : BaseObserver {
         
         private(set) var courses: [Course] = Course.temp
         private(set) var shortVideos: [ShortVideoUserData] = []
+        private(set) var shortsLoadState: LazyLoadState = .idle
         
         private(set) var services: [FixService] = FixService.sampleServices()
         private(set) var currentServices: [FixService] = []

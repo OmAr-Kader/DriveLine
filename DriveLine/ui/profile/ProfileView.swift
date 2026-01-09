@@ -321,7 +321,6 @@ struct EditProfileSheet: View {
                 }
                 LoadingScreen(color: .primaryOfApp, backDarkAlpha: .backDarkAlpha, isLoading: isLoading)
             }.toastView(toast: $toast, textColor: .textOfApp, backDarkSec: .backDarkSec)
-                .hideToolbar()
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
                         Button("Close") {

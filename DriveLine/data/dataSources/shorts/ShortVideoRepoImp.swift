@@ -47,8 +47,8 @@ final class ShortVideoRepoImp : ShortVideoRepo {
     }
     
     @BackgroundActor
-    func fetchLast50Videos(userBase: UserBase, crypted: CryptoMode?, invoke: @escaping @BackgroundActor ([ShortVideoUser]) -> Void, failed: @escaping (String) -> Void) async {
-        guard let url = URL(string: SecureConst.BASE_URL + Endpoint.SHORTS_LATEST) else {
+    func fetchLast50Videos(userBase: UserBase, limit: Int, skip: Int, crypted: CryptoMode?, invoke: @escaping @BackgroundActor ([ShortVideoUser]) -> Void, failed: @escaping (String) -> Void) async {
+        guard let url = URL(string: SecureConst.BASE_URL + Endpoint.SHORTS_LATEST + "?limit=\(limit)&skip=\(skip)") else {
             LogKit.print("fetchLast50Videos Invalid URL"); failed("Failed")
             return
         }

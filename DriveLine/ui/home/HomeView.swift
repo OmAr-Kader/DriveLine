@@ -16,7 +16,7 @@ import Foundation
 struct HomeView: View {
 
     let navigator: Navigator
-    let name: String
+    let userBase: UserBase?
     
     @Binding var obs: HomeObserve
 
@@ -50,7 +50,7 @@ struct HomeView: View {
                 .font(.title2)
                 .foregroundColor(.secondary)
             Spacer().height(6)
-            Text(name)
+            Text(userBase?.name ?? "")
                 .font(.largeTitle)
                 .bold()
             Spacer().height(6)
@@ -123,7 +123,16 @@ struct HomeView: View {
                 }.frame(height: isPortrait ? 140 : 120)
                     .onTapGesture {
                         navigator.navigateToScreen(VideoFeedConfig(shorts: obs.state.shortVideos, currentIndex: index), .VIDEO_SHORT_SCREEN_ROUTE)
+                    }.onAppeared {
+                        if obs.shouldPrefetch(itemIndex: index) {
+                            obs.loadShorts(userBase)
+                        }
                     }
+            }
+            if obs.state.shortsLoadState == .loading {
+                ProgressView()
+                    .gridCellColumns(2)
+                    .frame(height: 60).onCenterHorizontal()
             }
         }.padding([.horizontal, .bottom])
     }

@@ -58,6 +58,13 @@ struct FailableDecodable<T: Decodable>: Decodable {
     }
 }
 
+enum LazyLoadState: Equatable {
+    case idle
+    case loading
+    case loaded
+    case error(String)
+    case endReached
+}
 
 enum CryptoMode: String {
     case doubleCrypto = "x-double-crypto"
