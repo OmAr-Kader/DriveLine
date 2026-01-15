@@ -82,7 +82,7 @@ struct AiSessionData: Identifiable, Equatable, Sendable, Hashable {
     let updatedAt: Date
     
     var id: String {
-        idCloud + updatedAt.toStringAFormat() + lastMessage + title
+        "\(idCloud)\(updatedAt.toStringAFormat())\(lastMessage)\(title)"
     }
     
     static func == (lhs: Self, rhs: Self) -> Bool {
@@ -156,7 +156,7 @@ struct AiMessageData: Identifiable, Equatable, Sendable {
     var isFailedToUpload: Bool
     
     var id: String {
-        idCloud + text
+        "\(idCloud)\(text)"
     }
 
     static func == (lhs: Self, rhs: Self) -> Bool {

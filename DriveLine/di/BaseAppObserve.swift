@@ -72,7 +72,7 @@ final class BaseAppObserve: BaseObserver {
                 return
             }
             
-            await self.project.auth.shakeHand(userId: userBase.id) { res in
+            await self.project.auth.shakeHand(userBase: userBase) { res in
                 do {
                     try await self.secureSession.storeBackendPublicKey(res.serverPublicKey)
                     self.mainSync { invoke() }

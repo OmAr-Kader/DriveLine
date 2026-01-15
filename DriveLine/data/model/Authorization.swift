@@ -181,7 +181,7 @@ struct UserEdit: Sendable, Identifiable {
     
     @NoCopy
     var id: String {
-        name + "\(age ?? 0)" + (city ?? "") + (street ?? "") + (building ?? "") + (unit ?? "")
+        "\(name)\(age ?? 0)\(city ?? "")\(street ?? "")\(building ?? "")\(unit ?? "")"
     }
     
     var name: String

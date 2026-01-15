@@ -181,7 +181,7 @@ struct ShortVideoData: Identifiable, Hashable {
     let createdAt: Date
 
     var id: String {
-        _id + title + link
+        "\(_id)\(title)\(link)"
     }
     
     var player: AVPlayer?
@@ -229,8 +229,9 @@ struct ShortVideoUserData: Identifiable, Hashable, Equatable {
     let createdAt: Date
 
     var id: String {
-        _id + title + link
+        "\(_id)\(title)\(link)"
     }
+    
     var player: AVPlayer?
     
     var videoURL: URL? {

@@ -338,7 +338,7 @@ struct ProvideServiceData: Identifiable, Sendable, Hashable {
     let sunday: AvailabilityInterval?
     
     var id: String {
-        techId + String(serviceAdminId) + price + description
+        "\(techId)\(serviceAdminId)\(price)\(description)"
     }
     
     init(cloud: ProvideServiceRequest) {

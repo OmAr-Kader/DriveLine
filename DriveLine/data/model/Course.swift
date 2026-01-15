@@ -309,7 +309,7 @@ struct ProfileCourseData: Identifiable, Sendable, Hashable {
     let providedCourse: ProvideCourseData
     let course: Course
     var id: String {
-        "\(course.adminId)" + providedCourse.id + providedCourse.price + providedCourse.currency + "\(providedCourse.sessions)" + providedCourse.description
+        "\(course.adminId)\(providedCourse.id)\(providedCourse.price)\(providedCourse.currency)\(providedCourse.sessions)\(providedCourse.description)"
     }
 }
 
@@ -333,7 +333,7 @@ struct ProvideCourseData: Identifiable, Sendable, Hashable {
     let sunday: AvailabilityInterval?
     
     var id: String {
-        techId + String(courseAdminId) + price + description
+        "\(techId)\(courseAdminId)\(price)\(description)"
     }
     
     init(cloud: ProvideCourseRequest) {

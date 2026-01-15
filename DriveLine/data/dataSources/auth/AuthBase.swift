@@ -17,8 +17,8 @@ final class AuthBase {
     }
     
     @BackgroundActor
-    func shakeHand(userId: String, invoke: @escaping @BackgroundActor (ShakeHandsResponse) async -> Void, failed: @BackgroundActor (String) -> Void) async {
-        await repo.shakeHand(userId: userId, invoke: invoke, failed: failed)
+    func shakeHand(userBase: UserBase, invoke: @escaping @BackgroundActor (ShakeHandsResponse) async -> Void, failed: @BackgroundActor (String) -> Void) async {
+        await repo.shakeHand(userBase: userBase, invoke: invoke, failed: failed)
     }
     
     @BackgroundActor

@@ -51,9 +51,7 @@ struct Main: View, Navigator {
     
     var navigateMainNoAnimation: @MainActor (Screen) -> Void {
         return { screen in
-            withAnimation {
-                self._navigationPath.mainScreen = screen
-            }
+            self._navigationPath.mainScreen = screen
         }
     }
     
@@ -87,7 +85,6 @@ struct Main: View, Navigator {
     }
     
     var body: some View {
-        //let isSplash = app.state.homeScreen == Screen.SPLASH_SCREEN_ROUTE
         NavigationStack(path: $navigationPath) {
             targetScreen(
                 _navigationPath.mainScreen, $app, navigator: self
@@ -99,12 +96,6 @@ struct Main: View, Navigator {
         }.tint(theme.textHintColor)
             .toolbarColorScheme(theme.isDarkMode ? .dark : .light, for: .tabBar)
             .toolbarColorScheme(theme.isDarkMode ? .dark : .light, for: .navigationBar)
-        /*.onAppear {
-            UIScrollView.appearance().bounces = false
-        }*/
-        /*.prepareStatusBarConfigurator(
-          isSplash ? theme.background : theme.primary, isSplash, theme.isDarkStatusBarText
-          )*/
     }
 }
 
@@ -130,6 +121,16 @@ struct SplashScreen : View {
 
 
 
+/// Root home view that coordinates the main tab experience and navigation.
+///
+/// `HomeScreen` is backed by the app-wide observable state (`app`) and an internal
+/// `HomeObserve` instance (`obs`) that drives the selected tab and other home-level
+/// state using an observer-style pattern. Navigation and toolbar configuration are
+/// derived from this observed state:
+/// - `obs.selectedTab` determines which toolbar content is shown and which tab is active.
+/// - The injected `navigator` is used by subviews and callbacks to perform navigation
+///   actions that correspond to changes in the observed home state.
+/// - On appear, `obs` is initialized with user-specific data from `app.state.userBase`.
 struct HomeScreen: View {
     
     @Binding var app: BaseAppObserve

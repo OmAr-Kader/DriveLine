@@ -11,7 +11,7 @@ import SwiftUISturdy
 protocol AuthRepo :Sendable {
  
     @BackgroundActor
-    func shakeHand(userId: String, invoke: @escaping @BackgroundActor (ShakeHandsResponse) async -> Void, failed: @BackgroundActor (String) -> Void) async
+    func shakeHand(userBase: UserBase, invoke: @escaping @BackgroundActor (ShakeHandsResponse) async -> Void, failed: @BackgroundActor (String) -> Void) async
     
     @BackgroundActor
     func register(body: RegisterRequest, invoke: @escaping @BackgroundActor (BaseMessageResponse) async -> Void, failed: @BackgroundActor (String) -> Void) async

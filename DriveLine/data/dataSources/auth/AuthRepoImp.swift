@@ -19,14 +19,14 @@ final class AuthRepoImp : AuthRepo {
     }
     
     @BackgroundActor
-    func shakeHand(userId: String, invoke: @escaping @BackgroundActor (ShakeHandsResponse) async -> Void, failed: @BackgroundActor (String) -> Void) async {
+    func shakeHand(userBase: UserBase, invoke: @escaping @BackgroundActor (ShakeHandsResponse) async -> Void, failed: @BackgroundActor (String) -> Void) async {
         guard let url = URL(string: SecureConst.BASE_URL + Endpoint.SHAKE_HAND) else {
             LogKit.print("login Invalid URL"); failed("Failed")
             return
         }
         do {
             let publicKey = try await self.secureSession.getOurPublicKey()
-            let response: ShakeHandsResponse = try await url.createPOSTRequest(body: ShakeHandsRequest(publicKey: publicKey)).addAuthorizationHeader(userId: userId).performRequest(session: appSessions.disableCache)
+            let response: ShakeHandsResponse = try await url.createPOSTRequest(body: ShakeHandsRequest(publicKey: publicKey)).addAuthorizationHeader(userBase).performRequest(session: appSessions.disableCache)
             await invoke(response)
         } catch {
             LogKit.print("Failed ->", error.localizedDescription); failed("Failed")
