@@ -49,10 +49,10 @@ final class CreateEditCourseObserve: BaseObserver {
         let s = clamp(start, lower: 0, upper: 23)
         let e = clamp(end, lower: 0, upper: 23)
         if s <= e {
-            availabilities[day] = AvailabilityInterval(startUTC: s, endUTC: e)
+            availabilities[day] = AvailabilityInterval(startUTC: s, endUTC: e, dayOff: false)
         } else {
             // swap to keep start <= end
-            availabilities[day] = AvailabilityInterval(startUTC: e, endUTC: s)
+            availabilities[day] = AvailabilityInterval(startUTC: e, endUTC: s, dayOff: false)
         }
     }
 

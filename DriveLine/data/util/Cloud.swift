@@ -167,3 +167,25 @@ extension URLSessionConfiguration {
         return
     }
 }
+
+
+@BackgroundActor
+func debugDecodingError(_ error: Error) {
+    switch error {
+    case let decodingError as DecodingError:
+        switch decodingError {
+        case .typeMismatch(let type, let context):
+            print("Type mismatch for type: \(type)\npath: \(context.codingPath)\nmessage: \(context.debugDescription)")
+        case .valueNotFound(let type, let context):
+            print("Value not found for type: \(type)\npath: \(context.codingPath)\nmessage: \(context.debugDescription)")
+        case .keyNotFound(let key, let context):
+            print("Key '\(key.stringValue)' not found\npath: \(context.codingPath)\nmessage: \(context.debugDescription)")
+        case .dataCorrupted(let context):
+            print("Data corrupted\npath: \(context.codingPath)\nmessage: \(context.debugDescription)")
+        @unknown default:
+            print("Unknown DecodingError: \(decodingError)")
+        }
+    default:
+        print("Decoding failed with error: \(error)")
+    }
+}

@@ -51,8 +51,8 @@ final class CourseRepoImp : CourseRepo {
             return
         }
         do {
-            let response: GetACourseRespond = try await url.createGETRequest().addAuthorizationHeader(userBase).performRequest(session: appSessions.disableCache)
-            invoke(response)
+            let response: GetCourseResponse = try await url.createGETRequest().addAuthorizationHeader(userBase).performRequest(session: appSessions.disableCache)
+            invoke(response.course)
         } catch {
             LogKit.print("Failed ->", error.localizedDescription); failed("Failed")
         }

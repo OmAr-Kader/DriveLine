@@ -139,7 +139,7 @@ final class HomeObserve : BaseObserver {
         guard let userBase else { return }
         self.state = self.state.copy(isLoading: .set(true))
         self.tasker.back {
-            await self.project.auth.fetchProfileById(user: userBase, profileId: userBase.id, crypted: .receiveOnly) { profile in
+            await self.project.auth.fetchProfileById(user: userBase, profileId: userBase.id) { profile in
                 self.mainSync {
                     do {
                         let fixs = FixService.sampleServices()

@@ -24,7 +24,7 @@ struct ProvideServiceRequestRootRespond: Codable {
 
 @BackgroundActor
 struct ProvideServiceRequest: Codable {
-    let _id: String
+    let id: String
     let techId: String
     let serviceAdminId: Int
     let description: String
@@ -33,16 +33,16 @@ struct ProvideServiceRequest: Codable {
     let durationMinutes: Int
     let isActive: Bool// false of all days nil
     let images: [String]?
-    let monday: AvailabilityInterval?
-    let tuesday: AvailabilityInterval?
-    let wednesday: AvailabilityInterval?
-    let thursday: AvailabilityInterval?
-    let friday: AvailabilityInterval?
-    let saturday: AvailabilityInterval?
-    let sunday: AvailabilityInterval?
+    let monday: AvailabilityIntervalNullable?
+    let tuesday: AvailabilityIntervalNullable?
+    let wednesday: AvailabilityIntervalNullable?
+    let thursday: AvailabilityIntervalNullable?
+    let friday: AvailabilityIntervalNullable?
+    let saturday: AvailabilityIntervalNullable?
+    let sunday: AvailabilityIntervalNullable?
     
     init(data: ProvideServiceData) {
-        self._id = data._id
+        self.id = data._id
         self.techId = data.techId
         self.serviceAdminId = data.serviceAdminId
         self.description = data.description
@@ -51,17 +51,45 @@ struct ProvideServiceRequest: Codable {
         self.durationMinutes = data.durationMinutes
         self.isActive = data.isActive
         self.images = data.images
-        self.monday = data.monday
-        self.tuesday = data.tuesday
-        self.wednesday = data.wednesday
-        self.thursday = data.thursday
-        self.friday = data.friday
-        self.saturday = data.saturday
-        self.sunday = data.sunday
+        if let mon = data.monday {
+            self.monday = AvailabilityIntervalNullable(startUTC: mon.startUTC, endUTC: mon.endUTC, dayOff: mon.dayOff)
+        } else {
+            self.monday = nil
+        }
+        if let tue = data.tuesday {
+            self.tuesday = AvailabilityIntervalNullable(startUTC: tue.startUTC, endUTC: tue.endUTC, dayOff: tue.dayOff)
+        } else {
+            self.tuesday = nil
+        }
+        if let wed = data.wednesday {
+            self.wednesday = AvailabilityIntervalNullable(startUTC: wed.startUTC, endUTC: wed.endUTC, dayOff: wed.dayOff)
+        } else {
+            self.wednesday = nil
+        }
+        if let thu = data.thursday {
+            self.thursday = AvailabilityIntervalNullable(startUTC: thu.startUTC, endUTC: thu.endUTC, dayOff: thu.dayOff)
+        } else {
+            self.thursday = nil
+        }
+        if let fri = data.friday {
+            self.friday = AvailabilityIntervalNullable(startUTC: fri.startUTC, endUTC: fri.endUTC, dayOff: fri.dayOff)
+        } else {
+            self.friday = nil
+        }
+        if let sat = data.saturday {
+            self.saturday = AvailabilityIntervalNullable(startUTC: sat.startUTC, endUTC: sat.endUTC, dayOff: sat.dayOff)
+        } else {
+            self.saturday = nil
+        }
+        if let sun = data.sunday {
+            self.sunday = AvailabilityIntervalNullable(startUTC: sun.startUTC, endUTC: sun.endUTC, dayOff: sun.dayOff)
+        } else {
+            self.sunday = nil
+        }
     }
     
     init(techId: String, serviceAdminId: Int, description: String, price: String, currency: String, durationMinutes: Int, images: [String]?, monday: AvailabilityInterval?, tuesday: AvailabilityInterval?, wednesday: AvailabilityInterval?, thursday: AvailabilityInterval?, friday: AvailabilityInterval?, saturday: AvailabilityInterval?, sunday: AvailabilityInterval?) {
-        self._id = ""
+        self.id = ""
         self.techId = techId
         self.serviceAdminId = serviceAdminId
         self.description = description
@@ -70,13 +98,41 @@ struct ProvideServiceRequest: Codable {
         self.durationMinutes = durationMinutes
         self.isActive = monday != nil || tuesday != nil || wednesday != nil || thursday != nil || friday != nil || saturday != nil || sunday != nil
         self.images = images
-        self.monday = monday
-        self.tuesday = tuesday
-        self.wednesday = wednesday
-        self.thursday = thursday
-        self.friday = friday
-        self.saturday = saturday
-        self.sunday = sunday
+        if let mon = monday {
+            self.monday = AvailabilityIntervalNullable(startUTC: mon.startUTC, endUTC: mon.endUTC, dayOff: mon.dayOff)
+        } else {
+            self.monday = nil
+        }
+        if let tue = tuesday {
+            self.tuesday = AvailabilityIntervalNullable(startUTC: tue.startUTC, endUTC: tue.endUTC, dayOff: tue.dayOff)
+        } else {
+            self.tuesday = nil
+        }
+        if let wed = wednesday {
+            self.wednesday = AvailabilityIntervalNullable(startUTC: wed.startUTC, endUTC: wed.endUTC, dayOff: wed.dayOff)
+        } else {
+            self.wednesday = nil
+        }
+        if let thu = thursday {
+            self.thursday = AvailabilityIntervalNullable(startUTC: thu.startUTC, endUTC: thu.endUTC, dayOff: thu.dayOff)
+        } else {
+            self.thursday = nil
+        }
+        if let fri = friday {
+            self.friday = AvailabilityIntervalNullable(startUTC: fri.startUTC, endUTC: fri.endUTC, dayOff: fri.dayOff)
+        } else {
+            self.friday = nil
+        }
+        if let sat = saturday {
+            self.saturday = AvailabilityIntervalNullable(startUTC: sat.startUTC, endUTC: sat.endUTC, dayOff: sat.dayOff)
+        } else {
+            self.saturday = nil
+        }
+        if let sun = sunday {
+            self.sunday = AvailabilityIntervalNullable(startUTC: sun.startUTC, endUTC: sun.endUTC, dayOff: sun.dayOff)
+        } else {
+            self.sunday = nil
+        }
     }
     
     func encode(to encoder: Encoder) throws {
@@ -234,13 +290,13 @@ struct GetAServiceRespond: Codable {
     let durationMinutes: Int
     let images: [String]?
     let isActive: Bool
-    let monday: AvailabilityInterval?
-    let tuesday: AvailabilityInterval?
-    let wednesday: AvailabilityInterval?
-    let thursday: AvailabilityInterval?
-    let friday: AvailabilityInterval?
-    let saturday: AvailabilityInterval?
-    let sunday: AvailabilityInterval?
+    let monday: AvailabilityIntervalNullable?
+    let tuesday: AvailabilityIntervalNullable?
+    let wednesday: AvailabilityIntervalNullable?
+    let thursday: AvailabilityIntervalNullable?
+    let friday: AvailabilityIntervalNullable?
+    let saturday: AvailabilityIntervalNullable?
+    let sunday: AvailabilityIntervalNullable?
     
     struct Tech : Codable {
         let id: String
@@ -251,7 +307,7 @@ struct GetAServiceRespond: Codable {
         let image: String?
         let location: UserLocation?
         enum CodingKeys: String, CodingKey {
-            case id = "_id"
+            case id
             case name
             case email
             case phone
@@ -283,7 +339,7 @@ struct GetAServiceRespond: Codable {
     }
 
     enum CodingKeys: String, CodingKey {
-        case id = "_id"
+        case id
         case tech
         case serviceAdminId
         case description
@@ -305,6 +361,13 @@ struct GetAServiceRespond: Codable {
 struct AvailabilityInterval: Codable, Hashable, Sendable {
     var startUTC: Int
     var endUTC: Int
+    var dayOff: Bool
+}
+
+struct AvailabilityIntervalNullable: Codable, Hashable, Sendable {
+    var startUTC: Int?
+    var endUTC: Int?
+    var dayOff: Bool?
 }
 
 //=>////////////////////////////////////////////////
@@ -342,7 +405,7 @@ struct ProvideServiceData: Identifiable, Sendable, Hashable {
     }
     
     init(cloud: ProvideServiceRequest) {
-        self._id = cloud._id
+        self._id = cloud.id
         self.techId = cloud.techId
         self.serviceAdminId = cloud.serviceAdminId
         self.description = cloud.description
@@ -351,13 +414,41 @@ struct ProvideServiceData: Identifiable, Sendable, Hashable {
         self.durationMinutes = cloud.durationMinutes
         self.isActive = cloud.isActive
         self.images = cloud.images
-        self.monday = cloud.monday
-        self.tuesday = cloud.tuesday
-        self.wednesday = cloud.wednesday
-        self.thursday = cloud.thursday
-        self.friday = cloud.friday
-        self.saturday = cloud.saturday
-        self.sunday = cloud.sunday
+        if let mon = cloud.monday, mon.startUTC != nil || mon.endUTC != nil || mon.dayOff != nil {
+            self.monday = AvailabilityInterval(startUTC: mon.startUTC ?? 0, endUTC: mon.endUTC ?? 0, dayOff: mon.dayOff ?? false)
+        } else {
+            self.monday = nil
+        }
+        if let tue = cloud.tuesday, tue.startUTC != nil || tue.endUTC != nil || tue.dayOff != nil {
+            self.tuesday = AvailabilityInterval(startUTC: tue.startUTC ?? 0, endUTC: tue.endUTC ?? 0, dayOff: tue.dayOff ?? false)
+        } else {
+            self.tuesday = nil
+        }
+        if let wed = cloud.wednesday, wed.startUTC != nil || wed.endUTC != nil || wed.dayOff != nil {
+            self.wednesday = AvailabilityInterval(startUTC: wed.startUTC ?? 0, endUTC: wed.endUTC ?? 0, dayOff: wed.dayOff ?? false)
+        } else {
+            self.wednesday = nil
+        }
+        if let thu = cloud.thursday, thu.startUTC != nil || thu.endUTC != nil || thu.dayOff != nil {
+            self.thursday = AvailabilityInterval(startUTC: thu.startUTC ?? 0, endUTC: thu.endUTC ?? 0, dayOff: thu.dayOff ?? false)
+        } else {
+            self.thursday = nil
+        }
+        if let fri = cloud.friday, fri.startUTC != nil || fri.endUTC != nil || fri.dayOff != nil {
+            self.friday = AvailabilityInterval(startUTC: fri.startUTC ?? 0, endUTC: fri.endUTC ?? 0, dayOff: fri.dayOff ?? false)
+        } else {
+            self.friday = nil
+        }
+        if let sat = cloud.saturday, sat.startUTC != nil || sat.endUTC != nil || sat.dayOff != nil {
+            self.saturday = AvailabilityInterval(startUTC: sat.startUTC ?? 0, endUTC: sat.endUTC ?? 0, dayOff: sat.dayOff ?? false)
+        } else {
+            self.saturday = nil
+        }
+        if let sun = cloud.sunday, sun.startUTC != nil || sun.endUTC != nil || sun.dayOff != nil {
+            self.sunday = AvailabilityInterval(startUTC: sun.startUTC ?? 0, endUTC: sun.endUTC ?? 0, dayOff: sun.dayOff ?? false)
+        } else {
+            self.sunday = nil
+        }
     }
     
     
@@ -471,13 +562,41 @@ struct GetAServiceData: Identifiable, Sendable, Hashable {
         self.durationMinutes = cloud.durationMinutes
         self.images = cloud.images ?? []
         self.isActive = cloud.isActive
-        self.monday = cloud.monday
-        self.tuesday = cloud.tuesday
-        self.wednesday = cloud.wednesday
-        self.thursday = cloud.thursday
-        self.friday = cloud.friday
-        self.saturday = cloud.saturday
-        self.sunday = cloud.sunday
+        if let mon = cloud.monday, mon.startUTC != nil || mon.endUTC != nil || mon.dayOff != nil {
+            self.monday = AvailabilityInterval(startUTC: mon.startUTC ?? 0, endUTC: mon.endUTC ?? 0, dayOff: mon.dayOff ?? false)
+        } else {
+            self.monday = nil
+        }
+        if let tue = cloud.tuesday, tue.startUTC != nil || tue.endUTC != nil || tue.dayOff != nil {
+            self.tuesday = AvailabilityInterval(startUTC: tue.startUTC ?? 0, endUTC: tue.endUTC ?? 0, dayOff: tue.dayOff ?? false)
+        } else {
+            self.tuesday = nil
+        }
+        if let wed = cloud.wednesday, wed.startUTC != nil || wed.endUTC != nil || wed.dayOff != nil {
+            self.wednesday = AvailabilityInterval(startUTC: wed.startUTC ?? 0, endUTC: wed.endUTC ?? 0, dayOff: wed.dayOff ?? false)
+        } else {
+            self.wednesday = nil
+        }
+        if let thu = cloud.thursday, thu.startUTC != nil || thu.endUTC != nil || thu.dayOff != nil {
+            self.thursday = AvailabilityInterval(startUTC: thu.startUTC ?? 0, endUTC: thu.endUTC ?? 0, dayOff: thu.dayOff ?? false)
+        } else {
+            self.thursday = nil
+        }
+        if let fri = cloud.friday, fri.startUTC != nil || fri.endUTC != nil || fri.dayOff != nil {
+            self.friday = AvailabilityInterval(startUTC: fri.startUTC ?? 0, endUTC: fri.endUTC ?? 0, dayOff: fri.dayOff ?? false)
+        } else {
+            self.friday = nil
+        }
+        if let sat = cloud.saturday, sat.startUTC != nil || sat.endUTC != nil || sat.dayOff != nil {
+            self.saturday = AvailabilityInterval(startUTC: sat.startUTC ?? 0, endUTC: sat.endUTC ?? 0, dayOff: sat.dayOff ?? false)
+        } else {
+            self.saturday = nil
+        }
+        if let sun = cloud.sunday, sun.startUTC != nil || sun.endUTC != nil || sun.dayOff != nil {
+            self.sunday = AvailabilityInterval(startUTC: sun.startUTC ?? 0, endUTC: sun.endUTC ?? 0, dayOff: sun.dayOff ?? false)
+        } else {
+            self.sunday = nil
+        }
     }
     
     init(_ user: User, provided: ProvideServiceData) {

@@ -78,7 +78,7 @@ final class AuthRepoImp : AuthRepo {
     
     @BackgroundActor
     func fetchProfileById(user: UserBase, profileId: String, crypted: CryptoMode?, invoke: @escaping @BackgroundActor (Profile) -> Void, failed: @BackgroundActor (String) -> Void) async {
-        guard let url = URL(string: SecureConst.BASE_URL + Endpoint.PROFILE + profileId) else {
+        guard let url = URL(string: SecureConst.BASE_URL + Endpoint.PROFILE + profileId) else {// + "?limit=3"
             LogKit.print("fetchProfileById Invalid URL"); failed("Failed")
             return
         }
@@ -86,14 +86,14 @@ final class AuthRepoImp : AuthRepo {
             let request = try url.createGETRequest().addAuthorizationHeader(user, crypted)
             if crypted == .receiveOnly || crypted == .doubleCrypto {
                 let response: EncryptedCloud = try await request.performRequest(session: appSessions.disableCache)
-                let profile: Profile = try await self.secureSession.decryptFromBackend(encrypted: response.encrypted)
-                invoke(profile)
+                let profile: GetProfileResponse = try await self.secureSession.decryptFromBackend(encrypted: response.encrypted)
+                invoke(profile.profile)
             } else {
-                if let haveCache: Profile = appSessions.baseURLSession.tryFetchCache(request: request) {
-                    invoke(haveCache)
+                if let haveCache: GetProfileResponse = appSessions.baseURLSession.tryFetchCache(request: request) {
+                    invoke(haveCache.profile)
                 }
-                let profile: Profile = try await request.performRequest(session: appSessions.baseURLSession)
-                invoke(profile)
+                let profile: GetProfileResponse = try await request.performRequest(session: appSessions.baseURLSession)
+                invoke(profile.profile)
             }
         } catch {
             LogKit.print("Failed ->", error.localizedDescription); failed("Failed")

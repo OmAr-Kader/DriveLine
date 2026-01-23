@@ -40,7 +40,7 @@ final class ShortVideoRepoImp : ShortVideoRepo {
         }
         do {
             let response: GetShortsWithUserRespond = try await url.createGETRequest().addAuthorizationHeader(userBase).performRequest(session: appSessions.disableCache)
-            invoke(response.data)
+            invoke(response.data.videos)
         } catch {
             LogKit.print("Failed ->", error.localizedDescription); failed("Failed")
         }
@@ -63,10 +63,10 @@ final class ShortVideoRepoImp : ShortVideoRepo {
                     let data: EncryptedCloud = try await request.performRequest(session: appSessions.disableCache)
                     return try await self.secureSession.decryptFromBackend(encrypted: data.encrypted)
                 }
-                invoke(response.data)
+                invoke(response.data.videos)
             } else {
                 if let haveCache: GetShortsWithUserRespond = appSessions.baseURLSession.tryFetchCache(request: request) {
-                    invoke(haveCache.data)
+                    invoke(haveCache.data.videos)
                 }
                 let response: GetShortsWithUserRespond = try await withRetry { [weak self] in
                     guard let self = self else {
@@ -74,7 +74,7 @@ final class ShortVideoRepoImp : ShortVideoRepo {
                     }
                     return try await request.performRequest(session: appSessions.baseURLSession)
                 }
-                invoke(response.data)
+                invoke(response.data.videos)
             }
         } catch {
             // try before failed("Failed")

@@ -65,6 +65,7 @@ final class FixServiceRepoImp : FixServiceRepo {
         }
         do {
             let response: GetAServiceRootRespond = try await url.createGETRequest().addAuthorizationHeader(userBase).performRequest(session: appSessions.disableCache)
+            LogKit.print("Failed ---->", response.data.count)
             invoke(response.data)
         } catch {
             LogKit.print("Failed ->", error.localizedDescription); failed("Failed")

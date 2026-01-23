@@ -60,18 +60,18 @@ final class AiChatRepoImp : AiChatRepo {
     
     @BackgroundActor
     func getSessions(userBase: UserBase, invoke: @escaping ([AiSession]) -> Void, failed: @escaping (String) -> Void) async {
-        guard let url = URL(string: SecureConst.BASE_URL + Endpoint.SESSION) else {
+        guard let url = URL(string: SecureConst.BASE_URL + Endpoint.SESSION + Endpoint.timeStamp(firstQuery: true)) else {
             LogKit.print("getSessions Invalid URL"); failed("Failed")
             return
         }
         do {
             let request = try url.createGETRequest().addAuthorizationHeader(userBase)
-            if let haveCache: [AiSession] = appSessions.baseURLSession.tryFetchCache(request: request) {
-                invoke(haveCache)
+            if let haveCache: GetSessionsResponse = appSessions.baseURLSession.tryFetchCache(request: request) {
+                invoke(haveCache.sessions)
             }
             
-            let response: [AiSession] = try await request.performRequest(session: appSessions.baseURLSession)
-            invoke(response)
+            let response: GetSessionsResponse = try await request.performRequest(session: appSessions.baseURLSession)
+            invoke(response.sessions)
         } catch {
             LogKit.print("Failed ->", error.localizedDescription); failed("Failed")
         }
@@ -79,13 +79,13 @@ final class AiChatRepoImp : AiChatRepo {
     
     @BackgroundActor
     func getSessionMessages(userBase: UserBase, sessionId: String, invoke: @escaping ([AiMessage]) -> Void, failed: @escaping (String) -> Void) async {
-        guard let url = URL(string: SecureConst.BASE_URL + Endpoint.sessionById(sessionId)) else {
+        guard let url = URL(string: SecureConst.BASE_URL + Endpoint.sessionById(sessionId) + Endpoint.timeStamp(firstQuery: true)) else {
             LogKit.print("getSessionMessages Invalid URL"); failed("Failed")
             return
         }
         do {
-            let response: [AiMessage] = try await url.createGETRequest().addAuthorizationHeader(userBase).performRequest(session: appSessions.disableCache)
-            invoke(response)
+            let response: GetMessagesResponse = try await url.createGETRequest().addAuthorizationHeader(userBase).performRequest(session: appSessions.disableCache)
+            invoke(response.messages)
         } catch {
             LogKit.print("Failed ->", error.localizedDescription); failed("Failed")
         }

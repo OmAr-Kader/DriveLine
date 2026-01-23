@@ -101,11 +101,24 @@ struct UpdateUser: Codable, Sendable {
 }
 
 @BackgroundActor
+struct GetProfileResponse: Codable, Sendable {
+    let profile: Profile
+}
+
+@BackgroundActor
 struct Profile: Codable, Sendable {
     let user: User
     let services: [ProvideServiceRequest]
     let courses: [ProvideCourseRequest]
     let shorts: [ShortVideo]
+    
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.user = try container.decode(User.self, forKey: .user)
+        self.services = try container.decode([ProvideServiceRequest].self, forKey: .services)
+        self.courses = try container.decode([ProvideCourseRequest].self, forKey: .courses)
+        self.shorts = try container.decode([ShortVideo].self, forKey: .shorts)
+    }
 }
 
 @BackgroundActor
@@ -154,7 +167,7 @@ struct User: Codable, Sendable {
     }
     
     enum CodingKeys: String, CodingKey {
-        case id = "_id"
+        case id
         case name
         case email
         case role

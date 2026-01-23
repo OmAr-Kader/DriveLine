@@ -44,7 +44,7 @@ struct ShortVideo: Codable {
     }
     
     enum CodingKeys : String, CodingKey {
-        case id = "_id"
+        case id
         case title
         case userId
         case link
@@ -91,7 +91,7 @@ struct ShortVideoUser: Codable {
     }
     
     enum CodingKeys: String, CodingKey {
-        case id = "_id"
+        case id
         case title
         case user
         case link
@@ -136,7 +136,7 @@ struct UserShort: Codable {
     }
     
     enum CodingKeys: String, CodingKey {
-        case id = "_id", name, role, image
+        case id, name, role, image
     }
 }
 
@@ -158,15 +158,32 @@ struct GetShortsRespond: Codable {
 }
 
 @BackgroundActor
-struct GetShortsWithUserRespond: Codable {
-    let data: [ShortVideoUser]
+struct ShortUserVideoList: Codable {
+    let videos: [ShortVideoUser]
     
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
         // Attempt to decode as array, filter out invalid items
-        self.data = (try? container.decode([FailableDecodable<ShortVideoUser>].self, forKey: .data))?
+        self.videos = (try? container.decode([FailableDecodable<ShortVideoUser>].self, forKey: .videos))?
             .compactMap { $0.value } ?? []
+    }
+}
+
+@BackgroundActor
+struct ShortVideoList: Codable {
+    let videos: [ShortVideo]
+}
+
+@BackgroundActor
+struct GetShortsWithUserRespond: Codable {
+    let data: ShortUserVideoList
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        // Attempt to decode as array, filter out invalid items
+        self.data = try container.decode(ShortUserVideoList.self, forKey: .data)
     }
 }
 
