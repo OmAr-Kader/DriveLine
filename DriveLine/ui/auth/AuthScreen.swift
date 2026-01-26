@@ -263,35 +263,37 @@ fileprivate struct CustomSecureTextEditor: View {
                 .alignmentGuide(VerticalAlignment.center) { d in d[.top] + 10 }
             
             ZStack(alignment: .topLeading) {
-                // Normal TextEditor (shows dots instead of text manually)
-                TextField(placeholder, text: Binding(
-                    get: { isSecure ? String(repeating: "•", count: text.count) : text },
-                    set: { newValue in
-                        // Replace secure dots input manually
-                        if isSecure {
-                            if newValue.count < text.count {
-                                text.removeLast()
-                            } else if newValue.count > text.count {
-                                let addedChar = newValue.suffix(newValue.count - text.count)
-                                text.append(contentsOf: addedChar)
-                            }
-                        } else {
-                            text = newValue
-                        }
-                    }
-                ))
-                .foregroundColor(.textOfApp)
-                .scrollContentBackground(.hidden)
-                .background(Color.clear)
-                .lineLimit(1)
-                .frame(height: 35)
-                .autocapitalization(.none)
-                .autocorrectionDisabled(false)
-                .keyboardType(type.1)
-                .textContentType(type.0)
-                .focused($focusedField, equals: field)
-                .submitLabel(.go)
-                .onSubmit(onSubmit)
+                if isSecure {
+                    // Use SecureField to mask input but keep real value in `text`
+                    SecureField(placeholder, text: $text)
+                        .foregroundColor(.textOfApp)
+                        .scrollContentBackground(.hidden)
+                        .background(Color.clear)
+                        .lineLimit(1)
+                        .frame(height: 35)
+                        .autocapitalization(.none)
+                        .autocorrectionDisabled(false)
+                        .keyboardType(type.1)
+                        .textContentType(type.0)
+                        .focused($focusedField, equals: field)
+                        .submitLabel(.go)
+                        .onSubmit(onSubmit)
+                } else {
+                    // Plain TextField when visibility is toggled on
+                    TextField(placeholder, text: $text)
+                        .foregroundColor(.textOfApp)
+                        .scrollContentBackground(.hidden)
+                        .background(Color.clear)
+                        .lineLimit(1)
+                        .frame(height: 35)
+                        .autocapitalization(.none)
+                        .autocorrectionDisabled(false)
+                        .keyboardType(type.1)
+                        .textContentType(type.0)
+                        .focused($focusedField, equals: field)
+                        .submitLabel(.go)
+                        .onSubmit(onSubmit)
+                }
             }
             
             // Eye icon toggle for show/hide

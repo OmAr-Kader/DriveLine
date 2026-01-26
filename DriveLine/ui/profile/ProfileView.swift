@@ -39,7 +39,7 @@ struct ProfileView: View {
                         .overlay(
                             Circle()
                                 .stroke(.primaryOfApp, lineWidth: 3)
-                        )
+                        ).id(profileImage)
                 } else {
                     Image(systemName: "person.circle.fill")
                         .resizable()

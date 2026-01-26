@@ -66,18 +66,25 @@ final class HomeObserve : BaseObserver {
     func loadShorts(_ userBase: UserBase?) {
         guard let userBase, case .idle = state.shortsLoadState, canLoadMore else { return }
         self.state = self.state.copy(shortsLoadState: .set(.loading))
+        let needCache = self.state.shortVideos.isEmpty
         self.tasker.back {
-            await self.project.short.fetchLast50Videos(userBase: userBase, limit: self.pageSize, skip: self.currentPage, crypted: .receiveOnly) { shorts in
+            await self.project.short.fetchLast50Videos(userBase: userBase, limit: self.pageSize, skip: self.currentPage, needCache: needCache) { shorts in //, crypted: .receiveOnly
                 self.mainSync {
                     let list = shorts.map({ ShortVideoUserData($0) }).sorted(by: { $0.createdAt > $1.createdAt })
-                    LogKit.print("Local Short Videos Cound", shorts.count)
+                    LogKit.print("Local Short Videos Count \(needCache) ", shorts.count)
                     self.currentPage += 20
                     if list.isEmpty || list.count < 10 {
                         self.canLoadMore = false
                     }
-                    withAnimation {
-                        var newList = self.state.shortVideos
+                    
+                    var newList = self.state.shortVideos
+                    if needCache {
+                        newList = list
+                    } else {
                         newList.append(contentsOf: list)
+                    }
+                    withAnimation {
+                        //let uniqueVideos = Array(newList.reduce(into: [:]) { $0[$1.id] = $1 }.values)
                         self.state = self.state.copy(shortVideos: .set(newList), shortsLoadState: .set(.idle))
                     }
                 }

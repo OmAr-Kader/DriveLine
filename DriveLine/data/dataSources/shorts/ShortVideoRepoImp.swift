@@ -47,7 +47,7 @@ final class ShortVideoRepoImp : ShortVideoRepo {
     }
     
     @BackgroundActor
-    func fetchLast50Videos(userBase: UserBase, limit: Int, skip: Int, crypted: CryptoMode?, invoke: @escaping @BackgroundActor ([ShortVideoUser]) -> Void, failed: @escaping (String) -> Void) async {
+    func fetchLast50Videos(userBase: UserBase, limit: Int, skip: Int, needCache: Bool, crypted: CryptoMode?, invoke: @escaping @BackgroundActor ([ShortVideoUser]) -> Void, failed: @escaping (String) -> Void) async {
         guard let url = URL(string: SecureConst.BASE_URL + Endpoint.SHORTS_LATEST + "?limit=\(limit)&skip=\(skip)") else {
             LogKit.print("fetchLast50Videos Invalid URL"); failed("Failed")
             return
@@ -65,8 +65,10 @@ final class ShortVideoRepoImp : ShortVideoRepo {
                 }
                 invoke(response.data.videos)
             } else {
-                if let haveCache: GetShortsWithUserRespond = appSessions.baseURLSession.tryFetchCache(request: request) {
-                    invoke(haveCache.data.videos)
+                if needCache {
+                    if let haveCache: GetShortsWithUserRespond = appSessions.baseURLSession.tryFetchCache(request: request) {
+                        invoke(haveCache.data.videos)
+                    }
                 }
                 let response: GetShortsWithUserRespond = try await withRetry { [weak self] in
                     guard let self = self else {

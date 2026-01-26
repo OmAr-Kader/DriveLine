@@ -17,7 +17,7 @@ internal protocol ShortVideoRepo : Sendable {
     func fetchVideosByTag(userBase: UserBase, tag: Int, invoke: @escaping @BackgroundActor ([ShortVideoUser]) -> Void, failed: @escaping (String) -> Void) async
     
     @BackgroundActor
-    func fetchLast50Videos(userBase: UserBase, limit: Int, skip: Int, crypted: CryptoMode?, invoke: @escaping @BackgroundActor ([ShortVideoUser]) -> Void, failed: @escaping (String) -> Void) async
+    func fetchLast50Videos(userBase: UserBase, limit: Int, skip: Int, needCache: Bool, crypted: CryptoMode?, invoke: @escaping @BackgroundActor ([ShortVideoUser]) -> Void, failed: @escaping (String) -> Void) async
     
     @BackgroundActor
     func increaseViews(userBase: UserBase, shortId: String) async

@@ -43,50 +43,7 @@ struct ProvideCourseRequest: Codable {
     let sunday: AvailabilityIntervalNullable?
     
     init(data: ProvideCourseData) {
-        self.id = data._id
-        self.techId = data.techId
-        self.courseAdminId = data.courseAdminId
-        self.description = data.description
-        self.price = data.price
-        self.currency = data.currency
-        self.sessions = data.sessions
-        self.isActive = data.isActive
-        self.images = data.images
-        if let mon = data.monday {
-            self.monday = AvailabilityIntervalNullable(startUTC: mon.startUTC, endUTC: mon.endUTC, dayOff: mon.dayOff)
-        } else {
-            self.monday = nil
-        }
-        if let tue = data.tuesday {
-            self.tuesday = AvailabilityIntervalNullable(startUTC: tue.startUTC, endUTC: tue.endUTC, dayOff: tue.dayOff)
-        } else {
-            self.tuesday = nil
-        }
-        if let wed = data.wednesday {
-            self.wednesday = AvailabilityIntervalNullable(startUTC: wed.startUTC, endUTC: wed.endUTC, dayOff: wed.dayOff)
-        } else {
-            self.wednesday = nil
-        }
-        if let thu = data.thursday {
-            self.thursday = AvailabilityIntervalNullable(startUTC: thu.startUTC, endUTC: thu.endUTC, dayOff: thu.dayOff)
-        } else {
-            self.thursday = nil
-        }
-        if let fri = data.friday {
-            self.friday = AvailabilityIntervalNullable(startUTC: fri.startUTC, endUTC: fri.endUTC, dayOff: fri.dayOff)
-        } else {
-            self.friday = nil
-        }
-        if let sat = data.saturday {
-            self.saturday = AvailabilityIntervalNullable(startUTC: sat.startUTC, endUTC: sat.endUTC, dayOff: sat.dayOff)
-        } else {
-            self.saturday = nil
-        }
-        if let sun = data.sunday {
-            self.sunday = AvailabilityIntervalNullable(startUTC: sun.startUTC, endUTC: sun.endUTC, dayOff: sun.dayOff)
-        } else {
-            self.sunday = nil
-        }
+        self.init(techId: data.techId, courseAdminId: data.courseAdminId, description: data.description, price: data.price, currency: data.currency, sessions: data.sessions, images: data.images, monday: data.monday, tuesday: data.tuesday, wednesday: data.wednesday, thursday: data.thursday, friday: data.friday, saturday: data.saturday, sunday: data.sunday)
     }
     
     init(techId: String, courseAdminId: Int, description: String, price: String, currency: String, sessions: Int, images: [String]?, monday: AvailabilityInterval?, tuesday: AvailabilityInterval?, wednesday: AvailabilityInterval?, thursday: AvailabilityInterval?, friday: AvailabilityInterval?, saturday: AvailabilityInterval?, sunday: AvailabilityInterval?) {
