@@ -1,0 +1,107 @@
+syntax = "proto3";
+
+package course;
+
+import "user.proto";
+import "common.proto";
+
+
+message Course {
+  optional string id = 1;
+  int32 courseAdminId = 2;
+  optional string techId = 3;
+  optional user.User tech = 4;
+  optional string description = 5;
+  string price = 6;
+  optional string currency = 7;
+  optional int32 sessions = 8;
+  optional bool isActive = 9;
+  repeated string images = 10;
+  common.AvailabilityInterval monday = 11;
+  common.AvailabilityInterval tuesday = 12;
+  common.AvailabilityInterval wednesday = 13;
+  common.AvailabilityInterval thursday = 14;
+  common.AvailabilityInterval friday = 15;
+  common.AvailabilityInterval saturday = 16;
+  common.AvailabilityInterval sunday = 17;
+  optional string createdAt = 18;
+  optional string updatedAt = 19;
+}
+
+
+message UpdateFixService {
+  optional int32 serviceAdminId = 2;
+  optional string techId = 3;
+  optional string description = 5;
+  optional string price = 6;
+  optional string currency = 7;
+  optional int32 durationMinutes = 8;
+  optional bool isActive = 9;
+  repeated string images = 10;
+  optional common.AvailabilityInterval monday = 11;
+  optional common.AvailabilityInterval tuesday = 12;
+  optional common.AvailabilityInterval wednesday = 13;
+  optional common.AvailabilityInterval thursday = 14;
+  optional common.AvailabilityInterval friday = 15;
+  optional common.AvailabilityInterval saturday = 16;
+  optional common.AvailabilityInterval sunday = 17;
+}
+
+message CreateCourseRequest {
+  Course course = 1;
+  string currentUser = 2;
+}
+
+message CreateCourseResponse {
+  Course course = 2;
+}
+
+message UpdateCourseRequest {
+  string id = 1;
+  UpdateFixService update = 2;
+  string currentUser = 3;
+}
+
+message GetCourseByIdRequest {
+  string id = 1;
+  string currentUser = 2;
+}
+
+message GetCourseByIdResponse {
+  Course course = 1;
+}
+
+message GetCoursesByCourseAdminIdRequest {
+  int32 courseAdminId = 1;
+  bool isActive = 2;
+  string currentUser = 3;
+  common.BaseQueries queries = 7;
+}
+
+message GetCoursesResponse {
+  repeated Course data = 1;
+}
+
+message ListByTechRequest {
+  string techId = 1;
+  string currentUser = 2;
+  common.BaseQueries queries = 7;
+}
+
+message GetAllCoursesRequest {
+  common.BaseQueries queries = 1;
+}
+
+message DeleteCourseRequest {
+  string id = 1;
+}
+
+service CourseService {
+  rpc Create(CreateCourseRequest) returns (CreateCourseResponse);
+  rpc Update(UpdateCourseRequest) returns (CreateCourseResponse);
+  rpc GetCourseById(GetCourseByIdRequest) returns (GetCourseByIdResponse);
+  rpc GetCoursesByCourseAdminId(GetCoursesByCourseAdminIdRequest) returns (GetCoursesResponse);
+  rpc ListByTech(ListByTechRequest) returns (GetCoursesResponse);
+  rpc GetAllCourses(GetAllCoursesRequest) returns (GetCoursesResponse);
+  rpc Delete(DeleteCourseRequest) returns (common.MessageResponse);
+}

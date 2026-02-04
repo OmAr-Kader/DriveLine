@@ -1,0 +1,104 @@
+syntax = "proto3";
+
+package fixservice;
+
+import "common.proto";
+import "user.proto";
+
+message FixService {
+  optional string id = 1;
+  int32 serviceAdminId = 2;
+  optional string techId = 3;
+  optional user.User tech = 4;
+  optional string description = 5;
+  string price = 6;
+  optional string currency = 7;
+  optional int32 durationMinutes = 8;
+  optional bool isActive = 9;
+  repeated string images = 10;
+  common.AvailabilityInterval monday = 11;
+  common.AvailabilityInterval tuesday = 12;
+  common.AvailabilityInterval wednesday = 13;
+  common.AvailabilityInterval thursday = 14;
+  common.AvailabilityInterval friday = 15;
+  common.AvailabilityInterval saturday = 16;
+  common.AvailabilityInterval sunday = 17;
+  optional string updatedAt = 18;
+  optional string createdAt = 19;
+}
+
+message UpdateFixService {
+  
+  optional string description = 5;
+  optional string price = 6;
+  optional string currency = 7;
+  optional int32 durationMinutes = 8;
+  optional bool isActive = 9;
+  repeated string images = 10;
+  optional common.AvailabilityInterval monday = 11;
+  optional common.AvailabilityInterval tuesday = 12;
+  optional common.AvailabilityInterval wednesday = 13;
+  optional common.AvailabilityInterval thursday = 14;
+  optional common.AvailabilityInterval friday = 15;
+  optional common.AvailabilityInterval saturday = 16;
+  optional common.AvailabilityInterval sunday = 17;
+}
+
+message CreateFixServiceRequest {
+  FixService service = 1;
+  string userId = 2;
+}
+
+message CreateFixServiceResponse {
+  FixService service = 2;
+}
+
+message UpdateFixServiceRequest {
+  string id = 1;
+  optional UpdateFixService update = 2;
+  string userId = 3;
+}
+
+message GetServiceByIdRequest {
+  string id = 1;
+  string userId = 2;
+}
+
+message GetServiceByIdResponse {
+  FixService service = 1;
+}
+
+message GetServicesByServiceAdminIdRequest {
+  int32 serviceAdminId = 1;
+  bool isActive = 2;
+  string userId = 3;
+  common.BaseQueries queries = 7;
+}
+
+message GetServicesResponse {
+  repeated FixService data = 1;
+}
+
+message ListByTechRequest {
+  string techId = 1;
+  string userId = 2;
+  common.BaseQueries queries = 7;
+}
+
+message GetAllServicesRequest {
+  common.BaseQueries queries = 1;
+}
+
+message DeleteServiceRequest {
+  string id = 1;
+}
+
+service FixServiceService {
+  rpc Create(CreateFixServiceRequest) returns (CreateFixServiceResponse);
+  rpc Update(UpdateFixServiceRequest) returns (CreateFixServiceResponse);
+  rpc GetServiceById(GetServiceByIdRequest) returns (GetServiceByIdResponse);
+  rpc GetServicesByServiceAdminId(GetServicesByServiceAdminIdRequest) returns (GetServicesResponse);
+  rpc ListByTech(ListByTechRequest) returns (GetServicesResponse);
+  rpc GetAllServices(GetAllServicesRequest) returns (GetServicesResponse);
+  rpc Delete(DeleteServiceRequest) returns (common.MessageResponse);
+}

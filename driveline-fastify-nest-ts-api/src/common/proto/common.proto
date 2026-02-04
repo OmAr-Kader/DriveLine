@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+package common;
+
+// Empty message for operations that don't require request/response data
+message Empty {}
+
+// Standard response with a message
+message MessageResponse {
+  string message = 1;
+}
+
+// Generic ID request
+message IdRequest {
+  string id = 1;
+}
+
+message IdUserIdRequest {
+  string id = 1;
+  string currentUserId = 2;
+}
+
+// Availability interval for scheduling
+message AvailabilityInterval {
+  optional int32 startUTC = 1; // Unix timestamp or time value
+  optional int32 endUTC = 2; // Unix timestamp or time value
+  optional bool dayOff = 3;
+}
+
+// Pagination request
+message PaginationRequest {
+  int32 page = 1;
+  int32 limit = 2;
+  optional int32 skip = 3;
+}
+
+// Base query parameters used across endpoints
+message BaseQueries {
+  optional int32 limit = 1;
+  optional int32 skip = 2;
+  optional string sort = 3;
+  optional bool needTimestamp = 4;
+  optional string columns = 5;
+  optional string exclude = 6;
+}
+
+// Standard headers passed in requests
+message BaseHeaders {
+  optional string currentUserId = 1; 
+  optional string cryptoMode = 2;
+  optional string clientKeyBase64 = 3;
+}
+
+// Generic error response
+message ErrorResponse {
+  string error = 1;
+  string message = 2;
+  int32 statusCode = 3;
+}

@@ -8,46 +8,16 @@
 
 /* Begin PBXBuildFile section */
 		DC1D73992EE08E6400E982A9 /* SwiftUIMacroSturdy in Frameworks */ = {isa = PBXBuildFile; productRef = DC1D73982EE08E6400E982A9 /* SwiftUIMacroSturdy */; };
+		DC2D8B132F3367FB004DD778 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = DC2D8B122F3367FB004DD778 /* README.md */; };
+		DC2D8B152F336811004DD778 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = DC2D8B142F336811004DD778 /* LICENSE.txt */; };
 		DCA84EA22EBD348900945801 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = DCA84EA12EBD348900945801 /* .gitignore */; };
-		DCA84EA52EBD34C500945801 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = DCA84EA32EBD34C500945801 /* LICENSE */; };
-		DCA84EA62EBD34C500945801 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = DCA84EA42EBD34C500945801 /* README.md */; };
 		DCA84EAB2EBD358200945801 /* Swinject in Frameworks */ = {isa = PBXBuildFile; productRef = DCA84EAA2EBD358200945801 /* Swinject */; };
 		DCA84EB12EBD35A000945801 /* SwiftUISturdy in Frameworks */ = {isa = PBXBuildFile; productRef = DCA84EB02EBD35A000945801 /* SwiftUISturdy */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		DC911BB52ECC0C4B008FB226 /* API Documentation #reference.postman_collection.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "API Documentation #reference.postman_collection.json"; sourceTree = "<group>"; };
-		DC911BDE2ECC0C4B008FB226 /* package.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = package.json; sourceTree = "<group>"; };
-		DC911BDF2ECC0C4B008FB226 /* package-lock.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "package-lock.json"; sourceTree = "<group>"; };
-		DC911BE02ECC0C4B008FB226 /* tsconfig.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = tsconfig.json; sourceTree = "<group>"; };
-		DC911BE12ECC0C4B008FB226 /* tsconfig.tsbuildinfo */ = {isa = PBXFileReference; lastKnownFileType = text; path = tsconfig.tsbuildinfo; sourceTree = "<group>"; };
-		DC911BE22ECC0C96008FB226 /* db.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = db.ts; sourceTree = "<group>"; };
-		DC911BE42ECC0C96008FB226 /* aiMessageController.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = aiMessageController.ts; sourceTree = "<group>"; };
-		DC911BE52ECC0C96008FB226 /* aiSessionController.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = aiSessionController.ts; sourceTree = "<group>"; };
-		DC911BE62ECC0C96008FB226 /* authController.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = authController.ts; sourceTree = "<group>"; };
-		DC911BE72ECC0C96008FB226 /* courseController.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = courseController.ts; sourceTree = "<group>"; };
-		DC911BE82ECC0C96008FB226 /* fixServiceController.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = fixServiceController.ts; sourceTree = "<group>"; };
-		DC911BE92ECC0C96008FB226 /* geminiController.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = geminiController.ts; sourceTree = "<group>"; };
-		DC911BEA2ECC0C96008FB226 /* helperController.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = helperController.ts; sourceTree = "<group>"; };
-		DC911BEB2ECC0C96008FB226 /* shortVideoController.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = shortVideoController.ts; sourceTree = "<group>"; };
-		DC911BEC2ECC0C96008FB226 /* userController.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = userController.ts; sourceTree = "<group>"; };
-		DC911BEE2ECC0C96008FB226 /* aiMessage.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = aiMessage.ts; sourceTree = "<group>"; };
-		DC911BEF2ECC0C96008FB226 /* aiSession.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = aiSession.ts; sourceTree = "<group>"; };
-		DC911BF02ECC0C96008FB226 /* course.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = course.ts; sourceTree = "<group>"; };
-		DC911BF12ECC0C96008FB226 /* fixService.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = fixService.ts; sourceTree = "<group>"; };
-		DC911BF22ECC0C96008FB226 /* gemini.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = gemini.ts; sourceTree = "<group>"; };
-		DC911BF32ECC0C96008FB226 /* helper.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = helper.ts; sourceTree = "<group>"; };
-		DC911BF42ECC0C96008FB226 /* shortVideo.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = shortVideo.ts; sourceTree = "<group>"; };
-		DC911BF52ECC0C96008FB226 /* User.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = User.ts; sourceTree = "<group>"; };
-		DC911BF72ECC0C96008FB226 /* aiMessageRoutes.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = aiMessageRoutes.ts; sourceTree = "<group>"; };
-		DC911BF82ECC0C96008FB226 /* aiSessionRoutes.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = aiSessionRoutes.ts; sourceTree = "<group>"; };
-		DC911BF92ECC0C96008FB226 /* authRoutes.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = authRoutes.ts; sourceTree = "<group>"; };
-		DC911BFA2ECC0C96008FB226 /* courseRoutes.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = courseRoutes.ts; sourceTree = "<group>"; };
-		DC911BFB2ECC0C96008FB226 /* fixServiceRoutes.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = fixServiceRoutes.ts; sourceTree = "<group>"; };
-		DC911BFC2ECC0C96008FB226 /* serviceRoutes.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = serviceRoutes.ts; sourceTree = "<group>"; };
-		DC911BFD2ECC0C96008FB226 /* shortVideoRoutes.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = shortVideoRoutes.ts; sourceTree = "<group>"; };
-		DC911BFE2ECC0C96008FB226 /* userRoutes.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = userRoutes.ts; sourceTree = "<group>"; };
-		DC911C002ECC0CD3008FB226 /* index.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = index.ts; sourceTree = "<group>"; };
+		DC2D8B122F3367FB004DD778 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		DC2D8B142F336811004DD778 /* LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 		DC911C112ECC252C008FB226 /* 1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 1.jpg; sourceTree = "<group>"; };
 		DC911C122ECC252C008FB226 /* 2.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 2.jpg; sourceTree = "<group>"; };
 		DC911C132ECC252C008FB226 /* 3.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 3.jpg; sourceTree = "<group>"; };
@@ -59,60 +29,6 @@
 		DC9466B42EC22B2600E4C0BD /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 		DCA84E932EBD345F00945801 /* DriveLine.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DriveLine.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DCA84EA12EBD348900945801 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
-		DCA84EA32EBD34C500945801 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
-		DCA84EA42EBD34C500945801 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		DCA9677B2ED5A53700DDB968 /* eslint.config.mjs */ = {isa = PBXFileReference; lastKnownFileType = text; path = eslint.config.mjs; sourceTree = "<group>"; };
-		DCA9677C2ED5A53700DDB968 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
-		DCA9677D2ED5A53700DDB968 /* nest-cli.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "nest-cli.json"; sourceTree = "<group>"; };
-		DCA9677E2ED5A53700DDB968 /* package.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = package.json; sourceTree = "<group>"; };
-		DCA9677F2ED5A53700DDB968 /* package-lock.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "package-lock.json"; sourceTree = "<group>"; };
-		DCA967802ED5A53700DDB968 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		DCA967812ED5A53700DDB968 /* app.e2e-spec.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = "app.e2e-spec.ts"; sourceTree = "<group>"; };
-		DCA967822ED5A53700DDB968 /* jest-e2e.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "jest-e2e.json"; sourceTree = "<group>"; };
-		DCA967842ED5A53700DDB968 /* tsconfig.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = tsconfig.json; sourceTree = "<group>"; };
-		DCA967852ED5A53700DDB968 /* tsconfig.build.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = tsconfig.build.json; sourceTree = "<group>"; };
-		DCA967872ED5A57200DDB968 /* app.module.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = app.module.ts; sourceTree = "<group>"; };
-		DCA967882ED5A57200DDB968 /* aiMessage.controller.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = aiMessage.controller.ts; sourceTree = "<group>"; };
-		DCA967892ED5A57200DDB968 /* aiSession.controller.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = aiSession.controller.ts; sourceTree = "<group>"; };
-		DCA9678A2ED5A57200DDB968 /* auth.controller.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = auth.controller.ts; sourceTree = "<group>"; };
-		DCA9678B2ED5A57200DDB968 /* course.controller.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = course.controller.ts; sourceTree = "<group>"; };
-		DCA9678C2ED5A57200DDB968 /* fixServices.controller.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = fixServices.controller.ts; sourceTree = "<group>"; };
-		DCA9678D2ED5A57200DDB968 /* gemini.controller.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = gemini.controller.ts; sourceTree = "<group>"; };
-		DCA9678E2ED5A57200DDB968 /* helper.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = helper.ts; sourceTree = "<group>"; };
-		DCA9678F2ED5A57200DDB968 /* shortVideo.controller.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = shortVideo.controller.ts; sourceTree = "<group>"; };
-		DCA967902ED5A57200DDB968 /* user.controller.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = user.controller.ts; sourceTree = "<group>"; };
-		DCA967922ED5A57200DDB968 /* availabilityInterval.dto.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = availabilityInterval.dto.ts; sourceTree = "<group>"; };
-		DCA967932ED5A57200DDB968 /* create.course.dto.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = create.course.dto.ts; sourceTree = "<group>"; };
-		DCA967942ED5A57200DDB968 /* create.FixService.dto.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = create.FixService.dto.ts; sourceTree = "<group>"; };
-		DCA967952ED5A57200DDB968 /* create.gemini.dto.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = create.gemini.dto.ts; sourceTree = "<group>"; };
-		DCA967962ED5A57200DDB968 /* create.message.dto.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = create.message.dto.ts; sourceTree = "<group>"; };
-		DCA967972ED5A57200DDB968 /* create.session.dto.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = create.session.dto.ts; sourceTree = "<group>"; };
-		DCA967982ED5A57200DDB968 /* create.shortVideo.dto.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = create.shortVideo.dto.ts; sourceTree = "<group>"; };
-		DCA967992ED5A57200DDB968 /* login.user.dto.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = login.user.dto.ts; sourceTree = "<group>"; };
-		DCA9679A2ED5A57200DDB968 /* register.user.dto.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = register.user.dto.ts; sourceTree = "<group>"; };
-		DCA9679D2ED5A57200DDB968 /* aiMessage.module.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = aiMessage.module.ts; sourceTree = "<group>"; };
-		DCA9679E2ED5A57200DDB968 /* aiSession.module.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = aiSession.module.ts; sourceTree = "<group>"; };
-		DCA9679F2ED5A57200DDB968 /* auth.module.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = auth.module.ts; sourceTree = "<group>"; };
-		DCA967A02ED5A57200DDB968 /* course.module.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = course.module.ts; sourceTree = "<group>"; };
-		DCA967A12ED5A57200DDB968 /* fixService.module.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = fixService.module.ts; sourceTree = "<group>"; };
-		DCA967A22ED5A57200DDB968 /* gemini.module.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = gemini.module.ts; sourceTree = "<group>"; };
-		DCA967A32ED5A57200DDB968 /* shortVideo.module.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = shortVideo.module.ts; sourceTree = "<group>"; };
-		DCA967A42ED5A57200DDB968 /* user.module.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = user.module.ts; sourceTree = "<group>"; };
-		DCA967A62ED5A57200DDB968 /* aiMessage.schema.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = aiMessage.schema.ts; sourceTree = "<group>"; };
-		DCA967A72ED5A57200DDB968 /* aiSession.schema.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = aiSession.schema.ts; sourceTree = "<group>"; };
-		DCA967A82ED5A57200DDB968 /* availabilityInterval.schema.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = availabilityInterval.schema.ts; sourceTree = "<group>"; };
-		DCA967A92ED5A57200DDB968 /* course.schema.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = course.schema.ts; sourceTree = "<group>"; };
-		DCA967AA2ED5A57200DDB968 /* fixService.schema.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = fixService.schema.ts; sourceTree = "<group>"; };
-		DCA967AB2ED5A57200DDB968 /* shortVideo.schema.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = shortVideo.schema.ts; sourceTree = "<group>"; };
-		DCA967AC2ED5A57200DDB968 /* user.schema.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = user.schema.ts; sourceTree = "<group>"; };
-		DCA967AE2ED5A57200DDB968 /* aiMessage.service.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = aiMessage.service.ts; sourceTree = "<group>"; };
-		DCA967AF2ED5A57200DDB968 /* aiSession.service.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = aiSession.service.ts; sourceTree = "<group>"; };
-		DCA967B02ED5A57200DDB968 /* auth.service.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = auth.service.ts; sourceTree = "<group>"; };
-		DCA967B12ED5A57200DDB968 /* course.service.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = course.service.ts; sourceTree = "<group>"; };
-		DCA967B22ED5A57200DDB968 /* fixService.service.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = fixService.service.ts; sourceTree = "<group>"; };
-		DCA967B32ED5A57200DDB968 /* gemini.service.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = gemini.service.ts; sourceTree = "<group>"; };
-		DCA967B42ED5A57200DDB968 /* shortVideo.service.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = shortVideo.service.ts; sourceTree = "<group>"; };
-		DCA967B52ED5A57200DDB968 /* user.service.ts */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.typescript; path = user.service.ts; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -157,77 +73,6 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		DC911BB42ECC0ABB008FB226 /* driveline-express-ts-api */ = {
-			isa = PBXGroup;
-			children = (
-				DC911C002ECC0CD3008FB226 /* index.ts */,
-				DC911BE32ECC0C96008FB226 /* config */,
-				DC911BED2ECC0C96008FB226 /* controllers */,
-				DC911BF62ECC0C96008FB226 /* models */,
-				DC911BFF2ECC0C96008FB226 /* routes */,
-				DC911BB52ECC0C4B008FB226 /* API Documentation #reference.postman_collection.json */,
-				DC911BDE2ECC0C4B008FB226 /* package.json */,
-				DC911BDF2ECC0C4B008FB226 /* package-lock.json */,
-				DC911BE02ECC0C4B008FB226 /* tsconfig.json */,
-				DC911BE12ECC0C4B008FB226 /* tsconfig.tsbuildinfo */,
-			);
-			path = "driveline-express-ts-api";
-			sourceTree = "<group>";
-		};
-		DC911BE32ECC0C96008FB226 /* config */ = {
-			isa = PBXGroup;
-			children = (
-				DC911BE22ECC0C96008FB226 /* db.ts */,
-			);
-			path = config;
-			sourceTree = "<group>";
-		};
-		DC911BED2ECC0C96008FB226 /* controllers */ = {
-			isa = PBXGroup;
-			children = (
-				DC911BE42ECC0C96008FB226 /* aiMessageController.ts */,
-				DC911BE52ECC0C96008FB226 /* aiSessionController.ts */,
-				DC911BE62ECC0C96008FB226 /* authController.ts */,
-				DC911BE72ECC0C96008FB226 /* courseController.ts */,
-				DC911BE82ECC0C96008FB226 /* fixServiceController.ts */,
-				DC911BE92ECC0C96008FB226 /* geminiController.ts */,
-				DC911BEA2ECC0C96008FB226 /* helperController.ts */,
-				DC911BEB2ECC0C96008FB226 /* shortVideoController.ts */,
-				DC911BEC2ECC0C96008FB226 /* userController.ts */,
-			);
-			path = controllers;
-			sourceTree = "<group>";
-		};
-		DC911BF62ECC0C96008FB226 /* models */ = {
-			isa = PBXGroup;
-			children = (
-				DC911BEE2ECC0C96008FB226 /* aiMessage.ts */,
-				DC911BEF2ECC0C96008FB226 /* aiSession.ts */,
-				DC911BF02ECC0C96008FB226 /* course.ts */,
-				DC911BF12ECC0C96008FB226 /* fixService.ts */,
-				DC911BF22ECC0C96008FB226 /* gemini.ts */,
-				DC911BF32ECC0C96008FB226 /* helper.ts */,
-				DC911BF42ECC0C96008FB226 /* shortVideo.ts */,
-				DC911BF52ECC0C96008FB226 /* User.ts */,
-			);
-			path = models;
-			sourceTree = "<group>";
-		};
-		DC911BFF2ECC0C96008FB226 /* routes */ = {
-			isa = PBXGroup;
-			children = (
-				DC911BF72ECC0C96008FB226 /* aiMessageRoutes.ts */,
-				DC911BF82ECC0C96008FB226 /* aiSessionRoutes.ts */,
-				DC911BF92ECC0C96008FB226 /* authRoutes.ts */,
-				DC911BFA2ECC0C96008FB226 /* courseRoutes.ts */,
-				DC911BFB2ECC0C96008FB226 /* fixServiceRoutes.ts */,
-				DC911BFC2ECC0C96008FB226 /* serviceRoutes.ts */,
-				DC911BFD2ECC0C96008FB226 /* shortVideoRoutes.ts */,
-				DC911BFE2ECC0C96008FB226 /* userRoutes.ts */,
-			);
-			path = routes;
-			sourceTree = "<group>";
-		};
 		DC911C012ECC1E05008FB226 /* Screenshots */ = {
 			isa = PBXGroup;
 			children = (
@@ -246,13 +91,11 @@
 		DCA84E8A2EBD345E00945801 = {
 			isa = PBXGroup;
 			children = (
-				DCA9677A2ED5A4DF00DDB968 /* driveline-express-nest-ts-api */,
 				DC911C012ECC1E05008FB226 /* Screenshots */,
-				DC911BB42ECC0ABB008FB226 /* driveline-express-ts-api */,
 				DC9466B42EC22B2600E4C0BD /* Config.xcconfig */,
-				DCA84EA32EBD34C500945801 /* LICENSE */,
-				DCA84EA42EBD34C500945801 /* README.md */,
 				DCA84EA12EBD348900945801 /* .gitignore */,
+				DC2D8B142F336811004DD778 /* LICENSE.txt */,
+				DC2D8B122F3367FB004DD778 /* README.md */,
 				DCA84E952EBD345F00945801 /* DriveLine */,
 				DC1D73972EE08E6400E982A9 /* Frameworks */,
 				DCA84E942EBD345F00945801 /* Products */,
@@ -265,121 +108,6 @@
 				DCA84E932EBD345F00945801 /* DriveLine.app */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		DCA9677A2ED5A4DF00DDB968 /* driveline-express-nest-ts-api */ = {
-			isa = PBXGroup;
-			children = (
-				DCA967862ED5A53F00DDB968 /* src */,
-				DCA9677B2ED5A53700DDB968 /* eslint.config.mjs */,
-				DCA9677C2ED5A53700DDB968 /* LICENSE */,
-				DCA9677D2ED5A53700DDB968 /* nest-cli.json */,
-				DCA9677E2ED5A53700DDB968 /* package.json */,
-				DCA9677F2ED5A53700DDB968 /* package-lock.json */,
-				DCA967802ED5A53700DDB968 /* README.md */,
-				DCA967832ED5A53700DDB968 /* test */,
-				DCA967842ED5A53700DDB968 /* tsconfig.json */,
-				DCA967852ED5A53700DDB968 /* tsconfig.build.json */,
-			);
-			path = "driveline-express-nest-ts-api";
-			sourceTree = "<group>";
-		};
-		DCA967832ED5A53700DDB968 /* test */ = {
-			isa = PBXGroup;
-			children = (
-				DCA967812ED5A53700DDB968 /* app.e2e-spec.ts */,
-				DCA967822ED5A53700DDB968 /* jest-e2e.json */,
-			);
-			path = test;
-			sourceTree = "<group>";
-		};
-		DCA967862ED5A53F00DDB968 /* src */ = {
-			isa = PBXGroup;
-			children = (
-				DCA967872ED5A57200DDB968 /* app.module.ts */,
-				DCA967912ED5A57200DDB968 /* controllers */,
-				DCA9679B2ED5A57200DDB968 /* dto */,
-				DCA967A52ED5A57200DDB968 /* modules */,
-				DCA967AD2ED5A57200DDB968 /* schema */,
-				DCA967B62ED5A57200DDB968 /* services */,
-			);
-			path = src;
-			sourceTree = "<group>";
-		};
-		DCA967912ED5A57200DDB968 /* controllers */ = {
-			isa = PBXGroup;
-			children = (
-				DCA967882ED5A57200DDB968 /* aiMessage.controller.ts */,
-				DCA967892ED5A57200DDB968 /* aiSession.controller.ts */,
-				DCA9678A2ED5A57200DDB968 /* auth.controller.ts */,
-				DCA9678B2ED5A57200DDB968 /* course.controller.ts */,
-				DCA9678C2ED5A57200DDB968 /* fixServices.controller.ts */,
-				DCA9678D2ED5A57200DDB968 /* gemini.controller.ts */,
-				DCA9678E2ED5A57200DDB968 /* helper.ts */,
-				DCA9678F2ED5A57200DDB968 /* shortVideo.controller.ts */,
-				DCA967902ED5A57200DDB968 /* user.controller.ts */,
-			);
-			path = controllers;
-			sourceTree = "<group>";
-		};
-		DCA9679B2ED5A57200DDB968 /* dto */ = {
-			isa = PBXGroup;
-			children = (
-				DCA967922ED5A57200DDB968 /* availabilityInterval.dto.ts */,
-				DCA967932ED5A57200DDB968 /* create.course.dto.ts */,
-				DCA967942ED5A57200DDB968 /* create.FixService.dto.ts */,
-				DCA967952ED5A57200DDB968 /* create.gemini.dto.ts */,
-				DCA967962ED5A57200DDB968 /* create.message.dto.ts */,
-				DCA967972ED5A57200DDB968 /* create.session.dto.ts */,
-				DCA967982ED5A57200DDB968 /* create.shortVideo.dto.ts */,
-				DCA967992ED5A57200DDB968 /* login.user.dto.ts */,
-				DCA9679A2ED5A57200DDB968 /* register.user.dto.ts */,
-			);
-			path = dto;
-			sourceTree = "<group>";
-		};
-		DCA967A52ED5A57200DDB968 /* modules */ = {
-			isa = PBXGroup;
-			children = (
-				DCA9679D2ED5A57200DDB968 /* aiMessage.module.ts */,
-				DCA9679E2ED5A57200DDB968 /* aiSession.module.ts */,
-				DCA9679F2ED5A57200DDB968 /* auth.module.ts */,
-				DCA967A02ED5A57200DDB968 /* course.module.ts */,
-				DCA967A12ED5A57200DDB968 /* fixService.module.ts */,
-				DCA967A22ED5A57200DDB968 /* gemini.module.ts */,
-				DCA967A32ED5A57200DDB968 /* shortVideo.module.ts */,
-				DCA967A42ED5A57200DDB968 /* user.module.ts */,
-			);
-			path = modules;
-			sourceTree = "<group>";
-		};
-		DCA967AD2ED5A57200DDB968 /* schema */ = {
-			isa = PBXGroup;
-			children = (
-				DCA967A62ED5A57200DDB968 /* aiMessage.schema.ts */,
-				DCA967A72ED5A57200DDB968 /* aiSession.schema.ts */,
-				DCA967A82ED5A57200DDB968 /* availabilityInterval.schema.ts */,
-				DCA967A92ED5A57200DDB968 /* course.schema.ts */,
-				DCA967AA2ED5A57200DDB968 /* fixService.schema.ts */,
-				DCA967AB2ED5A57200DDB968 /* shortVideo.schema.ts */,
-				DCA967AC2ED5A57200DDB968 /* user.schema.ts */,
-			);
-			path = schema;
-			sourceTree = "<group>";
-		};
-		DCA967B62ED5A57200DDB968 /* services */ = {
-			isa = PBXGroup;
-			children = (
-				DCA967AE2ED5A57200DDB968 /* aiMessage.service.ts */,
-				DCA967AF2ED5A57200DDB968 /* aiSession.service.ts */,
-				DCA967B02ED5A57200DDB968 /* auth.service.ts */,
-				DCA967B12ED5A57200DDB968 /* course.service.ts */,
-				DCA967B22ED5A57200DDB968 /* fixService.service.ts */,
-				DCA967B32ED5A57200DDB968 /* gemini.service.ts */,
-				DCA967B42ED5A57200DDB968 /* shortVideo.service.ts */,
-				DCA967B52ED5A57200DDB968 /* user.service.ts */,
-			);
-			path = services;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -454,8 +182,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				DCA84EA22EBD348900945801 /* .gitignore in Resources */,
-				DCA84EA52EBD34C500945801 /* LICENSE in Resources */,
-				DCA84EA62EBD34C500945801 /* README.md in Resources */,
+				DC2D8B132F3367FB004DD778 /* README.md in Resources */,
+				DC2D8B152F336811004DD778 /* LICENSE.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -620,9 +348,9 @@
 				INFOPLIST_KEY_NSCalendarsUsageDescription = "DriveLine needs access to your calendar to schedule driving lessons and car maintenance events.";
 				INFOPLIST_KEY_NSContactsUsageDescription = "DriveLine may access your contacts to link lessons or service appointments with specific instructors or mechanics.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "DriveLine uses your location to plan routes and identify driving school pickup or service locations.";
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = "We need microphone access to listen to your commands";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "We need access to the microphone for speech recognition.";
 				INFOPLIST_KEY_NSRemindersUsageDescription = "DriveLine uses reminders to notify you of upcoming lessons, car service appointments, and other important tasks.";
-				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "We need speech recognition to understand your voice commands while driving";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "We need access to recognize your speech.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -634,7 +362,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.omar.driveLine.dev;
+				PRODUCT_BUNDLE_IDENTIFIER = com.omar.driveLine.dev.twp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				REGISTER_APP_GROUPS = YES;
@@ -675,9 +403,9 @@
 				INFOPLIST_KEY_NSCalendarsUsageDescription = "DriveLine needs access to your calendar to schedule driving lessons and car maintenance events.";
 				INFOPLIST_KEY_NSContactsUsageDescription = "DriveLine may access your contacts to link lessons or service appointments with specific instructors or mechanics.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "DriveLine uses your location to plan routes and identify driving school pickup or service locations.";
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = "We need microphone access to listen to your commands";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "We need access to the microphone for speech recognition.";
 				INFOPLIST_KEY_NSRemindersUsageDescription = "DriveLine uses reminders to notify you of upcoming lessons, car service appointments, and other important tasks.";
-				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "We need speech recognition to understand your voice commands while driving";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "We need access to recognize your speech.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

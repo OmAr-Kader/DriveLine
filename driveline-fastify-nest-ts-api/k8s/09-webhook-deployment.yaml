@@ -1,0 +1,117 @@
+---
+# Stripe Webhook Deployment (main-stripe-webhook.ts)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: driveline-webhook
+  namespace: driveline
+  labels:
+    app: driveline
+    component: webhook
+    tier: backend
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: driveline
+      component: webhook
+  template:
+    metadata:
+      labels:
+        app: driveline
+        component: webhook
+        tier: backend
+    spec:
+      # Node affinity to ensure pods run on worker nodes
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-role.kubernetes.io/control-plane
+                operator: DoesNotExist
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: component
+                  operator: In
+                  values:
+                  - webhook
+              topologyKey: kubernetes.io/hostname
+      containers:
+        - name: webhook
+          image: driveline-express-nest-ts-api:0.5.3
+          imagePullPolicy: IfNotPresent
+          command: ["node", "dist/main-stripe-webhook.js"]
+          ports:
+            - containerPort: 3003
+              name: http
+              protocol: TCP
+          env:
+          - name: SERVICE_TYPE
+            value: "webhook"
+          - name: NODE_ENV
+            value: "production"
+          envFrom:
+          - configMapRef:
+              name: driveline-config
+          - secretRef:
+              name: driveline-secrets
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "200m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          livenessProbe:
+            tcpSocket:
+              port: 3003
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            tcpSocket:
+              port: 3003
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          startupProbe:
+            tcpSocket:
+              port: 3003
+            initialDelaySeconds: 0
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 30
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+---
+# Webhook Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: driveline-webhook-service
+  namespace: driveline
+  labels:
+    app: driveline
+    component: webhook
+spec:
+  type: ClusterIP
+  ports:
+  - port: 3003
+    targetPort: 3003
+    protocol: TCP
+    name: http
+  selector:
+    app: driveline
+    component: webhook

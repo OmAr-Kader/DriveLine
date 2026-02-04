@@ -1,0 +1,71 @@
+---
+# NGINX Ingress Controller
+# This will route external traffic to your services
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: driveline-ingress
+  namespace: driveline
+  annotations:
+    # NGINX Ingress Controller annotations
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    
+    # Rate limiting
+    nginx.ingress.kubernetes.io/limit-rps: "100"
+    nginx.ingress.kubernetes.io/limit-connections: "10"
+    
+    # Timeouts
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "120"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "120"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "120"
+    nginx.ingress.kubernetes.io/proxy-body-size: "1m"
+    
+    # CORS settings
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "http://localhost:3000,https://localhost:3000"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, DELETE, PATCH, OPTIONS, HEAD"
+    nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
+    
+    # WebSocket support
+    nginx.ingress.kubernetes.io/websocket-services: "driveline-api-service"
+    
+    # Compression
+    nginx.ingress.kubernetes.io/enable-compression: "true"
+    
+    # Health checks
+    nginx.ingress.kubernetes.io/health-check-path: "/api/v1/health"
+    nginx.ingress.kubernetes.io/health-check-interval: "10s"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: localhost
+    http:
+      paths:
+      # REST API Routes (main.ts) - Port 3001
+      - path: /api(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+        pathType: Prefix
+        backend:
+          service:
+            name: driveline-api-service
+            port:
+              number: 3001
+      
+      # Webhook Routes (main-stripe-webhook.ts) - Port 3003
+      - path: /webhook
+        pathType: Prefix
+        backend:
+          service:
+            name: driveline-webhook-service
+            port:
+              number: 3003
+      
+      # Default route to API
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: driveline-api-service
+            port:
+              number: 3001

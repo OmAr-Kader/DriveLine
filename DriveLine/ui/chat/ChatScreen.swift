@@ -56,6 +56,13 @@ struct ChatScreen: View {
                                 } label: {
                                     Label("Copy", systemImage: "document.on.document")
                                 }.tint(.green.opacity(0.8))
+                            }.onTapGesture {
+                                LogKit.print("Messages changed, scroll to bottom: \(msg.id) - \(msg.isUser)")
+                                if speech.isSpeaking {
+                                    speech.stopSpeaking()
+                                } else {
+                                    speech.speak(msg.text)
+                                }
                             }
                     }.listStyle(PlainListStyle())
                         .listRowSeparator(.hidden)
@@ -70,10 +77,11 @@ struct ChatScreen: View {
             }.safeAreaInset(edge: .bottom, content: inputBar)
             LoadingScreen(color: .primaryOfApp, backDarkAlpha: .backDarkAlpha, isLoading: obs.state.isLoading)
         }.navigationTitle("AI Sssistant")
-        .onChange(obs.state.messages) { new in
-            guard let last = new.last else { return }
+        .onChange(obs.state.messages) { old, new in
+            guard let last = new.last, !old.isEmpty else { return }
             // scroll to bottom when messages change
             scrollToBottom(last.id , animated: true)
+            LogKit.print("Messages changed, scroll to bottom: \(last.id) - \(last.isUser)")
             if !last.isUser {
                 speech.speak(last.text)
             }
@@ -226,6 +234,7 @@ struct ChatScreen: View {
                     speech.requestSpeechRecognitionPermission()
                     return
                 }
+                //speech.requestSpeechRecognitionPermission()
                 speech.startListening()
                 return
             }

@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package stats;
+
+import "common.proto";
+
+message CountResponse {
+  int32 count = 1;
+}
+
+message GetAllCountsResponse {
+  int32 users = 1;
+  int32 fixServices = 2;
+  int32 courses = 3;
+  int32 shortVideos = 4;
+}
+
+service StatsService {
+  rpc CountUsers(common.Empty) returns (CountResponse);
+  rpc CountFixServices(common.Empty) returns (CountResponse);
+  rpc CountCourses(common.Empty) returns (CountResponse);
+  rpc CountShortVideos(common.Empty) returns (CountResponse);
+  rpc GetAllCounts(common.Empty) returns (GetAllCountsResponse);
+}

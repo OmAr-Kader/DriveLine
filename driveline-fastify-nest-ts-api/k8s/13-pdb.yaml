@@ -1,0 +1,52 @@
+---
+# Pod Disruption Budget for API
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: driveline-api-pdb
+  namespace: driveline
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: driveline
+      component: api
+---
+# Pod Disruption Budget for gRPC
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: driveline-grpc-pdb
+  namespace: driveline
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: driveline
+      component: grpc
+---
+# Pod Disruption Budget for Webhook
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: driveline-webhook-pdb
+  namespace: driveline
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: driveline
+      component: webhook
+---
+# Pod Disruption Budget for Worker
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: driveline-worker-pdb
+  namespace: driveline
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: driveline
+      component: worker

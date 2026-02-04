@@ -1,0 +1,181 @@
+{
+    "cSpell.words": [
+        "aimessage",
+        "aisession",
+        "CLICKHOUSE",
+        "dotenv",
+        "dtos",
+        "frameguard",
+        "hsts",
+        "ipcountry",
+        "jwtid",
+        "keepalive",
+        "pexpire",
+        "pids",
+        "pttl",
+        "shortvideo",
+        "uuidv",
+        "virtuals",
+        "workerpool"
+    ],
+    "protobuf.diagnostics.enabled": false,
+    "folderGroups.groups": [
+        {
+            "name": "Main",
+            "folders": [
+                "src/main.ts",
+                "src/rest/api.module.ts",
+                ".vscode/settings.json",
+                "src/rest/services/grpc-client.service.ts",
+                "src/rest/gRPC-Clients.ts",
+                "router.conf",
+                "src/main-grpc.ts",
+                "src/grpc/grpc.module.ts",
+                "src/common/proto/common.proto",
+                "src/common/dto/common.dto.ts",
+                "src/common/utils/ConstConfig.ts",
+                "src/common/utils/Const.ts",
+                ".env"
+            ],
+            "collapsed": false
+        },
+        {
+            "name": "User",
+            "folders": [
+                "src/common/schema/user.schema.ts",
+                "src/common/dto/user.dto.ts",
+                "src/common/proto/user.proto",
+                "src/rest/controllers/user.controller.ts",
+                "src/grpc/controllers/user.controller.ts",
+                "src/grpc/services/user.service.ts",
+            ],
+            "collapsed": false
+        },
+        {
+            "name": "Auth",
+            "folders": [
+                "src/common/dto/auth.dto.ts",
+                "src/common/proto/auth.proto",
+                "src/rest/controllers/auth.controller.ts",
+                "src/grpc/controllers/auth.controller.ts",
+                "src/grpc/services/auth.service.ts",
+            ],
+            "collapsed": true
+        },
+        {
+            "name": "ShortVideo",
+            "folders": [
+                "src/common/schema/shortvideo.schema.ts",
+                "src/common/dto/shortvideo.dto.ts",
+                "src/common/proto/short-video.proto",
+                "src/rest/controllers/shortvideo.controller.ts",
+                "src/grpc/controllers/shortvideo.controller.ts",
+                "src/grpc/services/shortvideo.service.ts",
+            ],
+            "collapsed": false
+        },
+        {
+            "name": "Fix Services",
+            "folders": [
+                "src/common/schema/fixService.schema.ts",
+                "src/common/dto/fixService.dto.ts",
+                "src/common/proto/fix-service.proto",
+                "src/rest/controllers/fixServices.controller.ts",
+                "src/grpc/controllers/fixServices.controller.ts",
+                "src/grpc/services/fixService.service.ts",
+            ],
+            "collapsed": false
+        },
+        {
+            "name": "Course",
+            "folders": [
+                "src/common/schema/course.schema.ts",
+                "src/common/dto/course.dto.ts",
+                "src/common/proto/course.proto",
+                "src/rest/controllers/course.controller.ts",
+                "src/grpc/controllers/course.controller.ts",
+                "src/grpc/services/course.service.ts",
+            ],
+            "collapsed": false
+        },
+        {
+            "name": "AI Session",
+            "folders": [
+                "src/common/schema/aiSession.schema.ts",
+                "src/common/dto/aiSession.dto.ts",
+                "src/common/proto/ai-Session.proto",
+                "src/rest/controllers/aiSession.controller.ts",
+                "src/grpc/controllers/aiSession.controller.ts",
+                "src/grpc/services/aiSession.service.ts",
+            ],
+            "collapsed": false
+        },
+        {
+            "name": "AI Message",
+            "folders": [
+                "src/common/schema/aiMessage.schema.ts",
+                "src/common/dto/aiMessage.dto.ts",
+                "src/common/proto/ai-message.proto",
+                "src/rest/controllers/aiMessage.controller.ts",
+                "src/grpc/controllers/aiMessage.controller.ts",
+                "src/grpc/services/aiMessage.service.ts",
+            ],
+            "collapsed": false
+        },
+        {
+            "name": "User Stripe",
+            "folders": [
+                "src/rest/controllers/user.stripe.controller.ts",
+            ],
+            "collapsed": false
+        },
+        {
+            "name": "Analytics",
+            "folders": [
+                "src/common/analytics/analytics-query.dto.ts",
+                "src/common/analytics/clickhouse-init.ts",
+                "src/rabbitmq/analytics/clickHouse.controller.ts",
+                "src/rabbitmq/analytics/clickHouse.module.ts",
+                "src/rabbitmq/analytics/clickhouse.service.ts",
+                "src/rest/analytics/analytics.controller.ts",
+                "src/rest/analytics/analytics.interceptor.ts",
+                "src/rest/analytics/analytics.module.ts",
+                "src/rest/analytics/analytics.service.ts",
+            ],
+            "collapsed": true
+        },
+        {
+            "name": "Folders",
+            "folders": [
+                "src/common/rabbitMQ",
+                "src/common/stripe",
+                "src/common/types",
+                "src/rabbitmq/stripe",
+                "src/grpc/crypto",
+                "src/grpc/modules",
+                "src/rest/cache",
+                "src/rest/modules",
+                "src/rest/webhook/",
+                "src/rest/websocket",
+            ],
+            "collapsed": true
+        },
+        {
+            "name": "Flow Controller",
+            "folders": [
+                "src/rest/flow-control/services",
+                "src/rest/flow-control/config/flow-control.ts",
+                "src/rest/flow-control/decorators/priority.decorator.ts",
+                "src/rest/flow-control/filters/global-exception.filter.ts",
+                "src/rest/flow-control/filters/micro-service-exception.filter.ts",
+                "src/rest/flow-control/guards/rate-limit.guard.ts",
+                "src/rest/flow-control/interceptors/priority-queue.interceptor.ts",
+                "src/rest/flow-control/interceptors/retry.interceptor.ts",
+                "src/rest/flow-control/interfaces/flow-control.interfaces.ts",
+                "src/rest/flow-control/middleware/ip-tracking.middleware.ts",
+                "src/rest/flow-control/flow-control.module.ts",
+            ],
+            "collapsed": true
+        },
+    ]
+}

@@ -1,0 +1,117 @@
+---
+# gRPC Microservice Deployment (main-grpc.ts)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: driveline-grpc
+  namespace: driveline
+  labels:
+    app: driveline
+    component: grpc
+    tier: backend
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: driveline
+      component: grpc
+  template:
+    metadata:
+      labels:
+        app: driveline
+        component: grpc
+        tier: backend
+    spec:
+      # Node affinity to ensure pods run on worker nodes
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-role.kubernetes.io/control-plane
+                operator: DoesNotExist
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: component
+                  operator: In
+                  values:
+                  - grpc
+              topologyKey: kubernetes.io/hostname
+      containers:
+        - name: grpc
+          image: driveline-express-nest-ts-api:0.5.5
+          imagePullPolicy: IfNotPresent
+          command: ["node", "dist/main-grpc.js"]
+          ports:
+            - containerPort: 50051
+              name: grpc
+              protocol: TCP
+          env:
+          - name: SERVICE_TYPE
+            value: "grpc"
+          - name: NODE_ENV
+            value: "production"
+          envFrom:
+          - configMapRef:
+              name: driveline-config
+          - secretRef:
+              name: driveline-secrets
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "300m"
+            limits:
+              memory: "1Gi"
+              cpu: "1000m"
+          livenessProbe:
+            tcpSocket:
+              port: 50051
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            tcpSocket:
+              port: 50051
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          startupProbe:
+            tcpSocket:
+              port: 50051
+            initialDelaySeconds: 0
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 30
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+---
+# gRPC Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: driveline-grpc-service
+  namespace: driveline
+  labels:
+    app: driveline
+    component: grpc
+spec:
+  type: ClusterIP
+  ports:
+  - port: 50051
+    targetPort: 50051
+    protocol: TCP
+    name: grpc
+  selector:
+    app: driveline
+    component: grpc

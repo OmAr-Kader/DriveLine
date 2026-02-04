@@ -1,0 +1,84 @@
+syntax = "proto3";
+
+package aimessage;
+
+import "common.proto";
+
+message AiMessage {
+  optional string id = 1;
+  string sessionId = 2;
+  string text = 3;
+  bool isUser = 4;
+  optional string createdAt = 5;
+  optional string updatedAt = 6;
+}
+
+message CreateAIMessage {
+  string sessionId = 1;
+  string text = 2;
+  bool isUser = 3;
+}
+
+message CreateMessageFromServer {
+  string sessionId = 1;
+  string question = 2;
+  optional string answer = 3;
+  bool saveQuestion = 4;
+}
+
+message CreateMessageRequest {
+  CreateAIMessage payload = 1;
+  string currentUserId = 2;
+}
+
+message CreateMessageResponse {
+  AiMessage message = 1;
+}
+
+message GetMessageRequest {
+  string id = 1;
+  string currentUserId = 2;
+}
+
+message GetAIMessageResponse {
+  AiMessage message = 1;
+}
+
+message GetMessagesBySessionRequest {
+  string sessionId = 1;
+  common.BaseQueries queries = 2;
+  common.BaseHeaders headers = 3;
+}
+
+message GetAIMessagesBySessionResponse {
+  repeated AiMessage messages = 1;
+}
+
+message UpdateMessageRequest {
+  string id = 1;
+  string currentUserId = 2;
+  optional string text = 3;
+  optional bool isUser = 4;
+}
+
+message DeleteMessageRequest {
+  repeated string ids = 1;
+  string currentUserId = 2;
+}
+
+message CreateMessageFromServerRequest {
+  CreateMessageFromServer payload = 1;
+}
+
+message CreateMessageFromServerResponse {
+  AiMessage message = 1;
+}
+
+service AiMessageService {
+  rpc CreateMessage(CreateMessageRequest) returns (CreateMessageResponse);
+  rpc GetMessage(GetMessageRequest) returns (GetAIMessageResponse);
+  rpc GetMessagesBySession(GetMessagesBySessionRequest) returns (GetAIMessagesBySessionResponse);
+  rpc UpdateMessage(UpdateMessageRequest) returns (CreateMessageResponse);
+  rpc DeleteMessage(DeleteMessageRequest) returns (common.MessageResponse);
+  rpc CreateMessageFromServer(CreateMessageFromServerRequest) returns (CreateMessageFromServerResponse);
+}

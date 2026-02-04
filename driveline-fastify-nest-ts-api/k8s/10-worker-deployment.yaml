@@ -1,0 +1,107 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: driveline-worker
+  namespace: driveline
+  labels:
+    app: driveline
+    component: worker
+    tier: backend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: driveline
+      component: worker
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: driveline
+        component: worker
+        tier: backend
+    spec:
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 60
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: node-role.kubernetes.io/control-plane
+                    operator: DoesNotExist
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: component
+                      operator: In
+                      values:
+                        - worker
+                topologyKey: kubernetes.io/hostname
+      containers:
+        - name: worker
+          image: driveline-express-nest-ts-api:0.5.3
+          imagePullPolicy: IfNotPresent
+          command: ["node", "dist/main-worker.js"]
+          env:
+            - name: SERVICE_TYPE
+              value: "worker"
+            - name: NODE_ENV
+              value: "production"
+          envFrom:
+            - configMapRef:
+                name: driveline-config
+            - secretRef:
+                name: driveline-secrets
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "300m"
+            limits:
+              memory: "1Gi"
+              cpu: "1000m"
+          livenessProbe:
+            exec:
+              command:
+                - node
+                - -e
+                - "process.exit(0)"
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            exec:
+              command:
+                - node
+                - -e
+                - "process.exit(0)"
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: driveline-worker-service
+  namespace: driveline
+  labels:
+    app: driveline
+    component: worker
+    tier: backend
+spec:
+  clusterIP: None
+  selector:
+    app: driveline
+    component: worker
+  ports:
+    - port: 8080
+      name: metrics

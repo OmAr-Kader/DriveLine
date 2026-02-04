@@ -1,0 +1,115 @@
+syntax = "proto3";
+
+package shortvideo;
+
+import "user.proto";
+import "common.proto";
+
+
+// Short video definition
+message ShortVideo {
+  optional string id = 1;
+  optional string userId = 2;
+  optional user.User user = 10;
+  string title = 3;
+  string link = 4;
+  string thumbImageName = 5;
+  repeated int32 tags = 6;
+  int32 views = 7;
+  optional string createdAt = 8;
+  optional string updatedAt = 9;
+}
+
+message CreateShortVideo {
+  string title = 1;
+  string link = 2;
+  string thumbImageName = 3;
+  repeated int32 tags = 4;
+}
+
+message UpdateTags {
+  repeated int32 tags = 2;
+}
+
+message CreateShortVideoRequest {
+  CreateShortVideo video = 1;
+  string userId = 2;
+}
+
+message GetByUserIdRequest {
+  string userId = 1;
+  common.BaseQueries queries = 2;
+  common.BaseHeaders headers = 3;
+}
+
+message GetByUserIdResponse {
+  oneof result {
+    string encrypted = 1;
+    ShortVideoList data = 2;
+  }
+}
+
+message ShortVideoList {
+  repeated ShortVideo videos = 1;
+}
+
+message GetByIdResponse {
+  ShortVideo data = 1;
+}
+
+message FetchByTagRequest {
+  string tag = 1;
+  string currentUserId = 2;
+  common.BaseQueries queries = 3;
+}
+
+message FetchByTagResponse {
+  ShortVideoList data = 1;
+}
+
+message FetchLatestRequest {
+  common.BaseQueries queries = 1;
+  common.BaseHeaders headers = 2;
+}
+
+message FetchAllRequest {
+  common.BaseQueries queries = 1;
+}
+
+message FetchLatestResponse {
+  oneof result {
+    string encrypted = 1;
+    ShortVideoList data = 2;
+  }
+}
+
+message IncrementViewsResponse {
+  int32 views = 1;
+}
+
+message UpdateTagsRequest {
+  string id = 1;
+  UpdateTags update = 2;
+  optional string userId = 3;
+}
+
+message UpdateTagsResponse {
+  optional ShortVideo data = 1;
+}
+
+message DeleteShortVideoRequest {
+  string id = 1;
+  optional string userId = 2;
+}
+
+service ShortVideoService {
+  rpc Create(CreateShortVideoRequest) returns (common.IdRequest);
+  rpc GetByUserId(GetByUserIdRequest) returns (GetByUserIdResponse);
+  rpc GetById(common.IdUserIdRequest) returns (GetByIdResponse);
+  rpc FetchByTag(FetchByTagRequest) returns (FetchByTagResponse);
+  rpc FetchLatest(FetchLatestRequest) returns (FetchLatestResponse);
+  rpc IncrementViews(common.IdUserIdRequest) returns (IncrementViewsResponse);
+  rpc UpdateTags(UpdateTagsRequest) returns (UpdateTagsResponse);
+  rpc Delete(common.IdUserIdRequest) returns (common.MessageResponse);
+  rpc GetAll(FetchAllRequest) returns (FetchLatestResponse);
+}

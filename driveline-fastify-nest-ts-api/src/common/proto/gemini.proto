@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package gemini;
+
+import "ai-message.proto";
+
+message CreateGeminiDto {
+  string sessionId = 1;
+  string text = 2;
+  bool saveQuestion = 3;
+  bool isTemp = 4;
+}
+message GenerateContentRequest {
+  CreateGeminiDto data = 1;
+  string userId = 2;
+}
+
+message ErrorSavingMessage {
+  string text = 1;
+  string error = 2;
+}
+
+message GenerateContentResponse {
+  oneof _data {
+    aimessage.AiMessage message = 2;
+    ErrorSavingMessage error = 3;
+  }
+}
+
+service GeminiService {
+  rpc GenerateContent(GenerateContentRequest) returns (GenerateContentResponse);
+}

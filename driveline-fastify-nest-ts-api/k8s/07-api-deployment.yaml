@@ -1,0 +1,117 @@
+---
+# REST API Deployment (main.ts)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: driveline-api
+  namespace: driveline
+  labels:
+    app: driveline
+    component: api
+    tier: backend
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: driveline
+      component: api
+  template:
+    metadata:
+      labels:
+        app: driveline
+        component: api
+        tier: backend
+    spec:
+      # Node affinity to ensure pods run on worker nodes
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-role.kubernetes.io/control-plane
+                operator: DoesNotExist
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: component
+                  operator: In
+                  values:
+                  - api
+              topologyKey: kubernetes.io/hostname
+      containers:
+        - name: api
+          image: driveline-express-nest-ts-api:0.5.6
+          imagePullPolicy: IfNotPresent
+          command: ["node", "dist/main.js"]
+          ports:
+            - containerPort: 3001
+              name: http
+              protocol: TCP
+          env:
+          - name: SERVICE_TYPE
+            value: "api"
+          - name: NODE_ENV
+            value: "production"
+          envFrom:
+          - configMapRef:
+              name: driveline-config
+          - secretRef:
+              name: driveline-secrets
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "300m"
+            limits:
+              memory: "1Gi"
+              cpu: "1000m"
+          livenessProbe:
+            tcpSocket:
+              port: 3001
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            tcpSocket:
+              port: 3001
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          startupProbe:
+            tcpSocket:
+              port: 3001
+            initialDelaySeconds: 0
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 30
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+---
+# API Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: driveline-api-service
+  namespace: driveline
+  labels:
+    app: driveline
+    component: api
+spec:
+  type: ClusterIP
+  ports:
+  - port: 3001
+    targetPort: 3001
+    protocol: TCP
+    name: http
+  selector:
+    app: driveline
+    component: api

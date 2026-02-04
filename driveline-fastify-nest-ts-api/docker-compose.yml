@@ -1,0 +1,26 @@
+services:      
+  router:
+    # platform: linux/amd64
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: "${APP_IMAGE_LIVE}"
+    container_name: router
+    restart: no
+    env_file:
+      - .env
+    ports:
+      - "3000:3000"
+    networks:
+      - app_network
+    environment:
+      SERVICE_TYPE: router
+      NODE_ENV: production
+
+volumes:
+  router_nginx_lib:
+  router_nginx_logs:
+
+networks:
+  app_network:
+    external: true # -> Terminal: docker network create app_network

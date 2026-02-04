@@ -1,0 +1,123 @@
+syntax = "proto3";
+
+package user;
+
+import "common.proto";
+import "fix-service.proto";
+import "course.proto";
+import "short-video.proto";
+
+// User message definition
+message User {
+  optional string id = 1;
+  string name = 2;
+  optional string stripeId = 3;
+  optional string stripeGatewayId = 4;
+  string email = 5;
+  string phone = 6;
+  optional string image = 7;
+  optional int32 age = 8;
+  string role = 9;
+  optional Location location = 10;
+  optional string createdAt = 11;
+  optional string updatedAt = 12;
+}
+
+message PartialUser {
+  optional string name = 2;
+  optional string stripeId = 3;
+  optional string stripeGatewayId = 4;
+  optional string phone = 5;
+  optional string image = 6;
+  optional int32 age = 7;
+  optional string role = 8;
+  optional Location location = 9;
+}
+
+// Location information
+message Location {
+  optional string country = 1;
+  optional string state = 2;
+  optional string city = 3;
+  optional string street = 4;
+  optional string building = 5;
+  optional string floor = 6;
+  optional string unit = 7;
+  optional string postal_code = 8;
+}
+
+
+// Request to get all users
+message GetAllUsersRequest {
+  optional string search = 2;
+  common.BaseQueries queries = 1;
+}
+
+// Response with list of users
+message GetAllUsersResponse {
+  repeated User users = 1;
+}
+
+// Request to get user by ID
+message GetUserByIdRequest {
+  string id = 1;
+  string currentUser = 2;
+  optional string columns = 3;
+  optional string exclude = 4;
+}
+
+// Response with user data
+message GetUserByIdResponse {
+  User user = 1;
+}
+
+// Request to update user
+message UpdateUserRequest {
+  string id = 1;
+  PartialUser data = 2;
+}
+
+// Response after updating user
+message UpdateUserResponse {
+  User user = 1;
+}
+
+// Request to get full profile by ID
+message GetProfileByIdRequest {
+  string id = 1;
+  common.BaseQueries queries = 2;
+  common.BaseHeaders headers = 3;
+}
+
+// Full profile response
+message GetProfileByIdResponse {
+  oneof data {
+    ProfileData profile = 1;
+    string encrypted = 2;
+  }
+}
+
+message ProfileData {
+  User user = 1;
+  repeated fixservice.FixService services = 2;
+  repeated course.Course courses = 3;
+  repeated shortvideo.ShortVideo shorts = 4;
+}
+
+// UserService - All user-related operations
+service UserService {
+  // Get all users
+  rpc FindAll(GetAllUsersRequest) returns (GetAllUsersResponse);
+  
+  // Get user by ID with dynamic projection
+  rpc FindById(GetUserByIdRequest) returns (GetUserByIdResponse);
+  
+  // Update user
+  rpc Update(UpdateUserRequest) returns (UpdateUserResponse);
+  
+  // Delete user
+  rpc Delete(common.IdRequest) returns (common.MessageResponse);
+  
+  // Get full profile with services, courses, and shorts
+  rpc GetProfileById(GetProfileByIdRequest) returns (GetProfileByIdResponse);
+}

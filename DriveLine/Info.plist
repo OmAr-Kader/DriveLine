@@ -2,27 +2,26 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>BASE_TOKEN</key>
-    <string>$(BASE_TOKEN)</string>
-    <key>BASE_URL</key>
-    <string>$(BASE_URL)</string>
-    <key>GEMINI_API_KEY</key>
-    <string>$(GEMINI_API_KEY)</string>
-    <key>NSAppTransportSecurity</key>
-    <dict>
-        <key>NSAllowsArbitraryLoads</key>
-        <true/>
-        <!-- OR more restrictive for specific domain -->
-        <key>NSExceptionDomains</key>
-        <dict>
-            <key>10.0.0.6</key>
-            <dict>
-                <key>NSExceptionAllowsInsecureHTTPLoads</key>
-                <true/>
-                <key>NSIncludesSubdomains</key>
-                <true/>
-            </dict>
-        </dict>
-    </dict>
+	<key>BASE_TOKEN</key>
+	<string>$(BASE_TOKEN)</string>
+	<key>BASE_URL</key>
+	<string>$(BASE_URL)</string>
+	<key>GEMINI_API_KEY</key>
+	<string>$(GEMINI_API_KEY)</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+		<key>NSExceptionDomains</key>
+		<dict>
+			<key>10.0.0.6</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+			</dict>
+		</dict>
+	</dict>
 </dict>
 </plist>

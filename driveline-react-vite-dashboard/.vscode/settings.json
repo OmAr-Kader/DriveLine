@@ -1,0 +1,41 @@
+{
+    "cSpell.words": [
+        "aimessage",
+        "CLICKHOUSE",
+        "dotenv",
+        "dtos",
+        "frameguard",
+        "hsts",
+        "ipcountry",
+        "jwtid",
+        "pids",
+        "shortvideo",
+        "virtuals",
+        "workerpool"
+    ],
+    "protobuf.diagnostics.enabled": false,
+    "folderGroups.groups": [
+        {
+            "name": "Pages",
+            "folders": [
+                "src/pages/Home.tsx",
+                "src/pages/Users.tsx",
+                "src/pages/FixServices.tsx",
+                "src/pages/Courses.tsx",
+                "src/pages/ShortVideos.tsx",
+            ],
+            "collapsed": false
+        },
+        {
+            "name": "Stores",
+            "folders": [
+                "src/pages/useStore/HomeStore.ts",
+                "src/pages/useStore/UsersStore.ts",
+                "src/pages/useStore/FixServicesStore.ts",
+                "src/pages/useStore/CoursesStore.ts",
+                "src/pages/useStore/ShortVideosStore.ts",
+            ],
+            "collapsed": false
+        }
+    ]
+}

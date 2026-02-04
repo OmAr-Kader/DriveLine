@@ -1,0 +1,17 @@
+
+node_modules
+dist
+npm-debug.log
+.env
+.git
+.gitignore
+README.md
+.vscode
+.idea
+# exclude user configuration and caches
+**/.config
+**/.cache
+
+# typical project ignores
+*.log
+.DS_Store
