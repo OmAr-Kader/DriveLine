@@ -23,7 +23,7 @@ A sophisticated backend and admin infrastructure powering:
 
 This repository provides a production-hardened, horizontally-scalable backend built with **Node.js**, **NestJS**, **Fastify**, **TypeScript**, **Mongoose**, **PostgreSQL**, **Valkey**, **RabbitMQ**, and **Socket.IO**, paired with a modern admin dashboard using **React 19**, **TypeScript**, **Zustand**, and **Vite**.
 
-### Final App Version (Current Implementation)
+### Final App Version
 - **Distributed Backend Architecture** — NGINX sidecar routing, webhook isolation, multi-process model (API, Worker, Webhook Handler)
 - **Advanced Flow Control** — Sliding window rate limiting, circuit breakers, priority queuing with backpressure, IP reputation scoring
 - **Caching Strategy** — Valkey-backed distributed cache with dual-window enforcement and cache-coherence patterns
@@ -37,7 +37,7 @@ This repository provides a production-hardened, horizontally-scalable backend bu
 
 -------------
 
-### Screenshot
+## Screenshot
 
 <table>
     <tr>
@@ -60,11 +60,13 @@ This repository provides a production-hardened, horizontally-scalable backend bu
 
 -------------
 
-### Screen Records
+## Screen Records
 
+### iOS App
+https://github.com/user-attachments/assets/cd190008-f791-41e2-8544-eecadba35408
 
-https://github.com/user-attachments/assets/a2665e82-d7c9-40c4-b861-597c77832cfc
-
+### Admin Panel
+https://github.com/user-attachments/assets/c3ee2d7b-73b9-45ea-8e75-9301c8bcc369
 
 -------------
 
