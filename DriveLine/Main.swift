@@ -107,7 +107,7 @@ struct SplashScreen : View {
 
     var body: some View {
         FullZStack {
-            Image.initial("AppIcon".forImage())
+            ImageIdentifierOriginalView("AppIcon".forImage())
                 .scaleEffect(scale)
                 .frame(width: width, height: width, alignment: .center)
                 .onAppeared {
@@ -275,7 +275,7 @@ struct HomeScreen: View {
                 guard !obs.state.isLoading else { return }
                 navigator.navigateTo(.CHAT_SCREEN_ROUTE)
             } label: {
-                Image.initial("plus".forImage(tint: .textOfApp, isSystem: true))
+                ImageIdentifierView("plus".forImage(tint: .textOfApp, isSystem: true))
                 .frame(size: 24)}
         }
     }

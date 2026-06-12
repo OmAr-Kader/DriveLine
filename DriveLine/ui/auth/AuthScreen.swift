@@ -32,7 +32,7 @@ struct AuthScreen: View {
                 
                 // Title
                 HStack {
-                    Image.initial("AppIcon".forImage())
+                    ImageIdentifierOriginalView("AppIcon".forImage())
                         .frame(width: 40, height: 40)
                     Spacer().width(10)
                     Text(isRegistering ? "Create Account" : "Welcome Back")

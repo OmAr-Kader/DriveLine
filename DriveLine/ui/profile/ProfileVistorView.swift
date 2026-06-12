@@ -151,7 +151,7 @@ struct ProfileVistorScreen: View {
         let gridItem = Array(repeating: GridItem(.flexible(), spacing: 12), count: columnsCount)
         LazyVGrid(columns: gridItem) {
             ForEach(Array(obs.state.visitorShorts.enumerated()), id: \.offset) { index, item in
-                ShortVideoTile(item: item)
+                ShortVideoTile(item: item, height: isPortrait ? 140 : 120)
                     .frame(height: isPortrait ? 140 : 120).onTapGesture {
                         navigator.navigateToScreen(VideoFeedConfig(shorts: obs.state.visitorShorts, currentIndex: index), .VIDEO_SHORT_SCREEN_ROUTE)
                     }
@@ -269,14 +269,14 @@ fileprivate struct CourseCardImage: View {
 
 fileprivate struct ShortVideoTile: View {
     let item: ShortVideoUserData
-    
+    let height: CGFloat
     var body: some View {
         ZStack(alignment: .bottom) {
             Rectangle()
                 .foregroundColor(Color.gray.opacity(0.15))
                 .overlay(
                     Group {
-                        KingsFisherImage(urlString: item.thumbImageName)
+                        KingsImageFullWidth(urlString: item.thumbImageName, height: height, radius: 0, contentMode: .fill, changeWithAnimation: .default)
                             .scaledToFill()
                             .clipped()
                     }

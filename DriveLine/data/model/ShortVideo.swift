@@ -8,54 +8,38 @@
 import AVKit
 import Combine
 import SwiftUISturdy
+import SwiftUIMacroSturdy
 
 @BackgroundActor
+@SturdyFilterCodable(shouldHaveEmptyInit: true)
 struct ShortVideo: Codable {
     let id: String
-    let title: String
+    @CodableKey("title")
+    let text: String
     let userId: String
     let link: String
     let thumbImageName: String
+    @CodableEmptyInit([])
     let tags: [Int]
     let views: Int
+    //@CodableEmptyInit(Date.now)
     let createdAt: Date
-    
-    init(id: String, title: String, userId: String, link: String, thumbImageName: String, tags: [Int], views: Int, createdAt: Date) {
-        self.id = id
-        self.title = title
-        self.userId = userId
-        self.link = link
-        self.thumbImageName = thumbImageName
-        self.tags = tags
-        self.views = views
-        self.createdAt = createdAt
-    }
     
     init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.id = try container.decode(String.self, forKey: .id)
-        self.title = try container.decode(String.self, forKey: .title)
+        self.text = try container.decode(String.self, forKey: .text)
         self.userId = try container.decode(String.self, forKey: .userId)
-        self.thumbImageName = try container.decode(String.self, forKey: .thumbImageName)
-        self.link = try container.decode(String.self, forKey: .link)
+        self.thumbImageName = "https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Neckertal_20150527-6384.jpg/1920px-Neckertal_20150527-6384.jpg"//try container.decode(String.self, forKey: .thumbImageName)
+        self.link = "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/1080/Big_Buck_Bunny_1080_10s_1MB.mp4"//try container.decode(String.self, forKey: .link)
         self.tags = try container.decode([Int].self, forKey: .tags)
         self.views = try container.decode(Int.self, forKey: .views)
         self.createdAt = try container.decodeISO8601Date(forKey: .createdAt)
     }
-    
-    enum CodingKeys : String, CodingKey {
-        case id
-        case title
-        case userId
-        case link
-        case thumbImageName
-        case tags
-        case views
-        case createdAt
-    }
 }
 
 @BackgroundActor
+@SturdyFilterCodable
 struct ShortVideoUser: Codable {
     let id: String
     let title: String
@@ -66,78 +50,27 @@ struct ShortVideoUser: Codable {
     let views: Int
     let createdAt: Date
     
-    init(id: String, title: String, user: UserShort, link: String, thumbImageName: String, tags: [Int], views: Int, createdAt: Date) {
-        self.id = id
-        self.title = title
-        self.user = user
-        self.thumbImageName = thumbImageName
-        self.link = link
-        self.tags = tags
-        self.views = views
-        self.createdAt = createdAt
-    }
-    
-    
     init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.id = try container.decode(String.self, forKey: .id)
         self.title = try container.decode(String.self, forKey: .title)
         self.user = try container.decode(UserShort.self, forKey: .user)
-        self.thumbImageName = try container.decode(String.self, forKey: .thumbImageName)
-        self.link = try container.decode(String.self, forKey: .link)
+        self.thumbImageName = "https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Neckertal_20150527-6384.jpg/1920px-Neckertal_20150527-6384.jpg"//try container.decode(String.self, forKey: .thumbImageName)
+        self.link = "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/1080/Big_Buck_Bunny_1080_10s_1MB.mp4"//try container.decode(String.self, forKey: .link)
         self.tags = try container.decode([Int].self, forKey: .tags)
         self.views = try container.decode(Int.self, forKey: .views)
         self.createdAt = try container.decodeISO8601Date(forKey: .createdAt)
     }
-    
-    enum CodingKeys: String, CodingKey {
-        case id
-        case title
-        case user
-        case link
-        case thumbImageName
-        case tags
-        case views
-        case createdAt
-    }
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        // `id` is intentionally excluded
-        try container.encode(title, forKey: .title)
-        try container.encode(user, forKey: .user)
-        try container.encode(link, forKey: .link)
-        try container.encode(thumbImageName, forKey: .thumbImageName)
-        try container.encode(tags, forKey: .tags)
-        try container.encode(views, forKey: .views)
-        try container.encode(createdAt, forKey: .createdAt)
-    }
 }
 
 @BackgroundActor
+@SturdyFilterCodable
 struct UserShort: Codable {
     let id: String
     let name: String
     let role: String
     let image: String?
     
-    init(id: String, name: String, role: String, image: String?) {
-        self.id = id
-        self.name = name
-        self.role = role
-        self.image = image
-    }
-    
-    init(from decoder: any Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.id = try container.decode(String.self, forKey: .id)
-        self.name = try container.decode(String.self, forKey: .name)
-        self.role = try container.decode(String.self, forKey: .role)
-        self.image = try container.decodeIfPresent(String.self, forKey: .image)
-    }
-    
-    enum CodingKeys: String, CodingKey {
-        case id, name, role, image
-    }
 }
 
 @BackgroundActor
@@ -220,7 +153,7 @@ struct ShortVideoData: Identifiable, Hashable {
     
     init(_ short: ShortVideo) {
         self._id = short.id
-        self.title = short.title
+        self.title = short.text
         self.link = short.link
         self.thumbImageName = short.thumbImageName
         self.tags = short.tags
@@ -284,7 +217,7 @@ struct ShortVideoUserData: Identifiable, Hashable, Equatable {
     
     init(_ user: User, short: ShortVideo) {
         self._id = short.id
-        self.title = short.title
+        self.title = short.text
         self.user = UserShortData(id: user.id, name: user.name, role: user.role, image: user.image)
         self.link = short.link
         self.thumbImageName = short.thumbImageName

@@ -27,6 +27,11 @@ struct Project : Sendable {
 }
 
 func buildContainer() -> Container {
+#if DEBUG
+    AppConfig.setIsDebuggerAttached(true)
+#else
+    AppConfig.setIsDebuggerAttached(false)
+#endif
     let container = Container()
     let modelContainer = createModelContainer()
     

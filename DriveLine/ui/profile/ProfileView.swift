@@ -9,6 +9,7 @@ import SwiftUI
 import SwiftUISturdy
 import AVKit
 import Combine
+import SwiftUIMacroSturdy
 
 struct ProfileView: View {
 
@@ -176,7 +177,7 @@ struct ProfileView: View {
         let gridItem = Array(repeating: GridItem(.flexible(), spacing: 12), count: columnsCount)
         LazyVGrid(columns: gridItem, spacing: 12) {
             ForEach(Array(obs.state.profileShorts.enumerated()), id: \.offset) { index, item in
-                ShortVideoTile(item: item) { player in
+                ShortVideoTile(item: item,  height: isPortrait ? 140 : 120) { player in
                     let edit = obs.state.profileShorts.editItem(where: { $0.link == item.link }, edit: { $0.player = player })
                     withAnimation {
                         obs.updateProfileVideos(edit)
@@ -491,6 +492,7 @@ fileprivate struct CourseCardImage: View {
 
 fileprivate struct ShortVideoTile: View {
     let item: ShortVideoUserData
+    let height: CGFloat
     let addPlayer: @MainActor (AVPlayer) -> Void
     
     @State private var sinkCancel: AnyCancellable?
@@ -507,7 +509,7 @@ fileprivate struct ShortVideoTile: View {
                                 .clipped()
                                 .animation(.smooth, value: true)
                         } else {
-                            KingsFisherImage(urlString: item.thumbImageName)
+                            KingsImageFullWidth(urlString: item.thumbImageName, height: height, radius: 0, contentMode: .fill, changeWithAnimation: .default)
                                 .scaledToFill()
                                 .clipped()
                             /*if UIImage(named: item.thumbImageName) != nil {

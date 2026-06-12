@@ -197,14 +197,14 @@ struct UserEdit: Sendable, Identifiable {
         "\(name)\(age ?? 0)\(city ?? "")\(street ?? "")\(building ?? "")\(unit ?? "")"
     }
     
-    var name: String
-    var phone: String
-    var age: Int?
-    var city: String?
-    var street: String?
-    var building: String?
-    var unit: String?
-    var image: String?
+    private(set) var name: String
+    private(set) var phone: String
+    private(set) var age: Int?
+    private(set) var city: String?
+    private(set) var street: String?
+    private(set) var building: String?
+    private(set) var unit: String?
+    private(set) var image: String?
     
     init(name: String, phone: String, age: Int? = nil, city: String? = nil, street: String? = nil, building: String? = nil, unit: String? = nil, image: String? = nil) {
         self.name = name

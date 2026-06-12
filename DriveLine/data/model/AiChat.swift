@@ -7,6 +7,33 @@
 
 import Foundation
 import SwiftUISturdy
+import SwiftUIMacroSturdy
+
+/*
+@BackgroundActor
+@SturdyCopy
+@SturdyFilterCodable(shouldHaveEmptyInit: true)
+struct CreateSessionRequest: Codable {
+    private(set) var title: String
+    @CodableKey("description")
+    private(set) var text: String?
+    @CodableEmptyInit(0)
+    private(set) var number: Int32?
+
+
+    
+    @CodableIgnore("""
+        if let text {
+            self.isUser = text == title
+        } else {
+            self.isUser = false
+        }
+    """)
+    private(set) var isUser: Bool
+    
+    private(set) var request: CreateMessageRequest? = nil
+    
+}*/
 
 // MARK: - Create Session Request
 @BackgroundActor
