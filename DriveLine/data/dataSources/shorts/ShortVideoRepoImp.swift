@@ -21,14 +21,14 @@ final class ShortVideoRepoImp : ShortVideoRepo {
     @BackgroundActor
     func createShortVideo(userBase: UserBase, body: ShortVideo, invoke: @escaping @BackgroundActor (ShortVideo) -> Void, failed: @escaping (String) -> Void) async {
         guard let url = URL(string: SecureConst.BASE_URL + Endpoint.SHORTS) else {
-            LogKit.print("createShortVideo Invalid URL"); failed("Failed")
+            LogKit.failure(tag: "createShortVideo Invalid URL"); failed("Failed")
             return
         }
         do {
             let response: ShortVideo = try await url.createPOSTRequest(body: body).addAuthorizationHeader(userBase).performRequest(session: appSessions.disableCache)
             invoke(response)
         } catch {
-            LogKit.print("Failed ->", error.localizedDescription); failed("Failed")
+            LogKit.failure(tag: "Failed ->", error.localizedDescription); failed("Failed")
         }
     }
     
@@ -42,14 +42,14 @@ final class ShortVideoRepoImp : ShortVideoRepo {
             let response: GetShortsWithUserRespond = try await url.createGETRequest().addAuthorizationHeader(userBase).performRequest(session: appSessions.disableCache)
             invoke(response.data.videos)
         } catch {
-            LogKit.print("Failed ->", error.localizedDescription); failed("Failed")
+            LogKit.failure(tag: "Failed ->", error.localizedDescription); failed("Failed")
         }
     }
     
     @BackgroundActor
     func fetchLast50Videos(userBase: UserBase, limit: Int, skip: Int, needCache: Bool, crypted: CryptoMode?, invoke: @escaping @BackgroundActor ([ShortVideoUser]) -> Void, failed: @escaping (String) -> Void) async {
         guard let url = URL(string: SecureConst.BASE_URL + Endpoint.SHORTS_LATEST + "?limit=\(limit)&skip=\(skip)") else {
-            LogKit.print("fetchLast50Videos Invalid URL"); failed("Failed")
+            LogKit.failure(tag: "fetchLast50Videos Invalid URL"); failed("Failed")
             return
         }
         
@@ -80,7 +80,7 @@ final class ShortVideoRepoImp : ShortVideoRepo {
             }
         } catch {
             // try before failed("Failed")
-            LogKit.print("Failed ->", error.localizedDescription); failed("Failed")
+            LogKit.failure(tag: "Failed ->", error.localizedDescription); failed("Failed")
         }
     }
     

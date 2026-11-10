@@ -3,7 +3,7 @@ import SwiftData
 import Combine
 import SwiftUISturdy
 
-final class PrefRepoImp : PrefRepo, Sendable {
+final class PrefRepoImp : PrefRepo {
     
     private let swiftData: SwiftDataManager?
     

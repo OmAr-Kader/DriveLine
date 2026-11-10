@@ -35,6 +35,19 @@ final class BaseAppObserve: BaseObserver {
         }?.store(in: &cancellables)
     }
     
+    init(pro: Project, secureSession: SecureSessionManager) {
+        self.secureSession = secureSession
+        super.init(project: pro)
+        
+        self.project.pref.observePrefs { prefs in
+            let list = prefs.map({ PreferenceData(from: $0) })
+            self.mainSync {
+                self.refreshPreferences(list)
+            }
+            
+        }?.store(in: &cancellables)
+    }
+    
     
     @MainActor
     func refreshPreferences(_ list: [PreferenceData]) {

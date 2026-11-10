@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUISturdy
 
-class BaseObserver : Sendable {
+class BaseObserver {
     
     let project: Project
         

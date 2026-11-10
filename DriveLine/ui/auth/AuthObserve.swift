@@ -24,6 +24,10 @@ final class AuthAppObserve: BaseObserver {
         super.init(project: pro)
     }
     
+    init(pro: Project) {
+        super.init(project: pro)
+    }
+    
     var toast: Binding<Toast?> {
         Binding {
             self.state.toast
@@ -69,24 +73,27 @@ final class AuthAppObserve: BaseObserver {
             }
         }
     }
-
+    
     @MainActor
-    func login(email: String, password: String, invoke: @escaping @Sendable @MainActor (LoginResponse) -> Void) {
+    func login(email: String, password: String, invoke: @escaping @Sendable @MainActor (UserBase) -> Void, failed: @escaping @Sendable @MainActor (String) -> Void = {_ in }) {
         if let msg = validateUserInput(email: email, password: password) {
             withAnimation {
                 self.state = self.state.copy(toast: .set(Toast(style: .error, message: msg)))
             }
+            failed("Not valid")
         } else {
             withAnimation {
                 self.state = self.state.copy(isLoading: .set(true))
             }
             tasker.back {
-                await self.project.auth.login(body: LoginRequest(email: email, password: password)) { res in
+                await self.project.auth.login(body: LoginRequest(email: email, password: password)) {
+                    let user = UserBase(id: $0.user.id, name: $0.user.name, email: $0.user.email, accountType: $0.user.role, token: $0.token)
                     self.mainSync {
-                        invoke(res)
+                        invoke(user)
                     }
                 } failed: { msg in
                     self.mainSync {
+                        failed(msg)
                         withAnimation {
                             self.state = self.state.copy(isLoading: .set(false), toast: .set(Toast(style: .error, message: msg)))
                         }

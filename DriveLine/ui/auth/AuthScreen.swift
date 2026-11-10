@@ -189,7 +189,7 @@ struct AuthScreen: View {
             }
         } else {
             obs.login(email: email, password: password) {
-                app.updateUserBase(userBase: UserBase(id: $0.user.id, name: $0.user.name, email: $0.user.email, accountType: $0.user.role, token: $0.token)) { userBase in
+                app.updateUserBase(userBase: $0) { userBase in
                     app.shakeHands(userBase: userBase) {
                         navigator.navigateMain(.HOME_SCREEN_ROUTE)
                     } failed: { _ in

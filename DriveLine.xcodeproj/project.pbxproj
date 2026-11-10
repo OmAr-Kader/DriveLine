@@ -7,17 +7,45 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		DC1D73992EE08E6400E982A9 /* SwiftUIMacroSturdy in Frameworks */ = {isa = PBXBuildFile; productRef = DC1D73982EE08E6400E982A9 /* SwiftUIMacroSturdy */; };
 		DC2D8B132F3367FB004DD778 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = DC2D8B122F3367FB004DD778 /* README.md */; };
 		DC2D8B152F336811004DD778 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = DC2D8B142F336811004DD778 /* LICENSE.txt */; };
+		DC7DA5C230A33FC40091B844 /* SwiftUISturdy in Frameworks */ = {isa = PBXBuildFile; productRef = DC7DA5C130A33FC40091B844 /* SwiftUISturdy */; };
+		DC7DA5CC30A3878F0091B844 /* SwiftUIMacroSturdy in Frameworks */ = {isa = PBXBuildFile; productRef = DC7DA5CB30A3878F0091B844 /* SwiftUIMacroSturdy */; };
 		DCA84EA22EBD348900945801 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = DCA84EA12EBD348900945801 /* .gitignore */; };
 		DCA84EAB2EBD358200945801 /* Swinject in Frameworks */ = {isa = PBXBuildFile; productRef = DCA84EAA2EBD358200945801 /* Swinject */; };
 		DCBFCDCA2F9F7D5D00E7EC3D /* SwiftUISturdy in Frameworks */ = {isa = PBXBuildFile; productRef = DCBFCDC92F9F7D5D00E7EC3D /* SwiftUISturdy */; };
+		DCF9F6F830A38B9600F1BF68 /* Swinject in Frameworks */ = {isa = PBXBuildFile; productRef = DCF9F6F730A38B9600F1BF68 /* Swinject */; };
+		DCF9F6FA30A38B9600F1BF68 /* SwiftUIMacroSturdy in Frameworks */ = {isa = PBXBuildFile; productRef = DCF9F6F930A38B9600F1BF68 /* SwiftUIMacroSturdy */; };
+		DCF9F6FC30A38B9600F1BF68 /* SwiftUISturdy in Frameworks */ = {isa = PBXBuildFile; productRef = DCF9F6FB30A38B9600F1BF68 /* SwiftUISturdy */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		DC7DA5BA30A324B20091B844 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DCA84E8B2EBD345E00945801 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DCA84E922EBD345F00945801;
+			remoteInfo = DriveLine;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		DC7DA5D030A38B4C0091B844 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		DC2D8B122F3367FB004DD778 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		DC2D8B142F336811004DD778 /* LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
+		DC7DA5B630A324B20091B844 /* DriveLineTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DriveLineTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		DC7DA5D230A38B4C0091B844 /* APIConsole */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = APIConsole; sourceTree = BUILT_PRODUCTS_DIR; };
 		DC911C112ECC252C008FB226 /* 1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 1.jpg; sourceTree = "<group>"; };
 		DC911C122ECC252C008FB226 /* 2.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 2.jpg; sourceTree = "<group>"; };
 		DC911C132ECC252C008FB226 /* 3.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 3.jpg; sourceTree = "<group>"; };
@@ -40,13 +68,97 @@
 			);
 			target = DCA84E922EBD345F00945801 /* DriveLine */;
 		};
+		DCF9F74030A38D1B00F1BF68 /* Exceptions for "DriveLine" folder in "APIConsole" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				AppDelegate.swift,
+				ContentView.swift,
+				data/dataSources/aiChat/AiChatBase.swift,
+				data/dataSources/aiChat/AiChatRepo.swift,
+				data/dataSources/aiChat/AiChatRepoImp.swift,
+				data/dataSources/auth/AuthBase.swift,
+				data/dataSources/auth/AuthRepo.swift,
+				data/dataSources/auth/AuthRepoImp.swift,
+				data/dataSources/course/CourseBase.swift,
+				data/dataSources/course/CourseRepo.swift,
+				data/dataSources/course/CourseRepoImp.swift,
+				data/dataSources/fixService/FixServiceBase.swift,
+				data/dataSources/fixService/FixServiceRepo.swift,
+				data/dataSources/fixService/FixServiceRepoImp.swift,
+				data/dataSources/pref/PreferenceBase.swift,
+				data/dataSources/pref/PrefRepo.swift,
+				data/dataSources/pref/PrefRepoImp.swift,
+				data/dataSources/shorts/ShortVideoBase.swift,
+				data/dataSources/shorts/ShortVideoRepo.swift,
+				data/dataSources/shorts/ShortVideoRepoImp.swift,
+				data/managers/EventKitManager.swift,
+				data/model/AiChat.swift,
+				data/model/Authorization.swift,
+				data/model/Course.swift,
+				data/model/FixService.swift,
+				data/model/Gemini.swift,
+				data/model/Preference.swift,
+				data/model/ShortVideo.swift,
+				data/model/UserLocal.swift,
+				data/util/Cloud.swift,
+				data/util/CryptoManager.swift,
+				data/util/Local.swift,
+				data/util/SwiftDataKit.swift,
+				di/AppModule.swift,
+				di/BaseAppObserve.swift,
+				DriveLineApp.swift,
+				global/base/Const.swift,
+				global/base/SecureConst.swift,
+				global/base/Theme.swift,
+				global/navigation/Roots.swift,
+				global/util/BaseObserver.swift,
+				Main.swift,
+				ui/auth/AuthObserve.swift,
+				ui/auth/AuthScreen.swift,
+				ui/chat/ChatObserve.swift,
+				ui/chat/ChatScreen.swift,
+				ui/chat/SessionView.swift,
+				ui/Common.swift,
+				ui/course/CoursesListScreen.swift,
+				ui/course/CoursesProvidersObserve.swift,
+				ui/course/CoursesProvidersScreen.swift,
+				ui/course/CreateEditCourseObserve.swift,
+				ui/course/CreateEditCourseScreen.swift,
+				ui/course/ViewCourseScreen.swift,
+				ui/fix/CreateEditServiceObserve.swift,
+				ui/fix/CreateEditServiceScreen.swift,
+				ui/fix/FixServicesListScreen.swift,
+				ui/fix/FixServicesObserve.swift,
+				ui/fix/FixView.swift,
+				ui/fix/ViewServiceScreen.swift,
+				ui/home/HomeObserve.swift,
+				ui/home/HomeView.swift,
+				ui/home/VideoFeedScreen.swift,
+				ui/profile/ProfileView.swift,
+				ui/profile/ProfileVistorObserve.swift,
+				ui/profile/ProfileVistorView.swift,
+				ui/upload/Upload.swift,
+			);
+			target = DC7DA5D130A38B4C0091B844 /* APIConsole */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		DC7DA5B730A324B20091B844 /* DriveLineTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = DriveLineTests;
+			sourceTree = "<group>";
+		};
+		DC7DA5D330A38B4C0091B844 /* APIConsole */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = APIConsole;
+			sourceTree = "<group>";
+		};
 		DCA84E952EBD345F00945801 /* DriveLine */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				DCA84F8F2EBD36A200945801 /* Exceptions for "DriveLine" folder in "DriveLine" target */,
+				DCF9F74030A38D1B00F1BF68 /* Exceptions for "DriveLine" folder in "APIConsole" target */,
 			);
 			path = DriveLine;
 			sourceTree = "<group>";
@@ -54,12 +166,30 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		DC7DA5B330A324B20091B844 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DC7DA5C230A33FC40091B844 /* SwiftUISturdy in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DC7DA5CF30A38B4C0091B844 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DCF9F6FC30A38B9600F1BF68 /* SwiftUISturdy in Frameworks */,
+				DCF9F6FA30A38B9600F1BF68 /* SwiftUIMacroSturdy in Frameworks */,
+				DCF9F6F830A38B9600F1BF68 /* Swinject in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		DCA84E902EBD345F00945801 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DC7DA5CC30A3878F0091B844 /* SwiftUIMacroSturdy in Frameworks */,
 				DCBFCDCA2F9F7D5D00E7EC3D /* SwiftUISturdy in Frameworks */,
-				DC1D73992EE08E6400E982A9 /* SwiftUIMacroSturdy in Frameworks */,
 				DCA84EAB2EBD358200945801 /* Swinject in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -99,6 +229,8 @@
 				DC2D8B142F336811004DD778 /* LICENSE.txt */,
 				DC2D8B122F3367FB004DD778 /* README.md */,
 				DCA84E952EBD345F00945801 /* DriveLine */,
+				DC7DA5B730A324B20091B844 /* DriveLineTests */,
+				DC7DA5D330A38B4C0091B844 /* APIConsole */,
 				DC1D73972EE08E6400E982A9 /* Frameworks */,
 				DCA84E942EBD345F00945801 /* Products */,
 			);
@@ -108,6 +240,8 @@
 			isa = PBXGroup;
 			children = (
 				DCA84E932EBD345F00945801 /* DriveLine.app */,
+				DC7DA5B630A324B20091B844 /* DriveLineTests.xctest */,
+				DC7DA5D230A38B4C0091B844 /* APIConsole */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -115,6 +249,56 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		DC7DA5B530A324B20091B844 /* DriveLineTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DC7DA5BC30A324B20091B844 /* Build configuration list for PBXNativeTarget "DriveLineTests" */;
+			buildPhases = (
+				DC7DA5B230A324B20091B844 /* Sources */,
+				DC7DA5B330A324B20091B844 /* Frameworks */,
+				DC7DA5B430A324B20091B844 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				DC7DA5BB30A324B20091B844 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				DC7DA5B730A324B20091B844 /* DriveLineTests */,
+			);
+			name = DriveLineTests;
+			packageProductDependencies = (
+				DC7DA5C130A33FC40091B844 /* SwiftUISturdy */,
+			);
+			productName = DriveLineTests;
+			productReference = DC7DA5B630A324B20091B844 /* DriveLineTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		DC7DA5D130A38B4C0091B844 /* APIConsole */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DC7DA5D630A38B4C0091B844 /* Build configuration list for PBXNativeTarget "APIConsole" */;
+			buildPhases = (
+				DC7DA5CE30A38B4C0091B844 /* Sources */,
+				DC7DA5CF30A38B4C0091B844 /* Frameworks */,
+				DC7DA5D030A38B4C0091B844 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				DC7DA5D330A38B4C0091B844 /* APIConsole */,
+				DCA84E952EBD345F00945801 /* DriveLine */,
+			);
+			name = APIConsole;
+			packageProductDependencies = (
+				DCF9F6F730A38B9600F1BF68 /* Swinject */,
+				DCF9F6F930A38B9600F1BF68 /* SwiftUIMacroSturdy */,
+				DCF9F6FB30A38B9600F1BF68 /* SwiftUISturdy */,
+			);
+			productName = APIConsole;
+			productReference = DC7DA5D230A38B4C0091B844 /* APIConsole */;
+			productType = "com.apple.product-type.tool";
+		};
 		DCA84E922EBD345F00945801 /* DriveLine */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = DCA84E9E2EBD345F00945801 /* Build configuration list for PBXNativeTarget "DriveLine" */;
@@ -133,8 +317,8 @@
 			name = DriveLine;
 			packageProductDependencies = (
 				DCA84EAA2EBD358200945801 /* Swinject */,
-				DC1D73982EE08E6400E982A9 /* SwiftUIMacroSturdy */,
 				DCBFCDC92F9F7D5D00E7EC3D /* SwiftUISturdy */,
+				DC7DA5CB30A3878F0091B844 /* SwiftUIMacroSturdy */,
 			);
 			productName = DriveLine;
 			productReference = DCA84E932EBD345F00945801 /* DriveLine.app */;
@@ -147,9 +331,16 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 2610;
+				LastSwiftUpdateCheck = 2720;
 				LastUpgradeCheck = 2620;
 				TargetAttributes = {
+					DC7DA5B530A324B20091B844 = {
+						CreatedOnToolsVersion = 27.2;
+						TestTargetID = DCA84E922EBD345F00945801;
+					};
+					DC7DA5D130A38B4C0091B844 = {
+						CreatedOnToolsVersion = 27.2;
+					};
 					DCA84E922EBD345F00945801 = {
 						CreatedOnToolsVersion = 26.1;
 					};
@@ -174,11 +365,20 @@
 			projectRoot = "";
 			targets = (
 				DCA84E922EBD345F00945801 /* DriveLine */,
+				DC7DA5B530A324B20091B844 /* DriveLineTests */,
+				DC7DA5D130A38B4C0091B844 /* APIConsole */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		DC7DA5B430A324B20091B844 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		DCA84E912EBD345F00945801 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -192,6 +392,20 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		DC7DA5B230A324B20091B844 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DC7DA5CE30A38B4C0091B844 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		DCA84E8F2EBD345F00945801 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -201,7 +415,258 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		DC7DA5BB30A324B20091B844 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DCA84E922EBD345F00945801 /* DriveLine */;
+			targetProxy = DC7DA5BA30A324B20091B844 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		DC7DA5A030A318B50091B844 /* Test */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 85F49QNXT3;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.1;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Test;
+		};
+		DC7DA5A130A318B50091B844 /* Test */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = DC9466B42EC22B2600E4C0BD /* Config.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = DriveLine;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 85F49QNXT3;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = YES;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = YES;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = YES;
+				ENABLE_RESOURCE_ACCESS_LOCATION = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = DriveLine/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = DriveLike;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				INFOPLIST_KEY_NSCalendarsUsageDescription = "DriveLine needs access to your calendar to schedule driving lessons and car maintenance events.";
+				INFOPLIST_KEY_NSContactsUsageDescription = "DriveLine may access your contacts to link lessons or service appointments with specific instructors or mechanics.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "DriveLine uses your location to plan routes and identify driving school pickup or service locations.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "We need access to the microphone for speech recognition.";
+				INFOPLIST_KEY_NSRemindersUsageDescription = "DriveLine uses reminders to notify you of upcoming lessons, car service appointments, and other important tasks.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "We need access to recognize your speech.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.omar.driveLine.dev;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				REGISTER_APP_GROUPS = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Test;
+		};
+		DC7DA5BD30A324B20091B844 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 85F49QNXT3;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 27.2;
+				MACOSX_DEPLOYMENT_TARGET = 27.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.driveline.test.DriveLineTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/DriveLine.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/DriveLine";
+				XROS_DEPLOYMENT_TARGET = 27.2;
+			};
+			name = Debug;
+		};
+		DC7DA5BE30A324B20091B844 /* Test */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 85F49QNXT3;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 27.2;
+				MACOSX_DEPLOYMENT_TARGET = 27.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.driveline.test.DriveLineTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/DriveLine.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/DriveLine";
+				XROS_DEPLOYMENT_TARGET = 27.2;
+			};
+			name = Test;
+		};
+		DC7DA5BF30A324B20091B844 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 85F49QNXT3;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 27.2;
+				MACOSX_DEPLOYMENT_TARGET = 27.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.driveline.test.DriveLineTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/DriveLine.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/DriveLine";
+				XROS_DEPLOYMENT_TARGET = 27.2;
+			};
+			name = Release;
+		};
+		DC7DA5D730A38B4C0091B844 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 85F49QNXT3;
+				ENABLE_HARDENED_RUNTIME = YES;
+				MACOSX_DEPLOYMENT_TARGET = 27.2;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		DC7DA5D830A38B4C0091B844 /* Test */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 85F49QNXT3;
+				ENABLE_HARDENED_RUNTIME = YES;
+				MACOSX_DEPLOYMENT_TARGET = 27.2;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Test;
+		};
+		DC7DA5D930A38B4C0091B844 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 85F49QNXT3;
+				ENABLE_HARDENED_RUNTIME = YES;
+				MACOSX_DEPLOYMENT_TARGET = 27.2;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 		DCA84E9C2EBD345F00945801 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -438,10 +903,31 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		DC7DA5BC30A324B20091B844 /* Build configuration list for PBXNativeTarget "DriveLineTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DC7DA5BD30A324B20091B844 /* Debug */,
+				DC7DA5BE30A324B20091B844 /* Test */,
+				DC7DA5BF30A324B20091B844 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DC7DA5D630A38B4C0091B844 /* Build configuration list for PBXNativeTarget "APIConsole" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DC7DA5D730A38B4C0091B844 /* Debug */,
+				DC7DA5D830A38B4C0091B844 /* Test */,
+				DC7DA5D930A38B4C0091B844 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		DCA84E8E2EBD345E00945801 /* Build configuration list for PBXProject "DriveLine" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				DCA84E9C2EBD345F00945801 /* Debug */,
+				DC7DA5A030A318B50091B844 /* Test */,
 				DCA84E9D2EBD345F00945801 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -451,6 +937,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				DCA84E9F2EBD345F00945801 /* Debug */,
+				DC7DA5A130A318B50091B844 /* Test */,
 				DCA84EA02EBD345F00945801 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -472,13 +959,18 @@
 			repositoryURL = "https://github.com/OmAr-Kader/SwiftUI-Sturdy";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.3.0;
+				minimumVersion = 1.3.6;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		DC1D73982EE08E6400E982A9 /* SwiftUIMacroSturdy */ = {
+		DC7DA5C130A33FC40091B844 /* SwiftUISturdy */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DCA84EAF2EBD35A000945801 /* XCRemoteSwiftPackageReference "SwiftUI-Sturdy" */;
+			productName = SwiftUISturdy;
+		};
+		DC7DA5CB30A3878F0091B844 /* SwiftUIMacroSturdy */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = DCA84EAF2EBD35A000945801 /* XCRemoteSwiftPackageReference "SwiftUI-Sturdy" */;
 			productName = SwiftUIMacroSturdy;
@@ -489,6 +981,21 @@
 			productName = Swinject;
 		};
 		DCBFCDC92F9F7D5D00E7EC3D /* SwiftUISturdy */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DCA84EAF2EBD35A000945801 /* XCRemoteSwiftPackageReference "SwiftUI-Sturdy" */;
+			productName = SwiftUISturdy;
+		};
+		DCF9F6F730A38B9600F1BF68 /* Swinject */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DCA84EA92EBD358200945801 /* XCRemoteSwiftPackageReference "Swinject" */;
+			productName = Swinject;
+		};
+		DCF9F6F930A38B9600F1BF68 /* SwiftUIMacroSturdy */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DCA84EAF2EBD35A000945801 /* XCRemoteSwiftPackageReference "SwiftUI-Sturdy" */;
+			productName = SwiftUIMacroSturdy;
+		};
+		DCF9F6FB30A38B9600F1BF68 /* SwiftUISturdy */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = DCA84EAF2EBD35A000945801 /* XCRemoteSwiftPackageReference "SwiftUI-Sturdy" */;
 			productName = SwiftUISturdy;

@@ -9,30 +9,12 @@ import SwiftUISturdy
 /** ON APP */
 
 
-struct AppURLSessions : Sendable {
-    let baseURLSession: URLSession
-    let disableCache: URLSession
-    let secure: URLSession
-}
-
-
-struct Project : Sendable {
-    let urlSessions: AppURLSessions
-    let pref: PreferenceBase
-    let auth: AuthBase
-    let aiChat: AiChatBase
-    let fix: FixServiceBase
-    let course: CourseBase
-    let short: ShortVideoBase
-}
-
-func buildContainer() -> Container {
+func projectGenerator() -> (Project, AppURLSessions, SecureSessionManager) {
 #if DEBUG
-    AppConfig.setIsDebuggerAttached(true)
+    AppConfig.setIsDebuggerAttached(LogKitLevel.all)
 #else
-    AppConfig.setIsDebuggerAttached(false)
+    AppConfig.setIsDebuggerAttached(LogKitLevel.off)
 #endif
-    let container = Container()
     let modelContainer = createModelContainer()
     
     let swiftData = SwiftDataManager(modelContainer: modelContainer)
@@ -51,7 +33,14 @@ func buildContainer() -> Container {
         course: CourseBase(repo: CourseRepoImp(appSessions: urlSessions)),
         short: ShortVideoBase(repo: ShortVideoRepoImp(appSessions: urlSessions, secureSession: secureSession))
     )
-    let theme = Theme(isDarkMode: UITraitCollection.current.userInterfaceStyle.isDarkMode)
+    return (pro, urlSessions, secureSession)
+}
+
+
+func buildContainer() -> Container {
+    let container = Container()
+    let (pro, urlSessions, secureSession) = projectGenerator()
+    let theme = Theme(isDarkMode: ColorScheme.isDarkMode)
     container.register(Project.self) { _  in
         return pro
     }.inObjectScope(.container)

@@ -101,7 +101,7 @@ struct Main: View, Navigator {
 
 struct SplashScreen : View {
     
-    private let theme = Theme(isDarkMode: UITraitCollection.current.userInterfaceStyle.isDarkMode)
+    private let theme = Theme(isDarkMode: ColorScheme.isDarkMode)
     @State private var scale: Double = 1
     @State private var width: CGFloat = 50
 

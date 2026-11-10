@@ -10,6 +10,24 @@ import SwiftUISturdy
 import SwiftUI
 
 
+struct AppURLSessions : Sendable {
+    let baseURLSession: URLSession
+    let disableCache: URLSession
+    let secure: URLSession
+}
+
+
+struct Project {
+    let urlSessions: AppURLSessions
+    let pref: PreferenceBase
+    let auth: AuthBase
+    let aiChat: AiChatBase
+    let fix: FixServiceBase
+    let course: CourseBase
+    let short: ShortVideoBase
+}
+
+
 /// A result type that represents an asynchronous operation's state with three possible cases.
 /// - Note: Marked as `@unchecked Sendable` to allow usage across concurrency domains.
 public enum Cloud<T> : @unchecked Sendable {
@@ -116,7 +134,7 @@ extension URLSessionConfiguration {
         // ============================================
         // HTTP/2 CONFIGURATION
         // ============================================
-        self.httpShouldUsePipelining = true
+        //self.httpShouldUsePipelining = true
         self.httpMaximumConnectionsPerHost = 6
         self.httpCookieAcceptPolicy = .onlyFromMainDocumentDomain
         self.httpShouldSetCookies = true
@@ -162,7 +180,7 @@ extension URLSessionConfiguration {
         // PRIVACY & SECURITY
         // ============================================
         self.sessionSendsLaunchEvents = true
-        self.shouldUseExtendedBackgroundIdleMode = false
+        //self.shouldUseExtendedBackgroundIdleMode = false
         
         return
     }
@@ -187,5 +205,27 @@ func debugDecodingError(_ error: Error) {
         }
     default:
         print("Decoding failed with error: \(error)")
+    }
+}
+
+
+
+final class ServerTrustDelegate: NSObject, URLSessionDelegate {
+    static let shared = ServerTrustDelegate()
+    private override init() { super.init() }
+
+    func urlSession(_ session: URLSession,
+                    didReceive challenge: URLAuthenticationChallenge,
+                    completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+        LogKit.print("Received server trust challenge for host: \(challenge.protectionSpace.host)")
+        let protectionSpace = challenge.protectionSpace
+        if protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust,
+           let serverTrust = protectionSpace.serverTrust {
+            // Replace with proper validation / pinning for production
+            let credential = URLCredential(trust: serverTrust)
+            completionHandler(.useCredential, credential)
+        } else {
+            completionHandler(.performDefaultHandling, nil)
+        }
     }
 }
